@@ -6,6 +6,23 @@
 
 'use strict';
 
+// ==========================
+// INIT SUPABASE (FIX)
+// ==========================
+let _supa = null;
+
+async function initSupabase() {
+  try {
+    const res = await fetch('/api/config');
+    const { url, key } = await res.json();
+
+    _supa = window.supabase.createClient(url, key);
+
+    console.log("✅ Supabase conectado");
+  } catch (err) {
+    console.error("Erro ao conectar Supabase:", err);
+  }
+}
 
 /* ════════════════════════════════
    CONSTANTES
@@ -1424,6 +1441,7 @@ async function renderAll() {
    INICIALIZAÇÃO
    ════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
+  await initSupabase();
   initTheme();
   initAuth();
   initNav();
