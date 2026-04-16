@@ -77,89 +77,248 @@ const DB = {
 
   /* ── Auth ── */
   async findUser(username, password) {
-    const { data } = await _supa.from('users').select('*')
-      .eq('username', username).eq('password', password).maybeSingle();
-    if (!data) return null;
-    _userId = data.id;
-    return { id:data.id, nome:data.nome, username:data.username };
+    try {
+      if (!_supa) return null;
+
+      const { data, error } = await _supa
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .eq('password', password)
+        .single();
+
+      if (error || !data) return null;
+
+      _userId = data.id;
+
+      return { id: data.id, nome: data.nome, username: data.username };
+
+    } catch (err) {
+      console.error("Erro login:", err);
+      return null;
+    }
   },
+
   async findUserByUsername(username) {
-    const { data } = await _supa.from('users').select('*')
-      .eq('username', username).maybeSingle();
-    if (!data) return null;
-    _userId = data.id;
-    return { id:data.id, nome:data.nome, username:data.username };
+    try {
+      if (!_supa) return null;
+
+      const { data, error } = await _supa
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .single();
+
+      if (error || !data) return null;
+
+      _userId = data.id;
+
+      return { id: data.id, nome: data.nome, username: data.username };
+
+    } catch (err) {
+      console.error("Erro buscar usuário:", err);
+      return null;
+    }
   },
+
   async usernameExists(username) {
-    const { data } = await _supa.from('users').select('id')
-      .eq('username', username).maybeSingle();
-    return !!data;
+    try {
+      if (!_supa) return false;
+
+      const { data } = await _supa
+        .from('users')
+        .select('id')
+        .eq('username', username)
+        .single();
+
+      return !!data;
+
+    } catch {
+      return false;
+    }
   },
+
   async createUser(nome, username, password) {
-    const { data, error } = await _supa.from('users')
-      .insert({ nome, username, password }).select().single();
-    if (error || !data) return null;
-    return { id:data.id, nome:data.nome, username:data.username };
+    try {
+      if (!_supa) return null;
+
+      const { data, error } = await _supa
+        .from('users')
+        .insert({ nome, username, password })
+        .select()
+        .single();
+
+      if (error || !data) {
+        console.error("Erro ao criar usuário:", error);
+        return null;
+      }
+
+      return { id: data.id, nome: data.nome, username: data.username };
+
+    } catch (err) {
+      console.error("Erro createUser:", err);
+      return null;
+    }
   },
 
   /* ── Gastos ── */
   async gastos() {
-    const { data } = await _supa.from('gastos').select('*')
-      .eq('user_id', _userId).order('ordem', { ascending:true });
-    return (data||[]).map(_gastoFromDB);
+    try {
+      if (!_supa) return [];
+
+      const { data } = await _supa.from('gastos')
+        .select('*')
+        .eq('user_id', _userId)
+        .order('ordem', { ascending:true });
+
+      return (data||[]).map(_gastoFromDB);
+
+    } catch {
+      return [];
+    }
   },
+
   async saveGastos(list) {
-    await _supa.from('gastos').delete().eq('user_id', _userId);
-    if (list.length) await _supa.from('gastos')
-      .insert(list.map((g,i) => ({ ..._gastoDB(g), ordem:i })));
+    try {
+      if (!_supa) return;
+
+      await _supa.from('gastos').delete().eq('user_id', _userId);
+
+      if (list.length) {
+        await _supa.from('gastos')
+          .insert(list.map((g,i) => ({ ..._gastoDB(g), ordem:i })));
+      }
+    } catch (err) {
+      console.error("Erro saveGastos:", err);
+    }
   },
 
   /* ── Rendas ── */
   async rendas() {
-    const { data } = await _supa.from('rendas').select('*')
-      .eq('user_id', _userId).order('ordem', { ascending:true });
-    return (data||[]).map(_rendaFromDB);
+    try {
+      if (!_supa) return [];
+
+      const { data } = await _supa.from('rendas')
+        .select('*')
+        .eq('user_id', _userId)
+        .order('ordem', { ascending:true });
+
+      return (data||[]).map(_rendaFromDB);
+
+    } catch {
+      return [];
+    }
   },
+
   async saveRendas(list) {
-    await _supa.from('rendas').delete().eq('user_id', _userId);
-    if (list.length) await _supa.from('rendas')
-      .insert(list.map((r,i) => ({ ..._rendaDB(r), ordem:i })));
+    try {
+      if (!_supa) return;
+
+      await _supa.from('rendas').delete().eq('user_id', _userId);
+
+      if (list.length) {
+        await _supa.from('rendas')
+          .insert(list.map((r,i) => ({ ..._rendaDB(r), ordem:i })));
+      }
+    } catch (err) {
+      console.error("Erro saveRendas:", err);
+    }
   },
 
   /* ── Parceladas ── */
   async parceladas() {
-    const { data } = await _supa.from('parceladas').select('*')
-      .eq('user_id', _userId).order('ordem', { ascending:true });
-    return (data||[]).map(_parcFromDB);
+    try {
+      if (!_supa) return [];
+
+      const { data } = await _supa.from('parceladas')
+        .select('*')
+        .eq('user_id', _userId)
+        .order('ordem', { ascending:true });
+
+      return (data||[]).map(_parcFromDB);
+
+    } catch {
+      return [];
+    }
   },
+
   async saveParcelas(list) {
-    await _supa.from('parceladas').delete().eq('user_id', _userId);
-    if (list.length) await _supa.from('parceladas')
-      .insert(list.map((p,i) => ({ ..._parcDB(p), ordem:i })));
+    try {
+      if (!_supa) return;
+
+      await _supa.from('parceladas').delete().eq('user_id', _userId);
+
+      if (list.length) {
+        await _supa.from('parceladas')
+          .insert(list.map((p,i) => ({ ..._parcDB(p), ordem:i })));
+      }
+    } catch (err) {
+      console.error("Erro saveParcelas:", err);
+    }
   },
 
   /* ── Futuras ── */
   async futuras() {
-    const { data } = await _supa.from('futuras').select('*')
-      .eq('user_id', _userId).order('ordem', { ascending:true });
-    return (data||[]).map(_futFromDB);
+    try {
+      if (!_supa) return [];
+
+      const { data } = await _supa.from('futuras')
+        .select('*')
+        .eq('user_id', _userId)
+        .order('ordem', { ascending:true });
+
+      return (data||[]).map(_futFromDB);
+
+    } catch {
+      return [];
+    }
   },
+
   async saveFuturas(list) {
-    await _supa.from('futuras').delete().eq('user_id', _userId);
-    if (list.length) await _supa.from('futuras')
-      .insert(list.map((f,i) => ({ ..._futDB(f), ordem:i })));
+    try {
+      if (!_supa) return;
+
+      await _supa.from('futuras').delete().eq('user_id', _userId);
+
+      if (list.length) {
+        await _supa.from('futuras')
+          .insert(list.map((f,i) => ({ ..._futDB(f), ordem:i })));
+      }
+    } catch (err) {
+      console.error("Erro saveFuturas:", err);
+    }
   },
 
   /* ── Recorrentes ── */
   async recorrentes() {
-    const { data } = await _supa.from('recorrentes').select('*')
-      .eq('user_id', _userId).order('ordem', { ascending:true });
-    return (data||[]).map(_recFromDB);
+    try {
+      if (!_supa) return [];
+
+      const { data } = await _supa.from('recorrentes')
+        .select('*')
+        .eq('user_id', _userId)
+        .order('ordem', { ascending:true });
+
+      return (data||[]).map(_recFromDB);
+
+    } catch {
+      return [];
+    }
   },
+
   async saveRecorr(list) {
-    await _supa.from('recorrentes').delete().eq('user_id', _userId);
-    if (list.length) await _supa.from('recorrentes')
-      .insert(list.map((r,i) => ({ ..._recDB(r), ordem:i })));
+    try {
+      if (!_supa) return;
+
+      await _supa.from('recorrentes').delete().eq('user_id', _userId);
+
+      if (list.length) {
+        await _supa.from('recorrentes')
+          .insert(list.map((r,i) => ({ ..._recDB(r), ordem:i })));
+      }
+    } catch (err) {
+      console.error("Erro saveRecorr:", err);
+    }
   },
 };
 
