@@ -1,10 +1,4 @@
-// api/config.js — Vercel Serverless Function
-// Retorna as credenciais do Supabase para o frontend.
-// As variáveis SUPABASE_URL e SUPABASE_ANON_KEY devem ser
-// configuradas em: Vercel Dashboard → Settings → Environment Variables
-
 export default function handler(req, res) {
-  // CORS preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');

@@ -1,20 +1,16 @@
-/* ═══════════════════════════════════════════════════════════
-   FORA PERRENGUE v6 — style.css
-   Login split-screen · Sidebar funcional · Rec-grid responsivo
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── RESET ── */
+/* ── Reset ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 button,input,select,textarea{font-family:inherit;cursor:pointer;}
 input,select{cursor:text;}
 ul{list-style:none;}
 .no-spin::-webkit-outer-spin-button,
 .no-spin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.no-spin{-moz-appearance:textfield;}
+.no-spin{
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
 
-/* ═══════════════════════════════════
-   VARIÁVEIS
-   ═══════════════════════════════════ */
+/* Variaveis */
 :root{
   --sb-w:230px;
   --r-sm:8px; --r:13px; --r-lg:20px;
@@ -53,9 +49,7 @@ html,body{
 }
 .hidden{display:none!important;}
 
-/* ═══════════════════════════════════
-   TOAST
-   ═══════════════════════════════════ */
+/* Toast */
 .toast{
   position:fixed;top:18px;right:18px;z-index:9999;
   background:var(--surface);border:1.5px solid var(--border);
@@ -72,9 +66,7 @@ html,body{
 .toast.leaving{animation:toastOut .2s ease forwards;}
 @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateX(20px);}}
 
-/* ═══════════════════════════════════
-   MODAIS
-   ═══════════════════════════════════ */
+/* Modais */
 .modal-backdrop{
   position:fixed;inset:0;
   background:rgba(0,0,0,.72);backdrop-filter:blur(10px);
@@ -130,15 +122,13 @@ html,body{
 .prev-resultado-label{font-size:.82rem;font-weight:600;color:var(--txt2);}
 .prev-resultado-valor{font-size:1.2rem;font-weight:800;}
 
-/* ═══════════════════════════════════
-   LOGIN — SPLIT SCREEN REDESENHADO
-   ═══════════════════════════════════ */
+/* Login  */
 .login-screen{
   min-height:100vh;
   display:flex;
 }
 
-/* PAINEL ESQUERDO */
+/* Login parte especificações */
 .login-left{
   width:44%;
   background:linear-gradient(145deg,var(--p7) 0%,var(--p5) 50%,#a855f7 100%);
@@ -182,14 +172,13 @@ html,body{
   font-size:.95rem;flex-shrink:0;
 }
 
-/* Orbs do painel esquerdo */
 .l-orb{position:absolute;border-radius:50%;pointer-events:none;}
 .l-orb-1{width:300px;height:300px;background:rgba(255,255,255,.07);bottom:-80px;right:-80px;animation:orb 8s ease-in-out infinite;}
 .l-orb-2{width:180px;height:180px;background:rgba(255,255,255,.05);top:30px;right:20px;animation:orb 11s ease-in-out infinite reverse;}
 .l-orb-3{width:120px;height:120px;background:rgba(255,255,255,.06);top:50%;left:20px;animation:orb 13s ease-in-out infinite 2s;}
 @keyframes orb{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.04);}}
 
-/* PAINEL DIREITO */
+/* Login parte login */
 .login-right{
   flex:1;
   display:flex;align-items:center;justify-content:center;
@@ -227,7 +216,7 @@ html,body{
 }
 .auth-demo-hint strong{color:var(--accent);}
 
-/* Inputs com ícone (login) */
+/* Ícone dos inputs */
 .input-icon-wrap{position:relative;}
 .input-icon{
   position:absolute;left:12px;top:50%;
@@ -245,7 +234,7 @@ html,body{
 }
 .btn-eye:hover{opacity:1;}
 
-/* Botão de login com seta */
+/* Botão de login */
 .btn-login-main{
   display:flex;align-items:center;justify-content:center;gap:8px;
   font-size:.9rem;letter-spacing:.02em;
@@ -265,9 +254,6 @@ html,body{
 }
 .btn-login-main:hover .btn-arrow{transform:translateX(4px);}
 
-/* ═══════════════════════════════════
-   FORM GROUPS (global)
-   ═══════════════════════════════════ */
 .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
 .form-group label{
   font-size:.68rem;font-weight:700;
@@ -291,7 +277,6 @@ html,body{
 .form-group select option{background:var(--surface);}
 .money-inp{font-weight:600;}
 
-/* Date picker display */
 .date-hidden{display:none!important;}
 .dp-wrap{position:relative;}
 .dp-display{
@@ -343,7 +328,6 @@ html,body{
 .form-grid-4{grid-template-columns:repeat(4,1fr);}
 .span-2{grid-column:span 2;}
 
-/* Checkbox */
 .check-label{
   display:flex;align-items:center;gap:9px;
   font-size:.79rem;color:var(--txt2);cursor:pointer;user-select:none;margin-bottom:13px;
@@ -358,7 +342,6 @@ html,body{
 .check-label input:checked+.check-box{background:var(--accent);border-color:var(--accent);}
 .check-label input:checked+.check-box::after{content:'✓';color:#fff;font-size:.68rem;font-weight:800;}
 
-/* Radio */
 .radio-group{display:flex;flex-wrap:wrap;gap:7px;}
 .radio-label{
   display:flex;align-items:center;gap:7px;
@@ -373,7 +356,7 @@ html,body{
 /* Erro */
 .msg-err{font-size:.76rem;color:var(--red);background:var(--redB);border:1px solid rgba(248,113,113,.2);border-radius:var(--r-sm);padding:7px 11px;margin-bottom:9px;}
 
-/* ── BOTÕES ── */
+/* Botoes */
 .btn-primary{
   background:linear-gradient(135deg,var(--p6),var(--p4));
   color:#fff;font-weight:700;font-size:.86rem;
@@ -393,12 +376,10 @@ html,body{
 }
 .btn-danger:hover{background:var(--red);color:#fff;}
 
-/* ═══════════════════════════════════
-   APP LAYOUT
-   ═══════════════════════════════════ */
+/* Aplicativo */
 .app{display:flex;min-height:100vh;}
 
-/* ── SIDEBAR ── */
+/* Menu */
 .sidebar{
   width:var(--sb-w);
   background:var(--surface);border-right:1px solid var(--border);
@@ -444,7 +425,7 @@ html,body{
 .sb-status{display:flex;align-items:center;gap:5px;font-size:.63rem;color:var(--txt3);margin-top:1px;}
 .sb-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);}
 
-/* Divisor na nav */
+/* Divisor */
 .sb-divider{height:1px;background:var(--border);margin:8px 0;border-radius:99px;}
 
 .sb-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
@@ -495,10 +476,10 @@ html,body{
 
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:299;backdrop-filter:blur(3px);}
 
-/* ── MAIN ── */
+/* Main */
 .main{margin-left:var(--sb-w);flex:1;padding:20px 24px;min-height:100vh;transition:margin var(--t);}
 
-/* TOPBAR */
+/* Topbar */
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
 .tp-left{display:flex;align-items:flex-start;gap:11px;}
 .btn-hamburger{display:none;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:1rem;color:var(--txt2);margin-top:2px;cursor:pointer;}
@@ -516,14 +497,12 @@ html,body{
 .clock-sep{font-size:.68rem;color:var(--txt3);}
 .clock-time{font-size:.78rem;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;}
 
-/* VIEWS */
+/* Views */
 .view{display:none;}
 .view.active{display:block;animation:viewIn .25s ease both;}
 @keyframes viewIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
 
-/* ═══════════════════════════════════
-   CARDS
-   ═══════════════════════════════════ */
+/* Cards */
 .card{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:17px;
@@ -534,9 +513,7 @@ html,body{
 .card-ttl{font-size:.85rem;font-weight:700;color:var(--txt);}
 .form-card{max-width:640px;}
 
-/* ═══════════════════════════════════
-   SALDO CARDS
-   ═══════════════════════════════════ */
+/* Saldo */
 .saldo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
 .saldo-card{
   background:var(--surface);border:1px solid var(--border);
@@ -563,9 +540,7 @@ html,body{
 .sc-red    .sc-value{color:var(--red);}
 .sc-blue   .sc-value{color:var(--blue);}
 
-/* ═══════════════════════════════════
-   DASHBOARD BOXES
-   ═══════════════════════════════════ */
+/* Box dashboard */
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
 .dash-box{
   background:var(--surface);border:1px solid var(--border);
@@ -587,9 +562,6 @@ html,body{
 .db-btn:hover{background:var(--glowS);color:var(--accent);border-color:var(--accent);transform:scale(1.1) rotate(90deg);}
 .db-list{display:flex;flex-direction:column;gap:6px;max-height:228px;overflow-y:auto;padding-right:2px;}
 
-/* ═══════════════════════════════════
-   ITEM ROWS
-   ═══════════════════════════════════ */
 .item-row{
   display:flex;align-items:center;gap:9px;
   background:var(--surf2);border:1px solid var(--borderS);
@@ -623,7 +595,6 @@ html,body{
 .btn-realizar{background:var(--blueB);border:1px solid rgba(96,165,250,.25);color:var(--blue);font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:background var(--t);}
 .btn-realizar:hover{background:var(--blue);color:#fff;}
 
-/* Realizar inline form */
 .realizar-form{
   background:var(--surf2);border:1px solid var(--border);
   border-radius:var(--r-sm);padding:10px 12px;
@@ -639,9 +610,7 @@ html,body{
 .realizar-form .qa-btn{background:var(--accent);color:#fff;font-size:.76rem;font-weight:700;border:none;border-radius:6px;padding:7px 12px;cursor:pointer;transition:opacity var(--t);flex-shrink:0;}
 .realizar-form .qa-btn:hover{opacity:.85;}
 
-/* ═══════════════════════════════════
-   PARCELADAS — CARDS
-   ═══════════════════════════════════ */
+/* Parceladas */
 .parc-card{
   background:var(--surf2);border:1px solid var(--borderS);
   border-radius:10px;padding:13px;
@@ -669,9 +638,8 @@ html,body{
 .parc-mes-btn::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--surf3);color:var(--txt);font-size:.58rem;font-weight:600;padding:3px 6px;border-radius:5px;border:1px solid var(--border);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity var(--t);z-index:10;}
 .parc-mes-btn:hover::after{opacity:1;}
 
-/* Parcelados no dashboard — fonte padronizada */
 .parc-dash-item{
-  margin-bottom:10px;font-size:.82rem;/* igual item-name */
+  margin-bottom:10px;font-size:.82rem;
 }
 .parc-dash-nome{
   font-size:.8rem;font-weight:600;color:var(--txt);
@@ -681,28 +649,19 @@ html,body{
 }
 .parc-dash-nome:hover{color:var(--accent);}
 
-/* ═══════════════════════════════════
-   PREVIEW BOX
-   ═══════════════════════════════════ */
 .preview-box{background:var(--glowS);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;margin-bottom:10px;font-size:.79rem;color:var(--accent);font-weight:600;}
 
-/* ═══════════════════════════════════
-   RECORRENTES — GRID RESPONSIVO
-   Usa flex-wrap para não quebrar
-   ═══════════════════════════════════ */
+/* Recorrentes */
 .rec-grid{
   display:flex;flex-wrap:wrap;gap:13px;margin-top:0;
 }
 .rec-grid .card{
-  flex:1 1 240px;/* cresce mas tem mínimo */
+  flex:1 1 240px;
   min-width:200px;
 }
-/* db-list sem altura máxima fixada nas listas de recorrentes */
+
 .rec-grid .db-list{max-height:none;}
 
-/* ═══════════════════════════════════
-   PILLS / MISC
-   ═══════════════════════════════════ */
 .pill{display:inline-flex;align-items:center;font-size:.67rem;font-weight:700;padding:3px 8px;border-radius:99px;}
 .pill-purple{background:var(--glowS);color:var(--accent);border:1px solid var(--border);}
 
@@ -743,23 +702,21 @@ html,body{
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--txt3);}
 
-/* ═══════════════════════════════════
-   RESPONSIVIDADE
-   ═══════════════════════════════════ */
+/* Responsividade */
 
-/* ── 1200px ── */
+/* 1200px */
 @media(max-width:1200px){
   .saldo-grid{grid-template-columns:1fr 1fr;}
   .form-grid-4{grid-template-columns:1fr 1fr;}
 }
 
-/* ── 900px ── */
+/* 900px */
 @media(max-width:900px){
   .dash-grid{grid-template-columns:1fr;}
   .prev-grid{grid-template-columns:1fr;}
 }
 
-/* ── 780px → mobile sidebar ── */
+/* 780px → Telefone */
 @media(max-width:780px){
   :root{--sb-w:0px;}
   .sidebar{width:230px;transform:translateX(-230px);}
@@ -776,7 +733,7 @@ html,body{
   .topbar{flex-wrap:wrap;}
 }
 
-/* ── 600px → login empilhado ── */
+/* 600px */
 @media(max-width:600px){
   .login-screen{flex-direction:column;}
   .login-left{
@@ -791,7 +748,7 @@ html,body{
   .l-orb{display:none;}
 }
 
-/* ── 480px ── */
+/* 480px */
 @media(max-width:480px){
   .saldo-grid{grid-template-columns:1fr;}
   .sc-value{font-size:.95rem;}
@@ -801,9 +758,7 @@ html,body{
   .modal-box{padding:24px 18px 20px;}
 }
 
-/* ═══════════════════════════════════
-   LOADING OVERLAY (Supabase async)
-   ═══════════════════════════════════ */
+/* Loading */
 .loading-overlay{
   position:fixed;inset:0;
   background:var(--bg);z-index:9998;

@@ -1,14 +1,5 @@
-/* ═══════════════════════════════════════════════════════════
-   FORA PERRENGUE v7 — script.js  (aabase Edition)
-   Todas as operações de banco migradas para Supabase.
-   localStorage mantido apenas para sessão e tema.
-   ═══════════════════════════════════════════════════════════ */
-
 'use strict';
 
-// ==========================
-// CONFIG DIRETO (FIX TOTAL)
-// ==========================
 let _supa = null;
 
 async function initSupabase() {
@@ -26,10 +17,6 @@ async function initSupabase() {
   }
 }
 
-
-/* ════════════════════════════════
-   CONSTANTES
-   ════════════════════════════════ */
 const CAT_EMOJIS = {
   'Alimentação':'🍔','Transporte':'🚗','Lazer':'🎮',
   'Contas':'💡','Saúde':'🏥','Educação':'📚',
@@ -45,12 +32,9 @@ const DIAS_PT  = ['D','S','T','Q','Q','S','S'];
 
 let pieChart   = null;
 let currentUser= null;
-let _userId    = null;   // UUID do usuário atual no Supabase
+let _userId    = null;   
 let clockTimer = null;
 
-/* ════════════════════════════════
-   CONVERSORES: JS ↔ Supabase Row
-   ════════════════════════════════ */
 const _gastoFromDB = r => ({ id:r.id, nome:r.nome, valor:r.valor, categoria:r.categoria, data:r.data });
 const _gastoDB     = g => ({ id:g.id, user_id:_userId, nome:g.nome, valor:g.valor, categoria:g.categoria, data:g.data });
 
@@ -76,19 +60,13 @@ const _recFromDB   = r => ({ id:r.id, nome:r.nome, valor:r.valor, frequencia:r.f
 const _recDB       = r => ({ id:r.id, user_id:_userId, nome:r.nome, valor:r.valor,
   frequencia:r.frequencia, proxima_data:r.proximaData, ultimo_gasto_id:r.ultimoGastoId||null });
 
-/* ════════════════════════════════
-   BANCO DE DADOS (Supabase)
-   Sessão e tema ainda ficam em localStorage.
-   ════════════════════════════════ */
 const DB = {
-  /* ── Session / Theme (localStorage) ── */
   session:     () => { try{return JSON.parse(localStorage.getItem('fp7_session'));}catch{return null;} },
   saveSession: v  => localStorage.setItem('fp7_session', JSON.stringify(v)),
   clearSession:() => localStorage.removeItem('fp7_session'),
   theme:       () => localStorage.getItem('fp7_theme')||'auto',
   saveTheme:   v  => localStorage.setItem('fp7_theme', v),
 
-  /* ── Auth ── */
   async findUser(username, password) {
     try {
       if (!_supa) return null;
@@ -174,7 +152,6 @@ const DB = {
     }
   },
 
-  /* ── Gastos ── */
   async gastos() {
     try {
       if (!_supa) return [];
@@ -206,7 +183,6 @@ const DB = {
     }
   },
 
-  /* ── Rendas ── */
   async rendas() {
     try {
       if (!_supa) return [];
@@ -238,7 +214,6 @@ const DB = {
     }
   },
 
-  /* ── Parceladas ── */
   async parceladas() {
     try {
       if (!_supa) return [];
@@ -270,7 +245,6 @@ const DB = {
     }
   },
 
-  /* ── Futuras ── */
   async futuras() {
     try {
       if (!_supa) return [];
@@ -302,7 +276,6 @@ const DB = {
     }
   },
 
-  /* ── Recorrentes ── */
   async recorrentes() {
     try {
       if (!_supa) return [];
@@ -335,9 +308,6 @@ const DB = {
   },
 };
 
-/* ════════════════════════════════
-   FORMATAÇÃO (padrão BR)
-   ════════════════════════════════ */
 const fmt = {
   brl:      v  => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),
   date:     s  => { if(!s)return'—'; const[y,m,d]=s.split('-'); return`${d}/${m}/${y}`; },
@@ -368,9 +338,6 @@ const fmt = {
   },
 };
 
-/* ════════════════════════════════
-   FORMATAÇÃO MONETÁRIA
-   ════════════════════════════════ */
 function setupMoneyInput(id) {
   const inp = document.getElementById(id);
   if (!inp) return;
@@ -392,9 +359,6 @@ function parseMoney(id) {
   return parseFloat(v)||0;
 }
 
-/* ════════════════════════════════
-   DATE PICKER CUSTOMIZADO
-   ════════════════════════════════ */
 class DatePicker {
   constructor(inputId, opts={}) {
     this.input = document.getElementById(inputId);
@@ -507,9 +471,6 @@ function initDatePickers() {
   pickers.rcData.setValue(hoje);
 }
 
-/* ════════════════════════════════
-   TOAST
-   ════════════════════════════════ */
 let _toastT=null;
 function toast(msg,type='success',ms=3200) {
   const el=document.getElementById('toast');
@@ -522,9 +483,6 @@ function toast(msg,type='success',ms=3200) {
   _toastT=setTimeout(()=>{ el.classList.add('leaving'); setTimeout(()=>el.classList.add('hidden'),220); },ms);
 }
 
-/* ════════════════════════════════
-   TEMA
-   ════════════════════════════════ */
 function applyTheme(t) {
   const html=document.documentElement;
   const toggle=document.getElementById('theme-toggle');
@@ -543,9 +501,6 @@ function initTheme() {
   window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(DB.theme()==='auto')applyTheme('auto');});
 }
 
-/* ════════════════════════════════
-   RELÓGIO
-   ════════════════════════════════ */
 function initClock() {
   const dateEl=document.getElementById('clock-date');
   const timeEl=document.getElementById('clock-time');
@@ -555,11 +510,7 @@ function initClock() {
   clockTimer=setInterval(tick,1000);
 }
 
-/* ════════════════════════════════
-   AUTENTICAÇÃO
-   ════════════════════════════════ */
 function initAuth() {
-  // Abas
   document.querySelectorAll('.auth-tab').forEach(tab=>{
     tab.addEventListener('click',()=>{
       document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
@@ -568,7 +519,6 @@ function initAuth() {
       document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
     });
   });
-  // Olhos
   document.querySelectorAll('.btn-eye').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const inp=document.getElementById(btn.dataset.t);
@@ -576,10 +526,8 @@ function initAuth() {
       btn.textContent=inp.type==='password'?'👁️':'🙈';
     });
   });
-  // Enter
   ['l-user','l-pass'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-login').click();}));
 
-  // Login
   document.getElementById('btn-login').addEventListener('click', async () => {
     const u   = document.getElementById('l-user').value.trim();
     const p   = document.getElementById('l-pass').value;
@@ -595,7 +543,6 @@ function initAuth() {
     await openApp(found);
   });
 
-  // Cadastro
   document.getElementById('btn-register').addEventListener('click', async () => {
     const nome  = document.getElementById('r-nome').value.trim();
     const user  = document.getElementById('r-user').value.trim();
@@ -620,7 +567,6 @@ function initAuth() {
     toast('Conta criada! Faça login 🎉','success',4000);
   });
 
-  // Logout
   document.getElementById('btn-logout').addEventListener('click', () => {
     if (!confirm('Deseja sair?')) return;
     const sess = DB.session();
@@ -633,9 +579,6 @@ function initAuth() {
   });
 }
 
-/* ════════════════════════════════
-   ABRIR APP
-   ════════════════════════════════ */
 async function openApp(user) {
   currentUser = user;
   document.getElementById('login-screen').classList.add('hidden');
@@ -659,9 +602,6 @@ async function openApp(user) {
   showView('dashboard');
 }
 
-/* ════════════════════════════════
-   NAVEGAÇÃO
-   ════════════════════════════════ */
 function initNav() {
   document.querySelectorAll('.nav-item').forEach(btn=>{
     btn.addEventListener('click',()=>{showView(btn.dataset.view);closeSB();});
@@ -686,9 +626,6 @@ function showView(name) {
 function openSB(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-overlay').classList.add('open');}
 function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');}
 
-/* ════════════════════════════════
-   MODAIS
-   ════════════════════════════════ */
 function initModals() {
   const mAbout = document.getElementById('modal-about');
   document.getElementById('btn-about').addEventListener('click',()=>mAbout.classList.remove('hidden'));
@@ -760,9 +697,6 @@ async function abrirModalPrevisao() {
   resEl.style.color = resultado < 0 ? 'var(--red)' : 'var(--green)';
 }
 
-/* ════════════════════════════════
-   MINI-TABS
-   ════════════════════════════════ */
 function initMiniTabs() {
   document.querySelectorAll('.mini-tab').forEach(tab=>{
     tab.addEventListener('click',()=>{
@@ -775,10 +709,6 @@ function initMiniTabs() {
     });
   });
 }
-
-/* ════════════════════════════════
-   LÓGICA DE SALDO (sync — recebe dados como parâmetro)
-   ════════════════════════════════ */
 function gerarOcorrencias(renda, ateData) {
   const resultado=[],seen=new Set();
   const maxAnos=new Date();maxAnos.setFullYear(maxAnos.getFullYear()+5);
@@ -846,9 +776,6 @@ function calcSaldosSync(gastos, parc, rec, futuras, rendas) {
   return {disponivel,aReceberMes,totalARec,totalSaidas,proximoMes,mesAtu};
 }
 
-/* ════════════════════════════════
-   GASTOS
-   ════════════════════════════════ */
 function initGastos() {
   setupMoneyInput('g-valor');
   document.getElementById('btn-add-gasto').addEventListener('click', async () => {
@@ -877,9 +804,6 @@ window.deletarGasto = async function(id) {
   await renderHistorico();
 };
 
-/* ════════════════════════════════
-   RENDAS
-   ════════════════════════════════ */
 function initRendas() {
   setupMoneyInput('rp-valor');
   setupMoneyInput('rr-valor');
@@ -892,7 +816,6 @@ function initRendas() {
     });
   });
 
-  // Entrada avulsa
   document.getElementById('btn-add-rp').addEventListener('click', async () => {
     const nome  = document.getElementById('rp-nome').value.trim();
     const valor = parseMoney('rp-valor');
@@ -909,7 +832,6 @@ function initRendas() {
     toast(`Entrada de ${fmt.brl(valor)} registrada! 💰`);
   });
 
-  // Renda regular
   document.getElementById('btn-add-rr').addEventListener('click', async () => {
     const nome  = document.getElementById('rr-nome').value.trim();
     const valor = parseMoney('rr-valor');
@@ -948,9 +870,6 @@ window.deletarRenda = async function(id) {
   await renderRendas();
 };
 
-/* ════════════════════════════════
-   PARCELADAS
-   ════════════════════════════════ */
 function initParceladas() {
   setupMoneyInput('p-valor');
   ['p-valor','p-num'].forEach(id=>document.getElementById(id).addEventListener('input',atualizarPreviewParc));
@@ -1026,9 +945,6 @@ window.deletarParcelada = async function(id) {
   await renderDashboard();
 };
 
-/* ════════════════════════════════
-   COMPRAS FUTURAS
-   ════════════════════════════════ */
 function initFuturas() {
   setupMoneyInput('f-valor');
   document.getElementById('btn-add-fut').addEventListener('click', async () => {
@@ -1099,9 +1015,6 @@ window.confirmarRealizacao = async function(id) {
   toast(`${f.nome} realizado e registrado! ✅`);
 };
 
-/* ════════════════════════════════
-   RECORRENTES
-   ════════════════════════════════ */
 function initRecorrentes() {
   setupMoneyInput('rc-valor');
   document.getElementById('btn-add-rec').addEventListener('click', async () => {
@@ -1179,9 +1092,6 @@ window.deletarRecorrente = async function(id) {
   await renderDashboard();
 };
 
-/* ════════════════════════════════
-   HISTÓRICO
-   ════════════════════════════════ */
 function initHistorico() {
   document.getElementById('h-cat-filter').addEventListener('change', ()=>renderHistorico().catch(console.error));
   document.getElementById('btn-limpar').addEventListener('click', async () => {
@@ -1193,11 +1103,7 @@ function initHistorico() {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: DASHBOARD
-   ════════════════════════════════ */
 async function renderDashboard() {
-  // Busca todos os dados em paralelo — uma única rodada de requisições
   const [gastos, parc, rec, futuras, rendas] = await Promise.all([
     DB.gastos(), DB.parceladas(), DB.recorrentes(), DB.futuras(), DB.rendas()
   ]);
@@ -1218,14 +1124,12 @@ async function renderDashboard() {
   renderBoxParcelados(parc);
   renderPieChart(gastos);
 
-  // Últimos gastos
   const recBox = document.getElementById('list-recent-gastos');
   recBox.innerHTML='';
   if (gastos.length===0) recBox.innerHTML='<p class="empty-msg">Nenhum gasto registrado.</p>';
   else gastos.slice(0,5).forEach(g=>recBox.appendChild(buildGastoItem(g)));
 }
 
-/* Entradas do mês atual */
 function renderBoxEntradasMes(s, rendas) {
   const box  = document.getElementById('list-entradas-mes');
   box.innerHTML = '';
@@ -1249,7 +1153,6 @@ function renderBoxEntradasMes(s, rendas) {
   });
 }
 
-/* Saídas do mês atual */
 function renderBoxSaidasMes(mesAtu, rec, parc, futuras) {
   const box  = document.getElementById('list-saidas-futuras');
   box.innerHTML = '';
@@ -1296,7 +1199,6 @@ function renderBoxSaidasMes(mesAtu, rec, parc, futuras) {
   });
 }
 
-/* Parcelados no dashboard */
 function renderBoxParcelados(lista) {
   const box = document.getElementById('list-parcelados-dash');
   box.innerHTML = '';
@@ -1328,9 +1230,6 @@ function renderBoxParcelados(lista) {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: PIE CHART
-   ════════════════════════════════ */
 function renderPieChart(gastos) {
   const ctx   = document.getElementById('pie-chart');
   const empty = document.getElementById('chart-empty');
@@ -1396,9 +1295,6 @@ function renderPieChart(gastos) {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: RENDAS
-   ════════════════════════════════ */
 async function renderRendas() {
   const box   = document.getElementById('list-rendas');
   const hoje  = fmt.hoje();
@@ -1431,9 +1327,6 @@ async function renderRendas() {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: PARCELADAS
-   ════════════════════════════════ */
 async function renderParceladas() {
   const box = document.getElementById('list-parceladas');
   box.innerHTML = '';
@@ -1470,9 +1363,6 @@ async function renderParceladas() {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: FUTURAS
-   ════════════════════════════════ */
 async function renderFuturas() {
   const box  = document.getElementById('list-futuras');
   box.innerHTML = '';
@@ -1497,9 +1387,6 @@ async function renderFuturas() {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: RECORRENTES
-   ════════════════════════════════ */
 async function renderRecorrentes() {
   const all = await DB.recorrentes();
   const mensais  = all.filter(r=>r.frequencia==='mensal');
@@ -1540,9 +1427,6 @@ function renderRecLista(boxId, lista, emptyTxt) {
   });
 }
 
-/* ════════════════════════════════
-   RENDER: HISTÓRICO
-   ════════════════════════════════ */
 async function renderHistorico() {
   const filter = document.getElementById('h-cat-filter').value;
   let gastos   = await DB.gastos();
@@ -1552,7 +1436,6 @@ async function renderHistorico() {
   if (gastos.length===0) box.innerHTML='<p class="empty-msg">Nenhum gasto.</p>';
   else gastos.forEach(g=>box.appendChild(buildGastoItem(g)));
 
-  // Recebidos
   const hoje   = fmt.hoje();
   const rendas = await DB.rendas();
   const recebidos = [];
@@ -1575,9 +1458,6 @@ async function renderHistorico() {
   });
 }
 
-/* ════════════════════════════════
-   BUILDER: ITEM DE GASTO
-   ════════════════════════════════ */
 function buildGastoItem(g) {
   const div = document.createElement('div'); div.className='item-row';
   div.innerHTML=`
@@ -1591,17 +1471,11 @@ function buildGastoItem(g) {
   return div;
 }
 
-/* ════════════════════════════════
-   RENDER ALL
-   ════════════════════════════════ */
 async function renderAll() {
   await renderDashboard();
-  // Demais seções são lazy — só carregam quando o usuário navega até elas
 }
 
-/* ════════════════════════════════
-   INICIALIZAÇÃO
-   ════════════════════════════════ */
+
 document.addEventListener('DOMContentLoaded', () => {
 
   initSupabase()
@@ -1624,14 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
         initRecorrentes();
         initHistorico();
 
-        // 🔥 SE SUPABASE FALHAR, NÃO TRAVA O APP
         if (!_supa) {
           console.warn("⚠️ Supabase não carregou");
           showLoginScreen();
           return;
         }
 
-        // Verifica sessão persistida
         const sess = DB.session();
 
         if (sess) {
@@ -1666,7 +1538,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginScreen();
       }
 
-      // 🔥 GARANTE QUE O LOADING SEMPRE SOME (MESMO COM ERRO)
       setTimeout(() => {
         document.getElementById('loading-overlay')?.classList.add('hidden');
       }, 100);

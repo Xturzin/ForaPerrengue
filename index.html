@@ -9,25 +9,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="script.js"></script>
 </head>
 <body>
 
-<!-- ══ LOADING OVERLAY (exibido enquanto verifica sessão) ══ -->
+<!-- Tela de carregamento -->
 <div id="loading-overlay" class="loading-overlay">
   <div class="loading-spinner">💸</div>
   <p>Carregando...</p>
 </div>
 
-<!-- ══ TOAST GLOBAL ══ -->
+<!-- Notificação -->
 <div id="toast" class="toast hidden">
   <span id="toast-icon"></span>
   <span id="toast-msg"></span>
 </div>
 
-<!-- ══ MODAL SOBRE ══ -->
+<!-- Box sobre  -->
 <div id="modal-about" class="modal-backdrop hidden">
   <div class="modal-box">
     <button class="modal-close" id="btn-close-about">✕</button>
@@ -45,7 +44,7 @@
   </div>
 </div>
 
-<!-- ══ MODAL PREVISÃO PRÓXIMO MÊS ══ -->
+<!-- Box previsão proximo mes -->
 <div id="modal-previsao" class="modal-backdrop hidden">
   <div class="modal-box modal-box-wide">
     <button class="modal-close" id="btn-close-previsao">✕</button>
@@ -74,7 +73,7 @@
 
 <section id="login-screen" class="login-screen hidden">
 
-  <!-- Painel esquerdo: identidade da marca -->
+  <!-- Login parte especificações -->
   <div class="login-left">
     <div class="login-brand">
       <div class="login-brand-icon">💸</div>
@@ -96,7 +95,7 @@
     </div>
   </div>
 
-  <!-- Painel direito: formulário -->
+  <!-- Login parte login -->
   <div class="login-right">
     <div class="login-form-wrap">
       <!-- Abas -->
@@ -105,7 +104,7 @@
         <button class="auth-tab" data-tab="register">Criar conta</button>
       </div>
 
-      <!-- LOGIN -->
+      <!-- Login -->
       <div id="tab-login" class="auth-form active">
         <div class="auth-form-title">Bem-vindo de volta 👋</div>
         <div class="auth-form-sub">Entre na sua conta para continuar</div>
@@ -143,7 +142,7 @@
         </div>
       </div>
 
-      <!-- CADASTRO -->
+      <!-- Cadastro -->
       <div id="tab-register" class="auth-form">
         <div class="auth-form-title">Crie sua conta ✨</div>
         <div class="auth-form-sub">Comece a controlar seu dinheiro agora</div>
@@ -175,6 +174,7 @@
           <div class="input-icon-wrap">
             <span class="input-icon">🔒</span>
             <input type="password" id="r-pass2" placeholder="repita a senha"/>
+            <button class="btn-eye" data-t="r-pass" type="button">👁️</button>
           </div>
         </div>
 
@@ -189,10 +189,10 @@
   </div>
 </section>
 
-<!-- ══ APP PRINCIPAL ══ -->
+<!-- Aplicativo principal -->
 <div id="app" class="app hidden">
 
-  <!-- SIDEBAR — estilo funcional -->
+  <!-- Menu -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-top">
       <button class="sb-brand" id="btn-about" title="Sobre o sistema">
@@ -261,7 +261,7 @@
 
   <div class="sb-overlay" id="sb-overlay"></div>
 
-  <!-- MAIN -->
+  <!-- Main -->
   <main class="main">
     <header class="topbar">
       <div class="tp-left">
@@ -280,7 +280,7 @@
       </div>
     </header>
 
-    <!-- ═══ DASHBOARD ═══ -->
+    <!-- Dashboard -->
     <section id="view-dashboard" class="view active">
 
       <div class="saldo-grid">
@@ -311,7 +311,7 @@
             <div class="sc-sub">gastos + parcelas pagas</div>
           </div>
         </div>
-        <!-- Card clicável → abre modal de previsão -->
+        <!-- Box proximo mês  -->
         <div class="saldo-card sc-blue clickable-card" id="card-proximo-mes" title="Clique para ver detalhes">
           <div class="sc-accent-bar"></div>
           <div class="sc-icon-wrap">📅</div>
@@ -324,7 +324,7 @@
       </div>
 
       <div class="dash-grid">
-        <!-- ENTRADAS DO MÊS -->
+        <!-- Entradas do mês -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
@@ -338,7 +338,7 @@
           </div>
         </div>
 
-        <!-- SAÍDAS DO MÊS ATUAL -->
+        <!-- Saídas do mês -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
@@ -352,7 +352,7 @@
           </div>
         </div>
 
-        <!-- PARCELADOS -->
+        <!-- Parcelados -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
@@ -366,7 +366,7 @@
           </div>
         </div>
 
-        <!-- GRÁFICO -->
+        <!-- Grafíco -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
@@ -396,7 +396,7 @@
       </div>
     </section>
 
-    <!-- ═══ NOVO GASTO ═══ -->
+    <!-- Novo gasto -->
     <section id="view-gastos" class="view">
       <div class="card form-card">
         <div class="card-hdr"><h3 class="card-ttl">💸 Registrar Gasto</h3></div>
@@ -432,7 +432,7 @@
       </div>
     </section>
 
-    <!-- ═══ RENDAS ═══ -->
+    <!-- Rendas -->
     <section id="view-rendas" class="view">
       <div class="mini-tabs-wrap">
         <button class="mini-tab active" data-mt="renda-pontual">Entrada avulsa</button>
@@ -504,7 +504,7 @@
       </div>
     </section>
 
-    <!-- ═══ PARCELADAS ═══ -->
+    <!-- Parceladas -->
     <section id="view-parceladas" class="view">
       <div class="card form-card">
         <div class="card-hdr"><h3 class="card-ttl">💳 Nova compra parcelada</h3></div>
@@ -552,7 +552,7 @@
       </div>
     </section>
 
-    <!-- ═══ COMPRAS FUTURAS ═══ -->
+    <!-- Compras futuras -->
     <section id="view-futuras" class="view">
       <div class="card form-card">
         <div class="card-hdr"><h3 class="card-ttl">🛍️ Planejar compra futura</h3></div>
@@ -582,7 +582,7 @@
       </div>
     </section>
 
-    <!-- ═══ RECORRENTES ═══ -->
+    <!-- Recorrentes -->
     <section id="view-recorrentes" class="view">
       <div class="card" style="margin-bottom:14px">
         <div class="card-hdr"><h3 class="card-ttl">🔄 Novo pagamento recorrente</h3></div>
@@ -637,7 +637,7 @@
       </div>
     </section>
 
-    <!-- ═══ HISTÓRICO ═══ -->
+    <!-- Historico -->
     <section id="view-historico" class="view">
       <div class="card">
         <div class="card-hdr">
@@ -665,7 +665,7 @@
       </div>
     </section>
 
-    <!-- ═══ SIMULAÇÃO ═══ -->
+    <!-- Simulação -->
     <section id="view-simulacao" class="view">
       <div class="simul-placeholder">
         <div class="simul-icon">⚡</div>
