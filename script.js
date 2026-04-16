@@ -1611,47 +1611,54 @@ document.addEventListener('DOMContentLoaded', () => {
         initRecorrentes();
         initHistorico();
 
+        // 🔥 SE SUPABASE FALHAR, NÃO TRAVA O APP
+        if (!_supa) {
+          console.warn("⚠️ Supabase não carregou");
+          showLoginScreen();
+          return;
+        }
+
         // Verifica sessão persistida
-const sess = DB.session();
+        const sess = DB.session();
 
-if (sess && _supa) {
-  try {
+        if (sess) {
+          try {
 
-    const u = await Promise.race([
-      DB.findUserByUsername(sess.username),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout usuário")), 4000)
-      )
-    ]);
+            const u = await Promise.race([
+              DB.findUserByUsername(sess.username),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Timeout usuário")), 4000)
+              )
+            ]);
 
-    if (u) {
-      await openApp(u);
-    } else {
-      DB.clearSession();
-      showLoginScreen();
-    }
+            if (u) {
+              await openApp(u);
+            } else {
+              DB.clearSession();
+              showLoginScreen();
+            }
 
-  } catch (e) {
-    console.error('Erro ao restaurar sessão:', e);
-    DB.clearSession();
-    showLoginScreen();
-  }
+          } catch (e) {
+            console.error('Erro ao restaurar sessão:', e);
+            DB.clearSession();
+            showLoginScreen();
+          }
 
-} else {
-  showLoginScreen();
-}
+        } else {
+          showLoginScreen();
+        }
 
-} catch (err) {
-  console.error("Erro geral ao iniciar app:", err);
-  showLoginScreen();
-}
+      } catch (err) {
+        console.error("Erro geral ao iniciar app:", err);
+        showLoginScreen();
+      }
 
-// 🔥 GARANTE QUE O LOADING SOME SEMPRE
-setTimeout(() => {
-  document.getElementById('loading-overlay')?.classList.add('hidden');
-}, 100);
+      // 🔥 GARANTE QUE O LOADING SEMPRE SOME (MESMO COM ERRO)
+      setTimeout(() => {
+        document.getElementById('loading-overlay')?.classList.add('hidden');
+      }, 100);
 
-});
+    });
 
 });
 
