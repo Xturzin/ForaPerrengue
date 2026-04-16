@@ -1438,45 +1438,58 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .finally(async () => {
 
-      initTheme();
-      initAuth();
-      initNav();
-      initModals();
-      initMiniTabs();
-      initGastos();
-      initRendas();
-      initParceladas();
-      initFuturas();
-      initRecorrentes();
-      initHistorico();
+      try {
 
-      // Verifica sessão persistida
-      const sess = DB.session();
+        initTheme();
+        initAuth();
+        initNav();
+        initModals();
+        initMiniTabs();
+        initGastos();
+        initRendas();
+        initParceladas();
+        initFuturas();
+        initRecorrentes();
+        initHistorico();
 
-      if (sess) {
-        try {
-          const u = await DB.findUserByUsername(sess.username);
+        // Verifica sessão persistida
+        const sess = DB.session();
 
-          if (u) {
-            await openApp(u);
-          } else {
+        if (sess && _supa) {
+          try {
+            const u = await DB.findUserByUsername(sess.username);
+
+            if (u) {
+              await openApp(u);
+            } else {
+              DB.clearSession();
+              showLoginScreen();
+            }
+
+          } catch (e) {
+            console.error('Erro ao restaurar sessão:', e);
             DB.clearSession();
             showLoginScreen();
           }
 
-        } catch (e) {
-          console.error('Erro ao restaurar sessão:', e);
-          DB.clearSession();
+        } else {
           showLoginScreen();
         }
 
-      } else {
+      } catch (err) {
+        console.error("Erro geral ao iniciar app:", err);
         showLoginScreen();
       }
 
-      // 🔥 GARANTE QUE O LOADING SEMPRE SOME
-      document.getElementById('loading-overlay')?.classList.add('hidden');
+      // 🔥 GARANTE QUE O LOADING SOME SEMPRE
+      setTimeout(() => {
+        document.getElementById('loading-overlay')?.classList.add('hidden');
+      }, 100);
 
     });
 
 });
+
+function showLoginScreen() {
+  document.getElementById('login-screen')?.classList.remove('hidden');
+}
