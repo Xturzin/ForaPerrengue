@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   FORA PERRENGUE v7 — script.js  (Supabase Edition)
+   FORA PERRENGUE v7 — script.js  (aabase Edition)
    Todas as operações de banco migradas para Supabase.
    localStorage mantido apenas para sessão e tema.
    ═══════════════════════════════════════════════════════════ */
@@ -7,22 +7,12 @@
 'use strict';
 
 // ==========================
-// INIT SUPABASE (FIX)
+// CONFIG DIRETO (FIX TOTAL)
 // ==========================
-let _supa = null;
+const SUPABASE_URL = wmyzhifyihcxuphkicwu;
+const SUPABASE_KEY = sb_publishable_Jsofa9dlC_Pl9ZkdgvPGcA_7fAlfpTB;
 
-async function initSupabase() {
-  try {
-    const res = await fetch('/api/config');
-    const { url, key } = await res.json();
-
-    _supa = window.supabase.createClient(url, key);
-
-    console.log("✅ Supabase conectado");
-  } catch (err) {
-    console.error("Erro ao conectar Supabase:", err);
-  }
-}
+const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ════════════════════════════════
    CONSTANTES
