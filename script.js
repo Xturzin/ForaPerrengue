@@ -9,10 +9,23 @@
 // ==========================
 // CONFIG DIRETO (FIX TOTAL)
 // ==========================
-const SUPABASE_URL = wmyzhifyihcxuphkicwu;
-const SUPABASE_KEY = sb_publishable_Jsofa9dlC_Pl9ZkdgvPGcA_7fAlfpTB;
+let _supa = null;
 
-const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function initSupabase() {
+  try {
+    const SUPABASE_URL = wmyzhifyihcxuphkicwu;
+    const SUPABASE_KEY = sb_publishable_Jsofa9dlC_Pl9ZkdgvPGcA_7fAlfpTB;
+
+    _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    console.log("✅ Supabase conectado");
+
+  } catch (err) {
+    console.error("❌ Erro Supabase:", err);
+    _supa = null;
+  }
+}
+
 
 /* ════════════════════════════════
    CONSTANTES
