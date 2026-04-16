@@ -13,7 +13,7 @@ let _supa = null;
 
 async function initSupabase() {
   try {
-    const SUPABASE_URL = "wmyzhifyihcxuphkicwu";
+    const SUPABASE_URL = "https://wmyzhifyihcxuphkicwu.supabase.co";
     const SUPABASE_KEY = "sb_publishable_Jsofa9dlC_Pl9ZkdgvPGcA_7fAlfpTB";
 
     _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
