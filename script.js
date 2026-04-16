@@ -1453,40 +1453,46 @@ document.addEventListener('DOMContentLoaded', () => {
         initHistorico();
 
         // Verifica sessão persistida
-        const sess = DB.session();
+const sess = DB.session();
 
-        if (sess && _supa) {
-          try {
-            const u = await DB.findUserByUsername(sess.username);
+if (sess && _supa) {
+  try {
 
-            if (u) {
-              await openApp(u);
-            } else {
-              DB.clearSession();
-              showLoginScreen();
-            }
+    const u = await Promise.race([
+      DB.findUserByUsername(sess.username),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout usuário")), 4000)
+      )
+    ]);
 
-          } catch (e) {
-            console.error('Erro ao restaurar sessão:', e);
-            DB.clearSession();
-            showLoginScreen();
-          }
+    if (u) {
+      await openApp(u);
+    } else {
+      DB.clearSession();
+      showLoginScreen();
+    }
 
-        } else {
-          showLoginScreen();
-        }
+  } catch (e) {
+    console.error('Erro ao restaurar sessão:', e);
+    DB.clearSession();
+    showLoginScreen();
+  }
 
-      } catch (err) {
-        console.error("Erro geral ao iniciar app:", err);
-        showLoginScreen();
-      }
+} else {
+  showLoginScreen();
+}
 
-      // 🔥 GARANTE QUE O LOADING SOME SEMPRE
-      setTimeout(() => {
-        document.getElementById('loading-overlay')?.classList.add('hidden');
-      }, 100);
+} catch (err) {
+  console.error("Erro geral ao iniciar app:", err);
+  showLoginScreen();
+}
 
-    });
+// 🔥 GARANTE QUE O LOADING SOME SEMPRE
+setTimeout(() => {
+  document.getElementById('loading-overlay')?.classList.add('hidden');
+}, 100);
+
+});
 
 });
 
