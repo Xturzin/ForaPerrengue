@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fora Perrengue 💜</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ══ LOADING OVERLAY (exibido enquanto verifica sessão) ══ -->
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loading-spinner">💸</div>
+  <p>Carregando...</p>
+</div>
+
+<!-- ══ TOAST GLOBAL ══ -->
+<div id="toast" class="toast hidden">
+  <span id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ══ MODAL SOBRE ══ -->
+<div id="modal-about" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <button class="modal-close" id="btn-close-about">✕</button>
+    <div class="modal-hero">💸</div>
+    <h2 class="modal-title">Fora Perrengue</h2>
+    <p class="modal-byline">Desenvolvido por <strong>Arthur Couto</strong> 💜</p>
+    <div class="modal-divider"></div>
+    <p class="modal-desc">
+      Chega de susto no fim do mês, de não saber pra onde o dinheiro foi ou de viver no limite.
+      Com o <strong>Fora Perrengue</strong>, você transforma desorganização em controle
+      e preocupação em planejamento.<br><br>
+      Aqui, cada escolha financeira fica mais clara, e cada passo te afasta do perrengue.
+    </p>
+    <span class="modal-tag">🚧 Em desenvolvimento 🚧</span>
+  </div>
+</div>
+
+<!-- ══ MODAL PREVISÃO PRÓXIMO MÊS ══ -->
+<div id="modal-previsao" class="modal-backdrop hidden">
+  <div class="modal-box modal-box-wide">
+    <button class="modal-close" id="btn-close-previsao">✕</button>
+    <h2 class="modal-title" id="modal-prev-titulo">Previsão de Janeiro</h2>
+    <p class="modal-byline" style="margin-bottom:18px">O que esperar do próximo mês</p>
+
+    <div class="prev-grid">
+      <div class="prev-section prev-entradas">
+        <div class="prev-section-title">📥 Entradas previstas</div>
+        <div id="prev-list-entradas" class="prev-list"></div>
+        <div class="prev-total" id="prev-total-entradas">R$ 0,00</div>
+      </div>
+      <div class="prev-section prev-saidas">
+        <div class="prev-section-title">📤 Saídas previstas</div>
+        <div id="prev-list-saidas" class="prev-list"></div>
+        <div class="prev-total" id="prev-total-saidas">R$ 0,00</div>
+      </div>
+    </div>
+
+    <div class="prev-resultado" id="prev-resultado">
+      <span class="prev-resultado-label">Saldo previsto</span>
+      <span class="prev-resultado-valor" id="prev-resultado-valor">R$ 0,00</span>
+    </div>
+  </div>
+</div>
+
+<section id="login-screen" class="login-screen hidden">
+
+  <!-- Painel esquerdo: identidade da marca -->
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-brand-icon">💸</div>
+      <h1 class="login-brand-name">Fora<br>Perrengue</h1>
+    </div>
+    <p class="login-brand-tagline">
+      Chega de não saber<br>pra onde o dinheiro foi.
+    </p>
+    <div class="login-features">
+      <div class="lf-item"><span class="lf-icon">💰</span> Saldo em tempo real</div>
+      <div class="lf-item"><span class="lf-icon">💳</span> Controle de parcelamentos</div>
+      <div class="lf-item"><span class="lf-icon">📊</span> Previsões do próximo mês</div>
+      <div class="lf-item"><span class="lf-icon">🔄</span> Gastos recorrentes</div>
+    </div>
+    <div class="login-orbs">
+      <div class="l-orb l-orb-1"></div>
+      <div class="l-orb l-orb-2"></div>
+      <div class="l-orb l-orb-3"></div>
+    </div>
+  </div>
+
+  <!-- Painel direito: formulário -->
+  <div class="login-right">
+    <div class="login-form-wrap">
+      <!-- Abas -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Entrar</button>
+        <button class="auth-tab" data-tab="register">Criar conta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="tab-login" class="auth-form active">
+        <div class="auth-form-title">Bem-vindo de volta 👋</div>
+        <div class="auth-form-sub">Entre na sua conta para continuar</div>
+
+        <div class="form-group">
+          <label>Usuário</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="l-user" placeholder="seu usuário" autocomplete="username"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="btn-eye" data-t="l-pass" type="button">👁️</button>
+          </div>
+        </div>
+
+        <label class="check-label">
+          <input type="checkbox" id="l-remember"/>
+          <span class="check-box"></span>
+          Lembrar neste dispositivo
+        </label>
+
+        <p id="l-error" class="msg-err hidden">Usuário ou senha incorretos.</p>
+        <button id="btn-login" class="btn-primary w-full btn-login-main">
+          <span>Entrar</span>
+          <span class="btn-arrow">→</span>
+        </button>
+
+        <div class="auth-demo-hint">
+          Demo: <strong>admin</strong> / <strong>1234</strong>
+        </div>
+      </div>
+
+      <!-- CADASTRO -->
+      <div id="tab-register" class="auth-form">
+        <div class="auth-form-title">Crie sua conta ✨</div>
+        <div class="auth-form-sub">Comece a controlar seu dinheiro agora</div>
+
+        <div class="form-group">
+          <label>Como quer ser chamado?</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">😊</span>
+            <input type="text" id="r-nome" placeholder="ex: Arthur"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Login</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="r-user" placeholder="ex: arthur123"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="r-pass" placeholder="mín. 4 caracteres"/>
+            <button class="btn-eye" data-t="r-pass" type="button">👁️</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirmar senha</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="r-pass2" placeholder="repita a senha"/>
+          </div>
+        </div>
+
+        <p id="r-error" class="msg-err hidden">Erro.</p>
+        <button id="btn-register" class="btn-primary w-full btn-login-main">
+          <span>Criar conta</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ APP PRINCIPAL ══ -->
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR — estilo funcional -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <button class="sb-brand" id="btn-about" title="Sobre o sistema">
+        <div class="sb-brand-icon">💸</div>
+        <div class="sb-brand-info">
+          <span class="sb-brand-name">Fora Perrengue</span>
+          <span class="sb-brand-sub">controle financeiro</span>
+        </div>
+      </button>
+      <button class="sb-close-btn" id="btn-sb-close">✕</button>
+    </div>
+
+    <div class="sb-profile">
+      <div class="sb-avatar" id="sb-avatar">A</div>
+      <div>
+        <div class="sb-name" id="sb-name">Usuário</div>
+        <div class="sb-status"><span class="sb-dot"></span>online</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <span class="nav-icon">🏠</span><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="gastos">
+        <span class="nav-icon">💸</span><span>Novo Gasto</span>
+      </button>
+      <button class="nav-item" data-view="rendas">
+        <span class="nav-icon">💰</span><span>Rendas</span>
+      </button>
+
+      <div class="sb-divider"></div>
+
+      <button class="nav-item" data-view="parceladas">
+        <span class="nav-icon">💳</span><span>Parceladas</span>
+      </button>
+      <button class="nav-item" data-view="futuras">
+        <span class="nav-icon">🛍️</span><span>Compras Futuras</span>
+      </button>
+      <button class="nav-item" data-view="recorrentes">
+        <span class="nav-icon">🔄</span><span>Recorrentes</span>
+      </button>
+
+      <div class="sb-divider"></div>
+
+      <button class="nav-item" data-view="historico">
+        <span class="nav-icon">📋</span><span>Histórico</span>
+      </button>
+      <button class="nav-item" data-view="simulacao">
+        <span class="nav-icon">⚡</span><span>Simulação</span>
+        <span class="nav-badge">novo</span>
+      </button>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="theme-row">
+        <span id="theme-lbl" class="theme-lbl">🌙 Modo escuro</span>
+        <label class="toggle-sw">
+          <input type="checkbox" id="theme-toggle"/>
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <button id="btn-logout" class="btn-logout">🚪 Sair</button>
+    </div>
+  </aside>
+
+  <div class="sb-overlay" id="sb-overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div class="tp-left">
+        <button class="btn-hamburger" id="btn-hamburger">☰</button>
+        <div>
+          <h2 id="page-title" class="page-title">Dashboard</h2>
+          <p id="user-greet" class="user-greet"></p>
+        </div>
+      </div>
+      <div class="tp-right">
+        <div id="clock-chip" class="clock-chip">
+          <span id="clock-date" class="clock-date"></span>
+          <span class="clock-sep">·</span>
+          <span id="clock-time" class="clock-time"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section id="view-dashboard" class="view active">
+
+      <div class="saldo-grid">
+        <div class="saldo-card sc-green">
+          <div class="sc-accent-bar"></div>
+          <div class="sc-icon-wrap">💰</div>
+          <div class="sc-body">
+            <div class="sc-label">Saldo Disponível</div>
+            <div class="sc-value" id="val-disponivel">R$ 0,00</div>
+            <div class="sc-sub">o que você tem agora</div>
+          </div>
+        </div>
+        <div class="saldo-card sc-purple">
+          <div class="sc-accent-bar"></div>
+          <div class="sc-icon-wrap">⏳</div>
+          <div class="sc-body">
+            <div class="sc-label">A Receber (mês)</div>
+            <div class="sc-value" id="val-previsto">R$ 0,00</div>
+            <div class="sc-sub">ainda não recebido este mês</div>
+          </div>
+        </div>
+        <div class="saldo-card sc-red">
+          <div class="sc-accent-bar"></div>
+          <div class="sc-icon-wrap">📤</div>
+          <div class="sc-body">
+            <div class="sc-label">Saídas do Mês</div>
+            <div class="sc-value" id="val-saidas-mes">R$ 0,00</div>
+            <div class="sc-sub">gastos + parcelas pagas</div>
+          </div>
+        </div>
+        <!-- Card clicável → abre modal de previsão -->
+        <div class="saldo-card sc-blue clickable-card" id="card-proximo-mes" title="Clique para ver detalhes">
+          <div class="sc-accent-bar"></div>
+          <div class="sc-icon-wrap">📅</div>
+          <div class="sc-body">
+            <div class="sc-label">Previsão Próx. Mês <span class="sc-click-hint">↗</span></div>
+            <div class="sc-value" id="val-proximo-mes">R$ 0,00</div>
+            <div class="sc-sub">rendas − compromissos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- ENTRADAS DO MÊS -->
+        <div class="dash-box">
+          <div class="db-header">
+            <div class="db-title-wrap">
+              <span class="db-title-icon">📥</span>
+              <h3 class="db-title">Entradas do Mês</h3>
+            </div>
+            <button class="db-btn" data-view="rendas" title="Ir para Rendas">＋</button>
+          </div>
+          <div id="list-entradas-mes" class="db-list">
+            <p class="empty-msg">Nenhuma entrada este mês.</p>
+          </div>
+        </div>
+
+        <!-- SAÍDAS DO MÊS ATUAL -->
+        <div class="dash-box">
+          <div class="db-header">
+            <div class="db-title-wrap">
+              <span class="db-title-icon">📤</span>
+              <h3 class="db-title">Saídas do Mês</h3>
+            </div>
+            <button class="db-btn" data-view="recorrentes" title="Ir para Recorrentes">＋</button>
+          </div>
+          <div id="list-saidas-futuras" class="db-list">
+            <p class="empty-msg">Nenhuma saída este mês.</p>
+          </div>
+        </div>
+
+        <!-- PARCELADOS -->
+        <div class="dash-box">
+          <div class="db-header">
+            <div class="db-title-wrap">
+              <span class="db-title-icon">💳</span>
+              <h3 class="db-title">Parcelados</h3>
+            </div>
+            <button class="db-btn" data-view="parceladas" title="Ir para Parceladas">＋</button>
+          </div>
+          <div id="list-parcelados-dash" class="db-list">
+            <p class="empty-msg">Nenhum parcelamento.</p>
+          </div>
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="dash-box">
+          <div class="db-header">
+            <div class="db-title-wrap">
+              <span class="db-title-icon">📊</span>
+              <h3 class="db-title">Gastos por Categoria</h3>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="pie-chart"></canvas>
+          </div>
+          <div id="cat-legend" class="cat-legend"></div>
+          <p id="chart-empty" class="empty-msg" style="display:none">Nenhum gasto ainda 🙂</p>
+        </div>
+      </div>
+
+      <div class="dash-box" style="margin-top:14px">
+        <div class="db-header">
+          <div class="db-title-wrap">
+            <span class="db-title-icon">🕐</span>
+            <h3 class="db-title">Últimos Gastos</h3>
+          </div>
+          <button class="db-btn" data-view="gastos" title="Ir para Novo Gasto">＋</button>
+        </div>
+        <div id="list-recent-gastos" class="db-list">
+          <p class="empty-msg">Nenhum gasto registrado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ NOVO GASTO ═══ -->
+    <section id="view-gastos" class="view">
+      <div class="card form-card">
+        <div class="card-hdr"><h3 class="card-ttl">💸 Registrar Gasto</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="g-nome" placeholder="Ifood, Uber..."/>
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="text" id="g-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group">
+            <label>Categoria</label>
+            <select id="g-cat">
+              <option value="">Selecione...</option>
+              <option value="Alimentação">🍔 Alimentação</option>
+              <option value="Transporte">🚗 Transporte</option>
+              <option value="Lazer">🎮 Lazer</option>
+              <option value="Contas">💡 Contas</option>
+              <option value="Saúde">🏥 Saúde</option>
+              <option value="Educação">📚 Educação</option>
+              <option value="Beleza">💅 Beleza</option>
+              <option value="Outros">📦 Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Data</label>
+            <input type="date" id="g-data" class="date-hidden"/>
+          </div>
+        </div>
+        <button id="btn-add-gasto" class="btn-primary">Adicionar Gasto</button>
+      </div>
+    </section>
+
+    <!-- ═══ RENDAS ═══ -->
+    <section id="view-rendas" class="view">
+      <div class="mini-tabs-wrap">
+        <button class="mini-tab active" data-mt="renda-pontual">Entrada avulsa</button>
+        <button class="mini-tab" data-mt="renda-regular">Renda regular</button>
+      </div>
+
+      <div id="mt-renda-pontual" class="mt-content card form-card">
+        <div class="card-hdr"><h3 class="card-ttl">💰 Registrar entrada avulsa</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Descrição</label>
+            <input type="text" id="rp-nome" placeholder="Freela, Venda..."/>
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="text" id="rp-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group span-2">
+            <label>Data de recebimento</label>
+            <input type="date" id="rp-data" class="date-hidden"/>
+          </div>
+        </div>
+        <button id="btn-add-rp" class="btn-primary">Registrar entrada</button>
+      </div>
+
+      <div id="mt-renda-regular" class="mt-content card form-card" style="display:none;margin-top:14px">
+        <div class="card-hdr"><h3 class="card-ttl">🔁 Adicionar renda regular</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="rr-nome" placeholder="ex: Salário CLT"/>
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="text" id="rr-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group">
+            <label>Dia do mês (1–28)</label>
+            <input type="number" id="rr-dia" placeholder="ex: 5" min="1" max="28" class="no-spin"/>
+          </div>
+          <div class="form-group">
+            <label>Mês de início</label>
+            <input type="month" id="rr-inicio"/>
+          </div>
+          <div class="form-group span-2">
+            <label>Prazo</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="rr-prazo" value="indeterminado" checked/>
+                <span>Prazo indeterminado</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="rr-prazo" value="determinado"/>
+                <span>Prazo determinado</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group span-2" id="rr-fim-wrap" style="display:none">
+            <label>Mês de encerramento</label>
+            <input type="month" id="rr-fim"/>
+          </div>
+        </div>
+        <button id="btn-add-rr" class="btn-primary">Adicionar renda regular</button>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><h3 class="card-ttl">📋 Entradas cadastradas</h3></div>
+        <div id="list-rendas" class="db-list"><p class="empty-msg">Nenhuma renda cadastrada.</p></div>
+      </div>
+    </section>
+
+    <!-- ═══ PARCELADAS ═══ -->
+    <section id="view-parceladas" class="view">
+      <div class="card form-card">
+        <div class="card-hdr"><h3 class="card-ttl">💳 Nova compra parcelada</h3></div>
+        <div class="form-grid">
+          <div class="form-group span-2">
+            <label>Nome da compra</label>
+            <input type="text" id="p-nome" placeholder="ex: iPhone 15, Geladeira..."/>
+          </div>
+          <div class="form-group span-2">
+            <label>Como vai inserir o valor?</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" id="p-tipo-total" name="p-tipo" value="total" checked/>
+                <span>Valor total (divide automaticamente)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" id="p-tipo-parcela" name="p-tipo" value="parcela"/>
+                <span>Valor da parcela (repete mensalmente)</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label id="p-valor-label">Valor total (R$)</label>
+            <input type="text" id="p-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group">
+            <label>Número de parcelas</label>
+            <input type="number" id="p-num" placeholder="ex: 12" min="1" max="120" class="no-spin"/>
+          </div>
+          <div class="form-group">
+            <label>Mês da 1ª parcela</label>
+            <input type="month" id="p-inicio"/>
+          </div>
+          <div class="form-group">
+            <label>Dia de vencimento <span class="label-required">*</span></label>
+            <input type="number" id="p-dia-venc" placeholder="ex: 10" min="1" max="28" class="no-spin" required/>
+          </div>
+        </div>
+        <div id="p-preview" class="preview-box hidden"></div>
+        <button id="btn-add-parc" class="btn-primary">Adicionar parcelamento</button>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><h3 class="card-ttl">📋 Parcelamentos ativos</h3></div>
+        <div id="list-parceladas" class="db-list"><p class="empty-msg">Nenhum parcelamento ativo.</p></div>
+      </div>
+    </section>
+
+    <!-- ═══ COMPRAS FUTURAS ═══ -->
+    <section id="view-futuras" class="view">
+      <div class="card form-card">
+        <div class="card-hdr"><h3 class="card-ttl">🛍️ Planejar compra futura</h3></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="f-nome" placeholder="ex: Tênis, Viagem..."/>
+          </div>
+          <div class="form-group">
+            <label>Valor estimado (R$)</label>
+            <input type="text" id="f-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group">
+            <label>Data pretendida</label>
+            <input type="date" id="f-data" class="date-hidden"/>
+          </div>
+          <div class="form-group">
+            <label>Observação (opcional)</label>
+            <input type="text" id="f-obs" placeholder="Qualquer nota..."/>
+          </div>
+        </div>
+        <button id="btn-add-fut" class="btn-primary">Planejar compra</button>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><h3 class="card-ttl">🗓️ Lista de desejos</h3></div>
+        <div id="list-futuras" class="db-list"><p class="empty-msg">Nenhuma compra planejada ✨</p></div>
+      </div>
+    </section>
+
+    <!-- ═══ RECORRENTES ═══ -->
+    <section id="view-recorrentes" class="view">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hdr"><h3 class="card-ttl">🔄 Novo pagamento recorrente</h3></div>
+        <div class="form-grid form-grid-4">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="rc-nome" placeholder="ex: Cartão, Água, Unha..."/>
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="text" id="rc-valor" class="money-inp" placeholder="0"/>
+          </div>
+          <div class="form-group">
+            <label>Frequência</label>
+            <select id="rc-freq">
+              <option value="">Selecione...</option>
+              <option value="semanal">Semanal (7 dias)</option>
+              <option value="quinzenal">Quinzenal (15 dias)</option>
+              <option value="mensal">Mensal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Próximo vencimento</label>
+            <input type="date" id="rc-data" class="date-hidden"/>
+          </div>
+        </div>
+        <button id="btn-add-rec" class="btn-primary">Adicionar recorrente</button>
+      </div>
+
+      <div class="rec-grid">
+        <div class="card">
+          <div class="card-hdr">
+            <h3 class="card-ttl">📅 Mensais</h3>
+            <span class="pill pill-purple" id="rec-tot-mensal">R$ 0,00/mês</span>
+          </div>
+          <div id="rec-list-mensal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <h3 class="card-ttl">📆 Semanais</h3>
+            <span class="pill pill-purple" id="rec-tot-semanal">R$ 0,00/sem</span>
+          </div>
+          <div id="rec-list-semanal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <h3 class="card-ttl">📆 Quinzenais</h3>
+            <span class="pill pill-purple" id="rec-tot-quinzenal">R$ 0,00/qnz</span>
+          </div>
+          <div id="rec-list-quinzenal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HISTÓRICO ═══ -->
+    <section id="view-historico" class="view">
+      <div class="card">
+        <div class="card-hdr">
+          <h3 class="card-ttl">📋 Histórico de Gastos</h3>
+          <div class="hist-controls">
+            <select id="h-cat-filter">
+              <option value="">Todas as categorias</option>
+              <option value="Alimentação">🍔 Alimentação</option>
+              <option value="Transporte">🚗 Transporte</option>
+              <option value="Lazer">🎮 Lazer</option>
+              <option value="Contas">💡 Contas</option>
+              <option value="Saúde">🏥 Saúde</option>
+              <option value="Educação">📚 Educação</option>
+              <option value="Beleza">💅 Beleza</option>
+              <option value="Outros">📦 Outros</option>
+            </select>
+            <button id="btn-limpar" class="btn-danger">🗑️ Limpar tudo</button>
+          </div>
+        </div>
+        <div id="list-historico" class="db-list"><p class="empty-msg">Nenhum gasto registrado.</p></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><h3 class="card-ttl">💚 Valores Recebidos</h3></div>
+        <div id="list-recebidos" class="db-list"><p class="empty-msg">Nenhum valor recebido ainda.</p></div>
+      </div>
+    </section>
+
+    <!-- ═══ SIMULAÇÃO ═══ -->
+    <section id="view-simulacao" class="view">
+      <div class="simul-placeholder">
+        <div class="simul-icon">⚡</div>
+        <h3 class="simul-title">Simulação</h3>
+        <p class="simul-desc">
+          Em breve: simule cenários financeiros.<br>
+          "E se eu ganhar R$ 500 a mais?", "E se eu cortar o lazer?"
+        </p>
+        <span class="simul-tag">🚧 Em desenvolvimento</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
