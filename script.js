@@ -1430,40 +1430,53 @@ async function renderAll() {
 /* ════════════════════════════════
    INICIALIZAÇÃO
    ════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', async () => {
-  await initSupabase();
-  initTheme();
-  initAuth();
-  initNav();
-  initModals();
-  initMiniTabs();
-  initGastos();
-  initRendas();
-  initParceladas();
-  initFuturas();
-  initRecorrentes();
-  initHistorico();
+document.addEventListener('DOMContentLoaded', () => {
 
-  // Verifica sessão persistida
-  const sess = DB.session();
-  if (sess) {
-    try {
-      const u = await DB.findUserByUsername(sess.username);
-      if (u) { await openApp(u); }
-      else   { DB.clearSession(); showLoginScreen(); }
-    } catch (e) {
-      console.error('Erro ao restaurar sessão:', e);
-      DB.clearSession();
-      showLoginScreen();
-    }
-  } else {
-    showLoginScreen();
-  }
+  initSupabase()
+    .catch(err => {
+      console.error("Erro Supabase:", err);
+    })
+    .finally(async () => {
 
-  // Remove o loading overlay
-  document.getElementById('loading-overlay').classList.add('hidden');
+      initTheme();
+      initAuth();
+      initNav();
+      initModals();
+      initMiniTabs();
+      initGastos();
+      initRendas();
+      initParceladas();
+      initFuturas();
+      initRecorrentes();
+      initHistorico();
+
+      // Verifica sessão persistida
+      const sess = DB.session();
+
+      if (sess) {
+        try {
+          const u = await DB.findUserByUsername(sess.username);
+
+          if (u) {
+            await openApp(u);
+          } else {
+            DB.clearSession();
+            showLoginScreen();
+          }
+
+        } catch (e) {
+          console.error('Erro ao restaurar sessão:', e);
+          DB.clearSession();
+          showLoginScreen();
+        }
+
+      } else {
+        showLoginScreen();
+      }
+
+      // 🔥 GARANTE QUE O LOADING SEMPRE SOME
+      document.getElementById('loading-overlay')?.classList.add('hidden');
+
+    });
+
 });
-
-function showLoginScreen() {
-  document.getElementById('login-screen').classList.remove('hidden');
-}
