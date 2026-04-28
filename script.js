@@ -588,31 +588,34 @@ function initAuth() {
     if (!username || !pass1) { errEl.textContent='Preencha todos os campos.'; errEl.classList.remove('hidden'); return; }
     if (pass1 !== pass2)     { errEl.textContent='As senhas não coincidem.';   errEl.classList.remove('hidden'); return; }
     if (pass1.length < 4)    { errEl.textContent='Senha muito curta (mín. 4 caracteres).'; errEl.classList.remove('hidden'); return; }
-    const userAtual = await DB.findUser(username, pass1);
-    if (userAtual) {
-      errEl.textContent='Essa senha já está em uso. Escolha uma diferente.';
+
+    btn.disabled = true; btn.textContent = 'Verificando...';
+
+    // Busca o usuário pelo username para pegar a senha atual
+    const { data: userData } = await _supa.from('users').select('password').eq('username', username).single();
+
+    if (!userData) {
+      errEl.textContent = 'Usuário não encontrado.';
       errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Salvar';
       return;
     }
 
-    btn.disabled = true; btn.textContent = 'Salvando...';
-
-    const existe = await DB.usernameExists(username);
-    if (!existe) {
-      errEl.textContent='Usuário não encontrado.';
+    if (userData.password === pass1) {
+      errEl.textContent = 'Essa senha já está em uso. Escolha uma diferente.';
       errEl.classList.remove('hidden');
-      btn.disabled = false; btn.innerHTML = 'Salvar nova senha';
+      btn.disabled = false; btn.textContent = 'Salvar';
       return;
     }
 
     const ok = await DB.updatePassword(username, pass1);
-    btn.disabled = false; btn.innerHTML = 'Salvar nova senha';
+    btn.disabled = false; btn.textContent = 'Salvar';
 
     if (ok) {
       document.getElementById('modal-forgot').classList.add('hidden');
       toast('Senha alterada com sucesso! 🔑', 'success', 3500);
     } else {
-      errEl.textContent='Erro ao salvar. Tente novamente.';
+      errEl.textContent = 'Erro ao salvar. Tente novamente.';
       errEl.classList.remove('hidden');
     }
   });
