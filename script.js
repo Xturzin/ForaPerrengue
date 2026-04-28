@@ -452,6 +452,15 @@ class DatePicker {
   }
   getValue() { return this.current||''; }
   setValue(ds) { this.current=ds||''; if(ds){const[y,m]=ds.split('-').map(Number);this.viewYear=y;this.viewMonth=m-1;} this.input.value=this.current; this._updateDisplay(); }
+  destroy() {
+    if (!this.input) return;
+    const wrap = this.input.closest('.dp-wrap');
+    if (wrap) {
+      wrap.parentNode.insertBefore(this.input, wrap);
+      wrap.remove();
+    }
+    this.input = null;
+  }
 }
 
 const pickers = {};
