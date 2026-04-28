@@ -457,6 +457,13 @@ class DatePicker {
 const pickers = {};
 
 function initDatePickers() {
+  Object.keys(pickers).forEach(k => {
+    if (pickers[k] && typeof pickers[k].destroy === 'function') {
+      pickers[k].destroy();
+    }
+    delete pickers[k];
+  });
+
   const hoje = fmt.hoje();
   const amanha = new Date(); amanha.setDate(amanha.getDate()+1);
   const amanhaStr = amanha.toISOString().split('T')[0];
