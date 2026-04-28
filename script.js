@@ -573,10 +573,6 @@ function initAuth() {
     });
   });
 
-  document.getElementById('modal-forgot').addEventListener('click', e => {
-    if (e.target === e.currentTarget) document.getElementById('modal-forgot').classList.add('hidden');
-  });
-
   document.getElementById('btn-fp-save').addEventListener('click', async () => {
     const username = document.getElementById('fp-user').value.trim();
     const pass1    = document.getElementById('fp-pass').value;
