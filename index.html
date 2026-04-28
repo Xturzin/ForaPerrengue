@@ -148,50 +148,6 @@
         </div>
       </div>
 
-      <!-- Esqueceu a Senha -->
-      <div id="modal-forgot" class="modal-backdrop hidden">
-      <div class="modal-box">
-        <button class="modal-close" id="btn-fp-cancel">✕</button>
-        <div class="modal-hero">🔑</div>
-        <h2 class="modal-title">Redefinir senha</h2>
-        <p class="modal-byline">Digite seu usuário e escolha uma nova senha.</p>
-        <div class="modal-divider"></div>
-
-        <div class="form-group" style="text-align:left;margin-top:14px">
-          <label>Usuário</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">👤</span>
-            <input type="text" id="fp-user" placeholder="seu usuário" autocomplete="username"/>
-          </div>
-        </div>
-
-        <div class="form-group" style="text-align:left;margin-top:12px">
-          <label>Nova senha</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="fp-pass" placeholder="••••••••"/>
-            <button class="btn-eye" data-t="fp-pass" type="button">👁️</button>
-          </div>
-        </div>
-
-        <div class="form-group" style="text-align:left;margin-top:12px">
-          <label>Confirmar nova senha</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="fp-pass2" placeholder="••••••••"/>
-            <button class="btn-eye" data-t="fp-pass2" type="button">👁️</button>
-          </div>
-        </div>
-
-        <p id="fp-error" class="msg-err hidden" style="text-align:left">Usuário não encontrado.</p>
-
-        <div style="display:flex;gap:10px;margin-top:18px">
-          <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
-          <button id="btn-fp-save" class="btn-primary" style="flex:2">Salvar</button>
-        </div>
-      </div>
-    </div>
-
       <!-- Cadastro -->
       <div id="tab-register" class="auth-form">
         <div class="auth-form-title">Crie sua conta ✨</div>
@@ -237,6 +193,50 @@
     </div>
   </div>
 </section>
+
+<!-- Esqueceu a Senha -->
+<div id="modal-forgot" class="modal-backdrop hidden">
+<div class="modal-box">
+  <button class="modal-close" id="btn-fp-cancel">✕</button>
+  <div class="modal-hero">🔑</div>
+  <h2 class="modal-title">Redefinir senha</h2>
+  <p class="modal-byline">Digite seu usuário e escolha uma nova senha.</p>
+  <div class="modal-divider"></div>
+
+  <div class="form-group" style="text-align:left;margin-top:14px">
+    <label>Usuário</label>
+    <div class="input-icon-wrap">
+      <span class="input-icon">👤</span>
+      <input type="text" id="fp-user" placeholder="seu usuário" autocomplete="username"/>
+    </div>
+  </div>
+
+  <div class="form-group" style="text-align:left;margin-top:12px">
+    <label>Nova senha</label>
+    <div class="input-icon-wrap">
+      <span class="input-icon">🔒</span>
+      <input type="password" id="fp-pass" placeholder="••••••••"/>
+      <button class="btn-eye" data-t="fp-pass" type="button">👁️</button>
+    </div>
+  </div>
+
+  <div class="form-group" style="text-align:left;margin-top:12px">
+    <label>Confirmar nova senha</label>
+    <div class="input-icon-wrap">
+      <span class="input-icon">🔒</span>
+      <input type="password" id="fp-pass2" placeholder="••••••••"/>
+      <button class="btn-eye" data-t="fp-pass2" type="button">👁️</button>
+    </div>
+  </div>
+
+  <p id="fp-error" class="msg-err hidden" style="text-align:left">Usuário não encontrado.</p>
+
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
+    <button id="btn-fp-save" class="btn-primary" style="flex:2">Salvar</button>
+  </div>
+</div>
+</div>
 
 <!-- Aplicativo principal -->
 <div id="app" class="app hidden">
