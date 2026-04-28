@@ -152,6 +152,20 @@ const DB = {
     }
   },
 
+  async updatePassword(username, newPassword) {
+    try {
+      if (!_supa) return false;
+      const { error } = await _supa
+        .from('users')
+        .update({ password: newPassword })
+        .eq('username', username);
+      return !error;
+    } catch (err) {
+      console.error('Erro updatePassword:', err);
+      return false;
+    }
+  },
+
   async gastos() {
     try {
       if (!_supa) return [];
@@ -543,6 +557,59 @@ function initAuth() {
     });
   });
   ['l-user','l-pass'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-login').click();}));
+  
+  // Esqueci a senha
+  document.getElementById('btn-forgot').addEventListener('click', () => {
+    document.getElementById('fp-user').value = document.getElementById('l-user').value;
+    document.getElementById('fp-pass').value  = '';
+    document.getElementById('fp-pass2').value = '';
+    document.getElementById('fp-error').classList.add('hidden');
+    document.getElementById('modal-forgot').classList.remove('hidden');
+  });
+
+  ['btn-fp-cancel', 'btn-fp-cancel2'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => {
+      document.getElementById('modal-forgot').classList.add('hidden');
+    });
+  });
+
+  document.getElementById('modal-forgot').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('modal-forgot').classList.add('hidden');
+  });
+
+  document.getElementById('btn-fp-save').addEventListener('click', async () => {
+    const username = document.getElementById('fp-user').value.trim();
+    const pass1    = document.getElementById('fp-pass').value;
+    const pass2    = document.getElementById('fp-pass2').value;
+    const errEl    = document.getElementById('fp-error');
+    const btn      = document.getElementById('btn-fp-save');
+
+    errEl.classList.add('hidden');
+    if (!username || !pass1) { errEl.textContent='Preencha todos os campos.'; errEl.classList.remove('hidden'); return; }
+    if (pass1 !== pass2)     { errEl.textContent='As senhas não coincidem.';   errEl.classList.remove('hidden'); return; }
+    if (pass1.length < 4)    { errEl.textContent='Senha muito curta (mín. 4 caracteres).'; errEl.classList.remove('hidden'); return; }
+
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    const existe = await DB.usernameExists(username);
+    if (!existe) {
+      errEl.textContent='Usuário não encontrado.';
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.innerHTML = 'Salvar nova senha';
+      return;
+    }
+
+    const ok = await DB.updatePassword(username, pass1);
+    btn.disabled = false; btn.innerHTML = 'Salvar nova senha';
+
+    if (ok) {
+      document.getElementById('modal-forgot').classList.add('hidden');
+      toast('Senha alterada com sucesso! 🔑', 'success', 3500);
+    } else {
+      errEl.textContent='Erro ao salvar. Tente novamente.';
+      errEl.classList.remove('hidden');
+    }
+  });
 
   document.getElementById('btn-login').addEventListener('click', async () => {
     const u   = document.getElementById('l-user').value.trim();
