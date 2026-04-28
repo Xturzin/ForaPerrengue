@@ -20,12 +20,12 @@ async function initSupabase() {
 const CAT_EMOJIS = {
   'Alimentação':'🍔','Transporte':'🚗','Lazer':'🎮',
   'Contas':'💡','Saúde':'🏥','Educação':'📚',
-  'Beleza':'💅','Outros':'📦',
+  'Beleza':'💅','Outros':'📦','cartao':'💳',
 };
 const CAT_COLORS = {
   'Alimentação':'#f87171','Transporte':'#34d399','Lazer':'#fbbf24',
   'Contas':'#a78bfa','Saúde':'#fb7185','Educação':'#60a5fa',
-  'Beleza':'#f472b6','Outros':'#9ca3af',
+  'Beleza':'#f472b6','Outros':'#9ca3af','cartao':'#c084fc',
 };
 const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DIAS_PT  = ['D','S','T','Q','Q','S','S'];
@@ -35,8 +35,8 @@ let currentUser= null;
 let _userId    = null;   
 let clockTimer = null;
 
-const _gastoFromDB = r => ({ id:r.id, nome:r.nome, valor:r.valor, categoria:r.categoria, data:r.data });
-const _gastoDB     = g => ({ id:g.id, user_id:_userId, nome:g.nome, valor:g.valor, categoria:g.categoria, data:g.data });
+const _gastoFromDB = r => ({ id:r.id, nome:r.nome, valor:r.valor, categoria:r.categoria, subcategoria:r.subcategoria||'', data:r.data });
+const _gastoDB     = g => ({ id:g.id, user_id:_userId, nome:g.nome, valor:g.valor, categoria:g.categoria, subcategoria:g.subcategoria||'', data:g.data });
 
 const _rendaFromDB = r => ({ id:r.id, tipo:r.tipo, nome:r.nome, valor:r.valor,
   data:r.data, diaMes:r.dia_mes, mesInicio:r.mes_inicio,
@@ -750,9 +750,13 @@ function calcSaldosSync(gastos, parc, rec, futuras, rendas) {
   const mesAtu = fmt.mesAtual();
   const proxM  = fmt.mesOffset(1);
 
+  // Gastos normais = todos exceto cartao (cartao já tem data no próximo mês)
+  const gastosNormais = gastos.filter(g => g.categoria !== 'cartao');
+  const gastosCartao  = gastos.filter(g => g.categoria === 'cartao');
+
   const recebidas   = todasEntradasSync(rendas, hoje);
   const totalRec    = recebidas.reduce((a,e)=>a+e.valor,0);
-  const totalGastos = gastos.reduce((a,g)=>a+g.valor,0);
+  const totalGastos = gastosNormais.reduce((a,g)=>a+g.valor,0);
   const totalPagas  = parc.reduce((a,p)=>a+p.parcelas.filter(x=>x.pago).reduce((b,x)=>b+x.valorParcela,0),0);
   const disponivel  = totalRec - totalGastos - totalPagas;
 
@@ -760,7 +764,7 @@ function calcSaldosSync(gastos, parc, rec, futuras, rendas) {
   const aReceberMes= todasMes.filter(e=>e.data>hoje&&e.data.startsWith(mesAtu));
   const totalARec  = aReceberMes.reduce((a,e)=>a+e.valor,0);
 
-  const gastosMes  = gastos.filter(g=>g.data>=mesAtu+'-01'&&g.data<=mesAtu+'-31').reduce((a,g)=>a+g.valor,0);
+  const gastosMes  = gastosNormais.filter(g=>g.data>=mesAtu+'-01'&&g.data<=mesAtu+'-31').reduce((a,g)=>a+g.valor,0);
   const parcMes    = parc.reduce((a,p)=>a+p.parcelas.filter(x=>x.pago&&x.mesAno===mesAtu).reduce((b,x)=>b+x.valorParcela,0),0);
   const totalSaidas= gastosMes + parcMes;
 
@@ -771,29 +775,61 @@ function calcSaldosSync(gastos, parc, rec, futuras, rendas) {
   const recQuinz   = rec.filter(r=>r.frequencia==='quinzenal').reduce((a,r)=>a+r.valor*2,0);
   const parcProx   = parc.reduce((a,p)=>a+p.parcelas.filter(x=>x.mesAno===proxM&&!x.pago).reduce((b,x)=>b+x.valorParcela,0),0);
   const futProx    = futuras.filter(f=>f.data.startsWith(proxM)).reduce((a,f)=>a+f.valorEstimado,0);
-  const proximoMes = totalEntrProx - recMensal - recSemanal - recQuinz - parcProx - futProx;
+  // Gastos de cartão que caem no próximo mês
+  const cartaoProx = gastosCartao.filter(g=>g.data.startsWith(proxM)).reduce((a,g)=>a+g.valor,0);
+  const proximoMes = totalEntrProx - recMensal - recSemanal - recQuinz - parcProx - futProx - cartaoProx;
 
-  return {disponivel,aReceberMes,totalARec,totalSaidas,proximoMes,mesAtu};
+  return {disponivel,aReceberMes,totalARec,totalSaidas,proximoMes,mesAtu,gastosCartao};
 }
 
 function initGastos() {
   setupMoneyInput('g-valor');
+
+  // Mostrar/esconder campo de subcategoria ao selecionar Cartão de Crédito
+  document.getElementById('g-cat').addEventListener('change', function() {
+    const subcatWrap = document.getElementById('g-subcat-wrap');
+    if (this.value === 'cartao') {
+      subcatWrap.classList.remove('hidden');
+    } else {
+      subcatWrap.classList.add('hidden');
+      document.getElementById('g-subcat').value = '';
+    }
+  });
+
   document.getElementById('btn-add-gasto').addEventListener('click', async () => {
-    const nome  = document.getElementById('g-nome').value.trim();
-    const valor = parseMoney('g-valor');
-    const cat   = document.getElementById('g-cat').value;
-    const data  = pickers.gasto?.getValue()||'';
-    if (!nome||valor<=0||!cat||!data) { toast('Preencha todos os campos.','error'); return; }
-    if (data>fmt.hoje()) { toast('Data do gasto não pode ser futura.','error'); return; }
+    const nome      = document.getElementById('g-nome').value.trim();
+    const valor     = parseMoney('g-valor');
+    const cat       = document.getElementById('g-cat').value;
+    const data      = pickers.gasto?.getValue()||'';
+    const isCartao  = cat === 'cartao';
+    const subcat    = isCartao ? document.getElementById('g-subcat').value : '';
+
+    if (!nome || valor <= 0 || !cat || !data) { toast('Preencha todos os campos.','error'); return; }
+    if (data > fmt.hoje()) { toast('Data do gasto não pode ser futura.','error'); return; }
+    if (isCartao && !subcat) { toast('Selecione a categoria do cartão.','error'); return; }
+
     const list = await DB.gastos();
-    list.unshift({id:fmt.uid(),nome,valor,categoria:cat,data});
-    await DB.saveGastos(list);
-    document.getElementById('g-nome').value='';
-    document.getElementById('g-valor').value='';
-    document.getElementById('g-cat').value='';
+
+    if (isCartao) {
+      // Cartão: salvar com data no PRÓXIMO mês (mesmo dia), para não impactar o mês atual
+      const dataOriginal = data; // data que o usuário viu
+      const proxMesData  = fmt.avancaMes(data); // empurra 1 mês
+      list.unshift({ id:fmt.uid(), nome, valor, categoria:'cartao', subcategoria:subcat, data:proxMesData, dataCompra:dataOriginal });
+      await DB.saveGastos(list);
+      toast(`💳 ${fmt.brl(valor)} no cartão — sai em ${fmt.date(proxMesData)}`, 'info', 4000);
+    } else {
+      list.unshift({ id:fmt.uid(), nome, valor, categoria:cat, subcategoria:'', data });
+      await DB.saveGastos(list);
+      toast(`${fmt.brl(valor)} registrado! 💸`);
+    }
+
+    document.getElementById('g-nome').value = '';
+    document.getElementById('g-valor').value = '';
+    document.getElementById('g-cat').value = '';
+    document.getElementById('g-subcat').value = '';
+    document.getElementById('g-subcat-wrap').classList.add('hidden');
     pickers.gasto?.setValue(fmt.hoje());
     await renderDashboard();
-    toast(`${fmt.brl(valor)} registrado! 💸`);
   });
 }
 window.deletarGasto = async function(id) {
@@ -1239,12 +1275,15 @@ function renderPieChart(gastos) {
     if (pieChart) { pieChart.destroy(); pieChart=null; } return;
   }
   empty.style.display='none'; ctx.style.display='block';
+
   const totals={}, gastosPerCat={};
   gastos.forEach(g=>{
-    totals[g.categoria]=(totals[g.categoria]||0)+g.valor;
-    if (!gastosPerCat[g.categoria]) gastosPerCat[g.categoria]=[];
-    gastosPerCat[g.categoria].push(g);
+    const cat = g.categoria==='cartao' ? 'cartao' : g.categoria;
+    totals[cat]=(totals[cat]||0)+g.valor;
+    if (!gastosPerCat[cat]) gastosPerCat[cat]=[];
+    gastosPerCat[cat].push(g);
   });
+
   const total  = Object.values(totals).reduce((a,b)=>a+b,0);
   const labels = Object.keys(totals);
   const data   = Object.values(totals);
@@ -1260,13 +1299,23 @@ function renderPieChart(gastos) {
         legend:{display:false},
         tooltip:{
           callbacks:{
-            title:items=>{const c=items[0].label;return`${CAT_EMOJIS[c]||'📦'} ${c}`;},
+            title:items=>{const c=items[0].label;return`${CAT_EMOJIS[c]||'📦'} ${c==='cartao'?'Cartão de Crédito':c}`;},
             label:ctx=>{
               const cat=ctx.label,val=ctx.raw;
               const itens=(gastosPerCat[cat]||[]).slice(0,3);
               const linhas=[`  Total: ${fmt.brl(val)}`];
-              if (itens.length){linhas.push('  ─────────');itens.forEach(g=>linhas.push(`  • ${g.nome}: ${fmt.brl(g.valor)}`));}
-              if ((gastosPerCat[cat]||[]).length>3) linhas.push(`  + mais ${(gastosPerCat[cat]||[]).length-3}...`);
+              if (cat==='cartao') {
+                // Subdividir por subcategoria no tooltip
+                const subTotals={};
+                (gastosPerCat[cat]||[]).forEach(g=>{ subTotals[g.subcategoria||'Outros']=(subTotals[g.subcategoria||'Outros']||0)+g.valor; });
+                linhas.push('  ─────────');
+                Object.entries(subTotals).sort((a,b)=>b[1]-a[1]).forEach(([sub,v])=>{
+                  linhas.push(`  ${CAT_EMOJIS[sub]||'📦'} ${sub}: ${fmt.brl(v)}`);
+                });
+              } else {
+                if (itens.length){linhas.push('  ─────────');itens.forEach(g=>linhas.push(`  • ${g.nome}: ${fmt.brl(g.valor)}`));}
+                if ((gastosPerCat[cat]||[]).length>3) linhas.push(`  + mais ${(gastosPerCat[cat]||[]).length-3}...`);
+              }
               return linhas;
             },
           },
@@ -1280,18 +1329,40 @@ function renderPieChart(gastos) {
       animation:{animateRotate:true,duration:650}
     }
   });
+
+  // Legend — cartão expande subcategorias
   leg.innerHTML='';
   Object.entries(totals).sort((a,b)=>b[1]-a[1]).forEach(([cat,val])=>{
     const pct=(total>0?(val/total*100).toFixed(0):0);
     const color=CAT_COLORS[cat]||'#9ca3af';
+    const label=cat==='cartao'?'💳 Cartão de Crédito':`${CAT_EMOJIS[cat]||'📦'} ${cat}`;
     const div=document.createElement('div'); div.className='cat-row';
     div.innerHTML=`
       <div class="cat-dot" style="background:${color}"></div>
       <div class="cat-info">
-        <div class="cat-name-row"><span>${CAT_EMOJIS[cat]||'📦'} ${fmt.esc(cat)}</span><span>${fmt.brl(val)} (${pct}%)</span></div>
+        <div class="cat-name-row"><span>${label}</span><span>${fmt.brl(val)} (${pct}%)</span></div>
         <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${pct}%;background:${color}"></div></div>
       </div>`;
     leg.appendChild(div);
+
+    // Se for cartão, adicionar linhas de subcategoria abaixo
+    if (cat==='cartao') {
+      const subTotals={};
+      (gastosPerCat[cat]||[]).forEach(g=>{ subTotals[g.subcategoria||'Outros']=(subTotals[g.subcategoria||'Outros']||0)+g.valor; });
+      Object.entries(subTotals).sort((a,b)=>b[1]-a[1]).forEach(([sub,sv])=>{
+        const subPct=(val>0?(sv/val*100).toFixed(0):0);
+        const subDiv=document.createElement('div'); subDiv.className='cat-row cat-row-sub';
+        subDiv.innerHTML=`
+          <div class="cat-dot" style="background:${CAT_COLORS[sub]||'#9ca3af'};opacity:.6;width:8px;height:8px;margin-left:18px"></div>
+          <div class="cat-info">
+            <div class="cat-name-row" style="font-size:.8rem;opacity:.8">
+              <span>${CAT_EMOJIS[sub]||'📦'} ${sub}</span>
+              <span>${fmt.brl(sv)} (${subPct}%)</span>
+            </div>
+          </div>`;
+        leg.appendChild(subDiv);
+      });
+    }
   });
 }
 
@@ -1459,11 +1530,21 @@ async function renderHistorico() {
 }
 
 function buildGastoItem(g) {
+  const isCartao = g.categoria === 'cartao';
+  const icon     = isCartao ? '💳' : (CAT_EMOJIS[g.categoria]||'📦');
+  const badgeTxt = isCartao
+    ? `💳 Cartão${g.subcategoria ? ' · '+g.subcategoria : ''}`
+    : g.categoria;
+  const badgeCls = isCartao ? 'badge badge-cartao' : 'badge badge-purple';
+  const meta     = isCartao
+    ? `${fmt.dateLong(g.data)} <span style="color:var(--p4);font-size:.75rem">• sai no próximo mês</span>`
+    : fmt.dateLong(g.data);
+
   const div = document.createElement('div'); div.className='item-row';
   div.innerHTML=`
-    <div class="item-icon">${CAT_EMOJIS[g.categoria]||'📦'}</div>
-    <div class="item-body"><div class="item-name">${fmt.esc(g.nome)}</div><div class="item-meta">${fmt.dateLong(g.data)}</div></div>
-    <span class="badge badge-purple">${fmt.esc(g.categoria)}</span>
+    <div class="item-icon">${icon}</div>
+    <div class="item-body"><div class="item-name">${fmt.esc(g.nome)}</div><div class="item-meta">${meta}</div></div>
+    <span class="${badgeCls}">${fmt.esc(badgeTxt)}</span>
     <div class="item-val neg">− ${fmt.brl(g.valor)}</div>
     <button class="btn-del" title="Excluir">🗑️</button>
   `;
