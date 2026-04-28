@@ -588,6 +588,12 @@ function initAuth() {
     if (!username || !pass1) { errEl.textContent='Preencha todos os campos.'; errEl.classList.remove('hidden'); return; }
     if (pass1 !== pass2)     { errEl.textContent='As senhas não coincidem.';   errEl.classList.remove('hidden'); return; }
     if (pass1.length < 4)    { errEl.textContent='Senha muito curta (mín. 4 caracteres).'; errEl.classList.remove('hidden'); return; }
+    const userAtual = await DB.findUser(username, pass1);
+    if (userAtual) {
+      errEl.textContent='Essa senha já está em uso. Escolha uma diferente.';
+      errEl.classList.remove('hidden');
+      return;
+    }
 
     btn.disabled = true; btn.textContent = 'Salvando...';
 
