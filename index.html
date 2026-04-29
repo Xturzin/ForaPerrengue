@@ -83,6 +83,22 @@
   </div>
 </div>
 
+<!-- box Vencimento do Cartão -->
+<div id="modal-venc-cartao" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <div class="modal-hero">💳</div>
+    <h2 class="modal-title">Dia do vencimento</h2>
+    <p class="modal-byline">Qual o dia que sua fatura vence todo mês?</p>
+    <div class="modal-divider"></div>
+    <div class="form-group" style="margin-top:16px">
+      <label>Dia do vencimento (1 a 28)</label>
+      <input type="number" id="venc-cartao-dia" min="1" max="28" placeholder="ex: 10" style="width:100%;margin-top:6px"/>
+    </div>
+    <p id="venc-cartao-erro" class="msg-err hidden">Informe um dia válido entre 1 e 28.</p>
+    <button id="btn-venc-cartao-save" class="btn-primary w-full" style="margin-top:16px">Confirmar</button>
+  </div>
+</div>
+
 <section id="login-screen" class="login-screen hidden">
 
   <!-- Login parte especificações -->

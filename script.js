@@ -166,6 +166,22 @@ const DB = {
     }
   },
 
+async getDiaVencCartao() {
+    try {
+      if (!_supa || !_userId) return null;
+      const { data } = await _supa.from('users').select('dia_venc_cartao').eq('id', _userId).single();
+      return data?.dia_venc_cartao || null;
+    } catch { return null; }
+  },
+
+  async saveDiaVencCartao(dia) {
+    try {
+      if (!_supa || !_userId) return false;
+      const { error } = await _supa.from('users').update({ dia_venc_cartao: dia }).eq('id', _userId);
+      return !error;
+    } catch { return false; }
+  },
+
   async gastos() {
     try {
       if (!_supa) return [];
@@ -746,7 +762,22 @@ function initModals() {
   const mCat = document.getElementById('modal-cat-detalhe');
   document.getElementById('btn-close-cat-detalhe').addEventListener('click',()=>mCat.classList.add('hidden'));
   mCat.addEventListener('click',e=>{if(e.target===mCat)mCat.classList.add('hidden');});
+
+  // Modal vencimento cartão
+  const mVenc = document.getElementById('modal-venc-cartao');
+  document.getElementById('btn-venc-cartao-save').addEventListener('click', async () => {
+    const dia = parseInt(document.getElementById('venc-cartao-dia').value);
+    const erroEl = document.getElementById('venc-cartao-erro');
+    if (isNaN(dia) || dia < 1 || dia > 28) {
+      erroEl.classList.remove('hidden'); return;
+    }
+    erroEl.classList.add('hidden');
+    await DB.saveDiaVencCartao(dia);
+    mVenc.classList.add('hidden');
+    if (window._vencCartaoCallback) { window._vencCartaoCallback(dia); window._vencCartaoCallback = null; }
+  });
 }
+
 
 async function abrirModalPrevisao() {
   const proxM = fmt.mesOffset(1);
@@ -919,12 +950,34 @@ function initGastos() {
     const list = await DB.gastos();
 
     if (isCartao) {
-      // Cartão: salvar com data no PRÓXIMO mês (mesmo dia), para não impactar o mês atual
-      const dataOriginal = data; // data que o usuário viu
-      const proxMesData  = fmt.avancaMes(data); // empurra 1 mês
-      list.unshift({ id:fmt.uid(), nome, valor, categoria:'cartao', subcategoria:subcat, data:proxMesData, dataCompra:dataOriginal });
-      await DB.saveGastos(list);
-      toast(`💳 ${fmt.brl(valor)} no cartão — sai em ${fmt.date(proxMesData)}`, 'info', 4000);
+      const salvarCartao = async (diaVenc) => {
+        const proxM    = fmt.mesOffset(1);
+        const diaMax   = new Date(parseInt(proxM.split('-')[0]), parseInt(proxM.split('-')[1]), 0).getDate();
+        const diaFinal = Math.min(diaVenc, diaMax);
+        const proxMesData = `${proxM}-${String(diaFinal).padStart(2,'0')}`;
+
+        list.unshift({ id:fmt.uid(), nome, valor, categoria:'cartao', subcategoria:subcat, data:proxMesData, dataCompra:data });
+        await DB.saveGastos(list);
+        document.getElementById('g-nome').value = '';
+        document.getElementById('g-valor').value = '';
+        document.getElementById('g-cat').value = '';
+        document.getElementById('g-subcat').value = '';
+        document.getElementById('g-subcat-wrap').classList.add('hidden');
+        pickers.gasto?.setValue(fmt.hoje());
+        await renderDashboard();
+        toast(`💳 ${fmt.brl(valor)} no cartão — vence dia ${diaFinal} de ${fmt.mesOffset(1).split('-')[1]}/${fmt.mesOffset(1).split('-')[0]}`, 'info', 4000);
+      };
+
+      const diaJaSalvo = await DB.getDiaVencCartao();
+      if (diaJaSalvo) {
+        await salvarCartao(diaJaSalvo);
+      } else {
+        document.getElementById('venc-cartao-dia').value = '';
+        document.getElementById('venc-cartao-erro').classList.add('hidden');
+        document.getElementById('modal-venc-cartao').classList.remove('hidden');
+        window._vencCartaoCallback = salvarCartao;
+      }
+      return;
     } else {
       list.unshift({ id:fmt.uid(), nome, valor, categoria:cat, subcategoria:'', data });
       await DB.saveGastos(list);
