@@ -539,12 +539,14 @@ function initClock() {
   clearInterval(clockTimer);
   clockTimer=setInterval(tick,1000);
 }
-// Altera saudação do login baseado se já entrou antes
-  const jaEntrou = !!localStorage.getItem('fp_visited');
-  document.querySelector('#tab-login .auth-form-title').textContent = jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
-  document.querySelector('#tab-login .auth-form-sub').textContent   = jaEntrou ? 'Entre na sua conta para continuar' : 'Crie sua conta e comece agora a se planejar financeiramente';
-
 function initAuth() {
+  // Altera saudação do login baseado se já entrou antes
+  const titleEl  = document.querySelector('#tab-login .auth-form-title');
+  const subEl    = document.querySelector('#tab-login .auth-form-sub');
+  const jaEntrou = !!localStorage.getItem('fp_visited');
+  if (titleEl) titleEl.textContent = jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
+  if (subEl)   subEl.textContent   = jaEntrou ? 'Entre na sua conta para continuar' : 'Crie sua conta e comece agora a se planejar financeiramente';
+
   document.querySelectorAll('.auth-tab').forEach(tab=>{
     tab.addEventListener('click',()=>{
       document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
