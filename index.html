@@ -523,18 +523,20 @@
             <p class="form-hint" style="margin-top:7px;margin-bottom:0">
               💡 Gastos no cartão <strong>não saem do saldo agora</strong> — entram como saída no <strong>próximo mês</strong>.
             </p>
-            <span id="g-venc-info" class="hidden" style="display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:.72rem;color:var(--txt3);margin-top:8px;">
-              📅 Fatura vence dia <strong id="g-venc-dia-txt" style="color:var(--txt);font-size:.75rem;">—</strong>
-              <span style="width:1px;height:10px;background:var(--border);display:inline-block;"></span>
-              <button id="btn-alterar-venc" type="button" style="background:none;border:none;color:var(--p4);font-size:.7rem;font-weight:600;cursor:pointer;font-family:var(--font);padding:0;">alterar</button>
-            </span>
             <div id="g-venc-info" style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;background:var(--surf3);border-radius:var(--r-sm);padding:9px 13px;">
               <span id="g-venc-label" style="font-size:.8rem;color:var(--txt2);">📅 Fatura vence dia <strong id="g-venc-dia-txt">—</strong></span>
               <button id="btn-alterar-venc" type="button" style="background:none;border:none;color:var(--p4);font-size:.76rem;font-weight:700;cursor:pointer;text-decoration:underline;font-family:var(--font);">Alterar</button>
             </div>
           </div>
         </div>
-        <button id="btn-add-gasto" class="btn-primary">Adicionar Gasto</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;">
+          <button id="btn-add-gasto" class="btn-primary" style="margin-top:0;">Adicionar Gasto</button>
+          <span id="g-venc-info" class="hidden" style="display:inline-flex;align-items:center;gap:5px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-size:.7rem;color:var(--txt3);white-space:nowrap;">
+            📅 dia <strong id="g-venc-dia-txt" style="color:var(--txt);">—</strong>
+            <span style="width:1px;height:9px;background:var(--border);display:inline-block;"></span>
+            <button id="btn-alterar-venc" type="button" style="background:none;border:none;color:var(--p4);font-size:.69rem;font-weight:600;cursor:pointer;font-family:var(--font);padding:0;">alterar</button>
+          </span>
+        </div>
       </div>
     </section>
 
