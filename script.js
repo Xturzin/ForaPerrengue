@@ -669,8 +669,7 @@ function initAuth() {
     DB.saveSession({ username:u, nome:found.nome, remember:rem });
     const prefsLogin = await DB.getPrefs();
     if (titleEl) titleEl.textContent = prefsLogin.jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
-    await DB.savePrefs({ ja_entrou: true });
-    await openApp(found);
+    await openApp(found, !prefsLogin.jaEntrou);
   });
 
   document.getElementById('btn-register').addEventListener('click', async () => {
@@ -709,7 +708,7 @@ function initAuth() {
   });
 }
 
-async function openApp(user) {
+async function openApp(user, primeiroAcesso = false) {
   currentUser = user;
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
@@ -734,10 +733,15 @@ async function openApp(user) {
   showView('dashboard');
 
   // Onboarding — apenas no primeiro acesso
-  if (!prefs.jaEntrou) {
-    document.getElementById('onboarding').classList.remove('hidden');
+  if (primeiroAcesso) {
+    setTimeout(() => {
+      document.getElementById('onboarding').classList.remove('hidden');
+    }, 600);
     document.getElementById('btn-ob-start').addEventListener('click', async () => {
-      document.getElementById('onboarding').classList.add('hidden');
+      const ob = document.getElementById('onboarding');
+      ob.style.opacity = '0';
+      ob.style.transition = 'opacity .3s ease';
+      setTimeout(() => ob.classList.add('hidden'), 300);
       await DB.savePrefs({ ja_entrou: true });
     });
   }

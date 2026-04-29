@@ -268,45 +268,52 @@
 </div>
 
 <!-- Onboarding -->
-<div id="onboarding" class="modal-backdrop hidden">
-  <div class="modal-box modal-box-wide" style="max-width:520px;text-align:center;">
-    <div class="modal-hero">🎉</div>
-    <h2 class="modal-title">Bem-vindo ao Fora Perrengue!</h2>
-    <p class="modal-byline">Aqui está tudo que você pode fazer para organizar sua vida financeira.</p>
-    <div class="modal-divider"></div>
+<div id="onboarding" class="modal-backdrop hidden" style="align-items:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:100%;max-width:540px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn .35s ease;">
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+    <div style="font-size:2.4rem;margin-bottom:10px;">👋</div>
+    <h2 style="font-size:1.35rem;font-weight:800;color:var(--txt);margin-bottom:6px;">Bem-vindo ao Fora Perrengue!</h2>
+    <p style="font-size:.84rem;color:var(--txt3);margin-bottom:20px;line-height:1.6;">Você está a um passo de ter suas finanças sob controle.<br>Veja o que você pode fazer por aqui:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;">
       <div class="ob-card">
         <div class="ob-icon">💸</div>
         <div class="ob-title">Gastos</div>
-        <div class="ob-desc">Registre seus gastos do dia a dia e acompanhe por categoria.</div>
+        <div class="ob-desc">Registre e categorize cada saída do mês.</div>
       </div>
       <div class="ob-card">
         <div class="ob-icon">💰</div>
         <div class="ob-title">Rendas</div>
-        <div class="ob-desc">Cadastre entradas fixas e variáveis para saber quanto vai receber.</div>
+        <div class="ob-desc">Cadastre entradas fixas e variáveis.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">💳</div>
+        <div class="ob-title">Cartão</div>
+        <div class="ob-desc">Gastos no cartão entram no próximo mês.</div>
       </div>
       <div class="ob-card">
         <div class="ob-icon">📦</div>
         <div class="ob-title">Parceladas</div>
-        <div class="ob-desc">Controle compras parceladas e veja o impacto mês a mês.</div>
+        <div class="ob-desc">Acompanhe parcelas mês a mês.</div>
       </div>
       <div class="ob-card">
         <div class="ob-icon">🔁</div>
         <div class="ob-title">Recorrentes</div>
-        <div class="ob-desc">Assinaturas e contas fixas que se repetem todo mês.</div>
+        <div class="ob-desc">Assinaturas e contas que se repetem.</div>
       </div>
       <div class="ob-card">
         <div class="ob-icon">🔮</div>
         <div class="ob-title">Futuras</div>
-        <div class="ob-desc">Planeje gastos que ainda vão acontecer e se prepare.</div>
-      </div>
-      <div class="ob-card">
-        <div class="ob-icon">📊</div>
-        <div class="ob-title">Dashboard</div>
-        <div class="ob-desc">Veja seu saldo, gráficos e previsão do próximo mês.</div>
+        <div class="ob-desc">Planeje gastos que ainda vão acontecer.</div>
       </div>
     </div>
+
+    <button id="btn-ob-start" class="btn-primary w-full" style="font-size:.95rem;padding:13px;">
+      Começar agora 🚀
+    </button>
+    <p style="font-size:.72rem;color:var(--txt3);margin-top:10px;">Você pode acessar o tutorial novamente pelo menu de configurações.</p>
+  </div>
+</div>
 
     <button id="btn-ob-start" class="btn-primary w-full" style="margin-top:20px;">Começar agora 🚀</button>
   </div>
