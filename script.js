@@ -742,6 +742,10 @@ function initModals() {
   });
   document.getElementById('btn-close-previsao').addEventListener('click',()=>mPrev.classList.add('hidden'));
   mPrev.addEventListener('click',e=>{if(e.target===mPrev)mPrev.classList.add('hidden');});
+
+  const mCat = document.getElementById('modal-cat-detalhe');
+  document.getElementById('btn-close-cat-detalhe').addEventListener('click',()=>mCat.classList.add('hidden'));
+  mCat.addEventListener('click',e=>{if(e.target===mCat)mCat.classList.add('hidden');});
 }
 
 async function abrirModalPrevisao() {
