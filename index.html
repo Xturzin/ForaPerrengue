@@ -91,10 +91,10 @@
     <p class="modal-byline">Qual o dia que sua fatura vence todo mês?</p>
     <div class="modal-divider"></div>
     <div class="form-group" style="margin-top:16px">
-      <label>Dia do vencimento (1 a 28)</label>
+      <label>Dia do vencimento</label>
       <input type="number" id="venc-cartao-dia" min="1" max="31" placeholder="ex: 10" style="width:100%;margin-top:6px"/>
     </div>
-    <p id="venc-cartao-erro" class="msg-err hidden">Informe um dia válido entre 1 e 28.</p>
+    <p id="venc-cartao-erro" class="msg-err hidden">Informe um dia válido entre 1 e 31.</p>
     <button id="btn-venc-cartao-save" class="btn-primary w-full" style="margin-top:16px">Confirmar</button>
   </div>
 </div>
@@ -574,7 +574,7 @@
             <input type="text" id="rr-valor" class="money-inp" placeholder="0"/>
           </div>
           <div class="form-group">
-            <label>Dia do mês (1–28)</label>
+            <label>Dia do mês </label>
             <input type="number" id="rr-dia" placeholder="ex: 5" min="1" max="31" class="no-spin"/>
           </div>
           <div class="form-group">
