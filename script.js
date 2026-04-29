@@ -708,6 +708,14 @@ function initNav() {
   document.getElementById('btn-sb-close').addEventListener('click',closeSB);
   document.getElementById('sb-overlay').addEventListener('click',closeSB);
 }
+function initModalCatDetalhe() {
+  document.getElementById('btn-close-cat-detalhe').addEventListener('click', () => {
+    document.getElementById('modal-cat-detalhe').classList.add('hidden');
+  });
+  document.getElementById('modal-cat-detalhe').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('modal-cat-detalhe').classList.add('hidden');
+  });
+}
 function showView(name) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1421,7 +1429,68 @@ function renderPieChart(gastos) {
           borderWidth:1,padding:12,cornerRadius:10,boxPadding:4,
         }
       },
-      animation:{animateRotate:true,duration:650}
+      animation:{animateRotate:true,duration:650},
+      onClick: (e, elements) => {
+        if (!elements.length) return;
+        const idx      = elements[0].index;
+        const cat      = labels[idx];
+        const itens    = gastosPerCat[cat] || [];
+        const total    = totals[cat] || 0;
+        const emoji    = cat === 'cartao' ? '💳' : (CAT_EMOJIS[cat] || '📦');
+        const label    = cat === 'cartao' ? 'Cartão de Crédito' : cat;
+
+        document.getElementById('cat-detalhe-hero').textContent  = emoji;
+        document.getElementById('cat-detalhe-titulo').textContent = label;
+        document.getElementById('cat-detalhe-total').textContent  = `Total: ${fmt.brl(total)}`;
+
+        const body = document.getElementById('cat-detalhe-body');
+        body.innerHTML = '';
+
+        if (cat === 'cartao') {
+          // Agrupa por subcategoria
+          const subGroups = {};
+          itens.forEach(g => {
+            const sub = g.subcategoria || 'Outros';
+            if (!subGroups[sub]) subGroups[sub] = [];
+            subGroups[sub].push(g);
+          });
+          Object.entries(subGroups).sort((a,b) => {
+            const ta = a[1].reduce((s,g)=>s+g.valor,0);
+            const tb = b[1].reduce((s,g)=>s+g.valor,0);
+            return tb - ta;
+          }).forEach(([sub, gastos]) => {
+            const subTotal = gastos.reduce((s,g)=>s+g.valor,0);
+            // Cabeçalho da subcategoria
+            const header = document.createElement('div');
+            header.style.cssText = 'font-size:.78rem;font-weight:700;color:var(--accent);margin-top:12px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;';
+            header.textContent = `${CAT_EMOJIS[sub]||'📦'} ${sub} — ${fmt.brl(subTotal)}`;
+            body.appendChild(header);
+            // Itens da subcategoria
+            gastos.forEach(g => {
+              const row = document.createElement('div');
+              row.className = 'prev-section';
+              row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:4px;';
+              row.innerHTML = `<span style="font-size:.84rem;color:var(--txt)">${fmt.esc(g.nome)}</span><span style="font-size:.84rem;font-weight:700;color:var(--red)">− ${fmt.brl(g.valor)}</span>`;
+              body.appendChild(row);
+            });
+          });
+        } else {
+          // Categoria normal — lista direto
+          itens.sort((a,b)=>b.valor-a.valor).forEach(g => {
+            const row = document.createElement('div');
+            row.className = 'prev-section';
+            row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:4px;';
+            row.innerHTML = `<span style="font-size:.84rem;color:var(--txt)">${fmt.esc(g.nome)}</span><span style="font-size:.84rem;font-weight:700;color:var(--red)">− ${fmt.brl(g.valor)}</span>`;
+            body.appendChild(row);
+          });
+        }
+
+        if (itens.length === 0) {
+          body.innerHTML = '<p class="empty-msg">Nenhum item.</p>';
+        }
+
+        document.getElementById('modal-cat-detalhe').classList.remove('hidden');
+      }
     }
   });
 
@@ -1665,6 +1734,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initTheme();
         initAuth();
         initNav();
+        initModalCatDetalhe();
         initModals();
         initMiniTabs();
         initGastos();
