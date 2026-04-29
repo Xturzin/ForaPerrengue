@@ -775,6 +775,7 @@ async function openApp(user, primeiroAcesso = false) {
 
       btnPrev.addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
 
+      ob.style.visibility = 'visible';
       ob.classList.remove('hidden');
     }, 600);
   }
