@@ -753,8 +753,8 @@ async function abrirModalPrevisao() {
   const {ano,mes0} = fmt.parseMes(proxM);
   document.getElementById('modal-prev-titulo').textContent = `Previsão de ${MESES_PT[mes0]} ${ano}`;
 
-  const [rendas, parc, rec, futuras] = await Promise.all([
-    DB.rendas(), DB.parceladas(), DB.recorrentes(), DB.futuras()
+  const [rendas, parc, rec, futuras, gastos] = await Promise.all([
+    DB.rendas(), DB.parceladas(), DB.recorrentes(), DB.futuras(), DB.gastos()
   ]);
 
   const entradas = todasEntradasSync(rendas, proxM+'-31').filter(e=>e.data.startsWith(proxM));
