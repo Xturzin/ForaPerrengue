@@ -61,11 +61,11 @@ const _recDB       = r => ({ id:r.id, user_id:_userId, nome:r.nome, valor:r.valo
   frequencia:r.frequencia, proxima_data:r.proximaData, ultimo_gasto_id:r.ultimoGastoId||null });
 
 const DB = {
-  session:     () => { try{return JSON.parse(localStorage.getItem('fp7_session'));}catch{return null;} },
-  saveSession: v  => localStorage.setItem('fp7_session', JSON.stringify(v)),
-  clearSession:() => localStorage.removeItem('fp7_session'),
-  theme:       () => localStorage.getItem('fp7_theme')||'auto',
-  saveTheme:   v  => localStorage.setItem('fp7_theme', v),
+  session:     () => { try{return JSON.parse(sessionStorage.getItem('fp7_session'));}catch{return null;} },
+  saveSession: v  => sessionStorage.setItem('fp7_session', JSON.stringify(v)),
+  clearSession:() => sessionStorage.removeItem('fp7_session'),
+  theme:       () => 'auto',
+  saveTheme:   v  => {},
 
   async findUser(username, password) {
     try {
@@ -180,6 +180,20 @@ async getDiaVencCartao() {
       const { error } = await _supa.from('users').update({ dia_venc_cartao: dia }).eq('id', _userId);
       return !error;
     } catch { return false; }
+  },
+async getPrefs() {
+    try {
+      if (!_supa || !_userId) return { tema: 'auto', jaEntrou: false };
+      const { data } = await _supa.from('users').select('tema, ja_entrou').eq('id', _userId).single();
+      return { tema: data?.tema || 'auto', jaEntrou: !!data?.ja_entrou };
+    } catch { return { tema: 'auto', jaEntrou: false }; }
+  },
+
+  async savePrefs(prefs) {
+    try {
+      if (!_supa || !_userId) return;
+      await _supa.from('users').update(prefs).eq('id', _userId);
+    } catch {}
   },
 
   async gastos() {
@@ -543,7 +557,11 @@ function applyTheme(t) {
 }
 function initTheme() {
   applyTheme(DB.theme());
-  document.getElementById('theme-toggle').addEventListener('change',e=>applyTheme(e.target.checked?'light':'dark'));
+  document.getElementById('theme-toggle').addEventListener('change', async e => {
+    const novoTema = e.target.checked ? 'light' : 'dark';
+    applyTheme(novoTema);
+    await DB.savePrefs({ tema: novoTema });
+  });
   window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(DB.theme()==='auto')applyTheme('auto');});
 }
 
@@ -559,9 +577,8 @@ function initAuth() {
   // Altera saudação do login baseado se já entrou antes
   const titleEl  = document.querySelector('#tab-login .auth-form-title');
   const subEl    = document.querySelector('#tab-login .auth-form-sub');
-  const jaEntrou = !!localStorage.getItem('fp_visited');
-  if (titleEl) titleEl.textContent = jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
-  if (subEl)   subEl.textContent   = jaEntrou ? 'Entre na sua conta para continuar' : 'Crie sua conta e comece agora a se planejar financeiramente';
+  if (titleEl) titleEl.textContent = 'Bem-vindo! 👋';
+  if (subEl)   subEl.textContent   = 'Entre na sua conta para continuar';
 
   document.querySelectorAll('.auth-tab').forEach(tab=>{
     tab.addEventListener('click',()=>{
@@ -650,7 +667,9 @@ function initAuth() {
     if (!found) { err.classList.remove('hidden'); document.getElementById('l-pass').value=''; return; }
     err.classList.add('hidden');
     DB.saveSession({ username:u, nome:found.nome, remember:rem });
-    localStorage.setItem('fp_visited', '1');
+    const prefsLogin = await DB.getPrefs();
+    if (titleEl) titleEl.textContent = prefsLogin.jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
+    await DB.savePrefs({ ja_entrou: true });
     await openApp(found);
   });
 
@@ -709,6 +728,8 @@ async function openApp(user) {
 
   initDatePickers();
   initClock();
+  const prefs = await DB.getPrefs();
+  applyTheme(prefs.tema);
   await renderAll();
   showView('dashboard');
 }
