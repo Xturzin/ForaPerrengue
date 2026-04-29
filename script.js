@@ -782,7 +782,7 @@ async function abrirModalPrevisao() {
   rec.filter(r=>r.frequencia==='semanal').forEach(r=>saidas.push({nome:`${r.nome} ×4`,valor:r.valor*4,tipo:'semanal'}));
   rec.filter(r=>r.frequencia==='quinzenal').forEach(r=>saidas.push({nome:`${r.nome} ×2`,valor:r.valor*2,tipo:'quinzenal'}));
   futuras.filter(f=>f.data.startsWith(proxM)).forEach(f=>saidas.push({nome:f.nome,valor:f.valorEstimado,tipo:'futura'}));
-  gastos.filter(g=>g.categoria==='cartao'&&g.data.startsWith(proxM)).forEach(g=>saidas.push({nome:`💳 ${g.nome} (${g.subcategoria||'Cartão'})`,valor:g.valor,tipo:'cartao'}));
+  gastos.filter(g=>g.categoria==='cartao'&&g.data.startsWith(proxM)).forEach(g=>saidas.push({nome:`💳 ${g.nome}`,valor:g.valor,tipo:'cartao'}));
 
   const listSai = document.getElementById('prev-list-saidas');
   listSai.innerHTML = '';
