@@ -945,17 +945,26 @@ function calcSaldosSync(gastos, parc, rec, futuras, rendas) {
 function initGastos() {
   setupMoneyInput('g-valor');
 
-  // Mostrar/esconder campo de subcategoria ao selecionar Cartão de Crédito
-  document.getElementById('g-cat').addEventListener('change', function() {
+  document.getElementById('g-cat').addEventListener('change', async function() {
     const subcatWrap = document.getElementById('g-subcat-wrap');
     if (this.value === 'cartao') {
       subcatWrap.classList.remove('hidden');
+      const dia = await DB.getDiaVencCartao();
+      document.getElementById('g-venc-dia-txt').textContent = dia ? dia : '—';
     } else {
       subcatWrap.classList.add('hidden');
       document.getElementById('g-subcat').value = '';
     }
   });
 
+  document.getElementById('btn-alterar-venc').addEventListener('click', () => {
+    document.getElementById('venc-cartao-dia').value = '';
+    document.getElementById('venc-cartao-erro').classList.add('hidden');
+    document.getElementById('modal-venc-cartao').classList.remove('hidden');
+    window._vencCartaoCallback = async (dia) => {
+      document.getElementById('g-venc-dia-txt').textContent = dia;
+    };
+  });
   document.getElementById('btn-add-gasto').addEventListener('click', async () => {
     const nome      = document.getElementById('g-nome').value.trim();
     const valor     = parseMoney('g-valor');
