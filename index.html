@@ -268,7 +268,6 @@
 </div>
 
 <!-- Onboarding -->
-<!-- Onboarding Slideshow -->
 <div id="onboarding" class="modal-backdrop hidden" style="align-items:center;visibility:hidden;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:100%;max-width:480px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn .35s ease;">
 
@@ -278,30 +277,30 @@
     <!-- Slides -->
     <div id="ob-slides">
 
-      <!-- Slide 0 — Boas vindas -->
+      <!-- Slide Boas vindas -->
       <div class="ob-slide">
         <div style="font-size:2.8rem;margin-bottom:12px;">👋</div>
         <h2 style="font-size:1.3rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Bem-vindo ao Fora Perrengue!</h2>
         <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Você está a um passo de ter suas finanças sob controle.<br>Vamos te mostrar tudo que dá pra fazer aqui em poucos passos.</p>
       </div>
 
-      <!-- Slide 1 — Gastos -->
+      <!-- Slide Gastos -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">💸</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Gastos</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Registre tudo que você gasta no dia a dia.<br>Cada gasto tem <strong style="color:var(--txt)">nome, valor, categoria e data</strong>.<br><br>Exemplo: <em>Ifood — R$ 35,00 — Alimentação</em></p>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Registre tudo que você gasta no dia a dia.<br>Cada gasto tem <strong style="color:var(--txt)">nome, valor, categoria e data</strong>.<br><br>Exemplo: <em>Ifood  R$ 35,00  Alimentação</em></p>
         <div class="ob-example">📊 Seus gastos aparecem no gráfico de pizza do Dashboard separados por categoria.</div>
       </div>
 
-      <!-- Slide 2 — Rendas -->
+      <!-- Slide Rendas -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">💰</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Rendas</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Cadastre suas entradas de dinheiro.<br>Pode ser <strong style="color:var(--txt)">avulsa</strong> (único mês) ou <strong style="color:var(--txt)">regular</strong> (todo mês no mesmo dia).<br><br>Exemplo: <em>Salário — R$ 3.000 — todo dia 5</em></p>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Cadastre suas entradas de dinheiro.<br>Pode ser <strong style="color:var(--txt)">avulsa</strong> (único mês) ou <strong style="color:var(--txt)">regular</strong> (todo mês no mesmo dia).<br><br>Exemplo: <em>Salário  R$ 3.000  todo dia 5</em></p>
         <div class="ob-example">💡 Rendas regulares são geradas automaticamente todo mês.</div>
       </div>
 
-      <!-- Slide 3 — Cartão -->
+      <!-- Slide Cartão -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">💳</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Cartão de Crédito</h2>
@@ -309,31 +308,31 @@
         <div class="ob-example">📅 Você define o dia de vencimento na primeira compra no cartão.</div>
       </div>
 
-      <!-- Slide 4 — Parceladas -->
+      <!-- Slide Parceladas -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">📦</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Parceladas</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Para compras parceladas, informe o <strong style="color:var(--txt)">valor total, número de parcelas e dia de vencimento</strong>.<br><br>Exemplo: <em>TV — R$ 1.200 — 12x de R$ 100 — vence dia 10</em></p>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Para compras parceladas, informe o <strong style="color:var(--txt)">valor total, número de parcelas e dia de vencimento</strong>.<br><br>Exemplo: <em>TV  R$ 1.200  12x de R$ 100  vence dia 10</em></p>
         <div class="ob-example">✅ Marque cada parcela como paga conforme for quitando.</div>
       </div>
 
-      <!-- Slide 5 — Recorrentes -->
+      <!-- Slide Recorrentes -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">🔁</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Recorrentes</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Gastos que se repetem com frequência, como <strong style="color:var(--txt)">assinaturas e contas fixas</strong>.<br><br>Podem ser mensais, semanais ou quinzenais.<br><br>Exemplo: <em>Netflix — R$ 45 — mensal — dia 15</em></p>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Gastos que se repetem com frequência, como <strong style="color:var(--txt)">assinaturas e contas fixas</strong>.<br><br>Podem ser mensais, semanais ou quinzenais.<br><br>Exemplo: <em>Netflix  R$ 45  mensal  dia 15</em></p>
         <div class="ob-example">🔔 O sistema avisa quando estão próximos do vencimento.</div>
       </div>
 
-      <!-- Slide 6 — Futuras -->
+      <!-- Slide Futuras -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">🔮</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Despesas Futuras</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Planeje gastos que ainda vão acontecer e já se prepare financeiramente.<br><br>Exemplo: <em>Viagem de férias — R$ 2.000 — julho</em></p>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Planeje gastos que ainda vão acontecer e já se prepare financeiramente.<br><br>Exemplo: <em>Viagem de férias  R$ 2.000  julho</em></p>
         <div class="ob-example">📉 Despesas futuras já impactam a previsão do próximo mês no Dashboard.</div>
       </div>
 
-      <!-- Slide 7 — Pronto -->
+      <!-- Slide Pronto -->
       <div class="ob-slide hidden">
         <div style="font-size:2.8rem;margin-bottom:12px;">🚀</div>
         <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Tudo pronto!</h2>
@@ -592,7 +591,7 @@
             <label>Data</label>
             <input type="date" id="g-data" class="date-hidden"/>
           </div>
-          <!-- Campo subcategoria — aparece só ao selecionar Cartão de Crédito -->
+          <!-- Campo subcategoria que aparece só ao selecionar Cartão de Crédito -->
           <div class="form-group span-2 hidden" id="g-subcat-wrap">
             <label>Categoria do cartão</label>
             <select id="g-subcat">
