@@ -539,6 +539,10 @@ function initClock() {
   clearInterval(clockTimer);
   clockTimer=setInterval(tick,1000);
 }
+// Altera saudação do login baseado se já entrou antes
+  const jaEntrou = !!localStorage.getItem('fp_visited');
+  document.querySelector('#tab-login .auth-form-title').textContent = jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
+  document.querySelector('#tab-login .auth-form-sub').textContent   = jaEntrou ? 'Entre na sua conta para continuar' : 'Crie sua conta e comece agora a se planejar financeiramente';
 
 function initAuth() {
   document.querySelectorAll('.auth-tab').forEach(tab=>{
@@ -628,6 +632,7 @@ function initAuth() {
     if (!found) { err.classList.remove('hidden'); document.getElementById('l-pass').value=''; return; }
     err.classList.add('hidden');
     DB.saveSession({ username:u, nome:found.nome, remember:rem });
+    localStorage.setItem('fp_visited', '1');
     await openApp(found);
   });
 
