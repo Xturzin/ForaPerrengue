@@ -92,7 +92,7 @@
     <div class="modal-divider"></div>
     <div class="form-group" style="margin-top:16px">
       <label>Dia do vencimento (1 a 28)</label>
-      <input type="number" id="venc-cartao-dia" min="1" max="28" placeholder="ex: 10" style="width:100%;margin-top:6px"/>
+      <input type="number" id="venc-cartao-dia" min="1" max="31" placeholder="ex: 10" style="width:100%;margin-top:6px"/>
     </div>
     <p id="venc-cartao-erro" class="msg-err hidden">Informe um dia válido entre 1 e 28.</p>
     <button id="btn-venc-cartao-save" class="btn-primary w-full" style="margin-top:16px">Confirmar</button>
@@ -575,7 +575,7 @@
           </div>
           <div class="form-group">
             <label>Dia do mês (1–28)</label>
-            <input type="number" id="rr-dia" placeholder="ex: 5" min="1" max="28" class="no-spin"/>
+            <input type="number" id="rr-dia" placeholder="ex: 5" min="1" max="31" class="no-spin"/>
           </div>
           <div class="form-group">
             <label>Mês de início</label>
@@ -644,7 +644,7 @@
           </div>
           <div class="form-group">
             <label>Dia de vencimento <span class="label-required">*</span></label>
-            <input type="number" id="p-dia-venc" placeholder="ex: 10" min="1" max="28" class="no-spin" required/>
+            <input type="number" id="p-dia-venc" placeholder="ex: 10" min="1" max="31" class="no-spin" required/>
           </div>
         </div>
         <div id="p-preview" class="preview-box hidden"></div>

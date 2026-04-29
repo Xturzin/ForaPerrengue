@@ -789,7 +789,7 @@ function initModals() {
   document.getElementById('btn-venc-cartao-save').addEventListener('click', async () => {
     const dia = parseInt(document.getElementById('venc-cartao-dia').value);
     const erroEl = document.getElementById('venc-cartao-erro');
-    if (isNaN(dia) || dia < 1 || dia > 28) {
+    if (isNaN(dia) || dia < 1 || dia > 31) {
       erroEl.classList.remove('hidden'); return;
     }
     erroEl.classList.add('hidden');
@@ -1068,7 +1068,7 @@ function initRendas() {
     const inicio= document.getElementById('rr-inicio').value;
     const prazo = document.querySelector('input[name="rr-prazo"]:checked')?.value;
     const fim   = document.getElementById('rr-fim').value;
-    if (!nome||valor<=0||isNaN(dia)||dia<1||dia>28||!inicio) { toast('Preencha todos os campos.','error'); return; }
+    if (!nome||valor<=0||isNaN(dia)||dia<1||dia>31||!inicio) { toast('Preencha todos os campos.','error'); return; }
     if (prazo==='determinado'&&!fim) { toast('Informe o mês de encerramento.','error'); return; }
     if (prazo==='determinado'&&fim<=fmt.mesAtual()) { toast('Encerramento deve ser futuro.','error'); return; }
     const list = await DB.rendas();
@@ -1117,7 +1117,7 @@ function initParceladas() {
     const tipo  = document.getElementById('p-tipo-total').checked?'total':'parcela';
     const diaV  = parseInt(document.getElementById('p-dia-venc').value);
     if (!nome||valI<=0||isNaN(num)||num<1||!inicio) { toast('Preencha todos os campos.','error'); return; }
-    if (isNaN(diaV)||diaV<1||diaV>28) { toast('Informe o dia de vencimento (1–28).','error'); return; }
+    if (isNaN(diaV)||diaV<1||diaV>31) { toast('Informe o dia de vencimento (1–31).','error'); return; }
 
     const valParc  = tipo==='total'?valI/num:valI;
     const valTotal = tipo==='total'?valI:valI*num;
