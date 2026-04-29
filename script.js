@@ -732,6 +732,16 @@ async function openApp(user) {
   applyTheme(prefs.tema);
   await renderAll();
   showView('dashboard');
+
+  // Onboarding — apenas no primeiro acesso
+  const prefs = await DB.getPrefs();
+  if (!prefs.jaEntrou) {
+    document.getElementById('onboarding').classList.remove('hidden');
+    document.getElementById('btn-ob-start').addEventListener('click', async () => {
+      document.getElementById('onboarding').classList.add('hidden');
+      await DB.savePrefs({ ja_entrou: true });
+    });
+  }
 }
 
 function initNav() {

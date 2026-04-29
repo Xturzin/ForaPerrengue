@@ -225,46 +225,91 @@
 
 <!-- Esqueceu a Senha -->
 <div id="modal-forgot" class="modal-backdrop hidden">
-<div class="modal-box">
-  <button class="modal-close" id="btn-fp-cancel">✕</button>
-  <div class="modal-hero">🔑</div>
-  <h2 class="modal-title">Redefinir senha</h2>
-  <p class="modal-byline">Digite seu usuário e escolha uma nova senha.</p>
-  <div class="modal-divider"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="btn-fp-cancel">✕</button>
+    <div class="modal-hero">🔑</div>
+    <h2 class="modal-title">Redefinir senha</h2>
+    <p class="modal-byline">Digite seu usuário e escolha uma nova senha.</p>
+    <div class="modal-divider"></div>
 
-  <div class="form-group" style="text-align:left;margin-top:14px">
-    <label>Usuário</label>
-    <div class="input-icon-wrap">
-      <span class="input-icon">👤</span>
-      <input type="text" id="fp-user" placeholder="seu usuário" autocomplete="username"/>
+    <div class="form-group" style="text-align:left;margin-top:14px">
+      <label>Usuário</label>
+      <div class="input-icon-wrap">
+        <span class="input-icon">👤</span>
+        <input type="text" id="fp-user" placeholder="seu usuário" autocomplete="username"/>
+      </div>
     </div>
-  </div>
 
-  <div class="form-group" style="text-align:left;margin-top:12px">
-    <label>Nova senha</label>
-    <div class="input-icon-wrap">
-      <span class="input-icon">🔒</span>
-      <input type="password" id="fp-pass" placeholder="••••••••"/>
-      <button class="btn-eye" data-t="fp-pass" type="button">👁️</button>
+    <div class="form-group" style="text-align:left;margin-top:12px">
+      <label>Nova senha</label>
+      <div class="input-icon-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="fp-pass" placeholder="••••••••"/>
+        <button class="btn-eye" data-t="fp-pass" type="button">👁️</button>
+      </div>
     </div>
-  </div>
 
-  <div class="form-group" style="text-align:left;margin-top:12px">
-    <label>Confirmar nova senha</label>
-    <div class="input-icon-wrap">
-      <span class="input-icon">🔒</span>
-      <input type="password" id="fp-pass2" placeholder="••••••••"/>
-      <button class="btn-eye" data-t="fp-pass2" type="button">👁️</button>
+    <div class="form-group" style="text-align:left;margin-top:12px">
+      <label>Confirmar nova senha</label>
+      <div class="input-icon-wrap">
+        <span class="input-icon">🔒</span>
+        <input type="password" id="fp-pass2" placeholder="••••••••"/>
+        <button class="btn-eye" data-t="fp-pass2" type="button">👁️</button>
+      </div>
     </div>
-  </div>
 
-  <p id="fp-error" class="msg-err hidden" style="text-align:left">Usuário não encontrado.</p>
+    <p id="fp-error" class="msg-err hidden" style="text-align:left">Usuário não encontrado.</p>
 
-  <div style="display:flex;gap:10px;margin-top:18px">
-    <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
-    <button id="btn-fp-save" class="btn-primary" style="flex:2">Salvar</button>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
+      <button id="btn-fp-save" class="btn-primary" style="flex:2">Salvar</button>
+    </div>
   </div>
 </div>
+
+<!-- Onboarding -->
+<div id="onboarding" class="modal-backdrop hidden">
+  <div class="modal-box modal-box-wide" style="max-width:520px;text-align:center;">
+    <div class="modal-hero">🎉</div>
+    <h2 class="modal-title">Bem-vindo ao Fora Perrengue!</h2>
+    <p class="modal-byline">Aqui está tudo que você pode fazer para organizar sua vida financeira.</p>
+    <div class="modal-divider"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+      <div class="ob-card">
+        <div class="ob-icon">💸</div>
+        <div class="ob-title">Gastos</div>
+        <div class="ob-desc">Registre seus gastos do dia a dia e acompanhe por categoria.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">💰</div>
+        <div class="ob-title">Rendas</div>
+        <div class="ob-desc">Cadastre entradas fixas e variáveis para saber quanto vai receber.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">📦</div>
+        <div class="ob-title">Parceladas</div>
+        <div class="ob-desc">Controle compras parceladas e veja o impacto mês a mês.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">🔁</div>
+        <div class="ob-title">Recorrentes</div>
+        <div class="ob-desc">Assinaturas e contas fixas que se repetem todo mês.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">🔮</div>
+        <div class="ob-title">Futuras</div>
+        <div class="ob-desc">Planeje gastos que ainda vão acontecer e se prepare.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-icon">📊</div>
+        <div class="ob-title">Dashboard</div>
+        <div class="ob-desc">Veja seu saldo, gráficos e previsão do próximo mês.</div>
+      </div>
+    </div>
+
+    <button id="btn-ob-start" class="btn-primary w-full" style="margin-top:20px;">Começar agora 🚀</button>
+  </div>
 </div>
 
 <!-- Aplicativo principal -->

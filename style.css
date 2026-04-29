@@ -784,3 +784,10 @@ html,body{
 }
 .loading-overlay.hidden{display:none!important;}
 .loading-spinner{font-size:2.8rem;animation:float 1.5s ease-in-out infinite;}
+
+/* Onboarding */
+.ob-card{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:left;transition:border-color var(--t),transform var(--t);}
+.ob-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.ob-icon{font-size:1.4rem;margin-bottom:6px;}
+.ob-title{font-size:.84rem;font-weight:700;color:var(--txt);margin-bottom:3px;}
+.ob-desc{font-size:.74rem;color:var(--txt3);line-height:1.5;}
