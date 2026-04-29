@@ -523,7 +523,7 @@ function applyTheme(t) {
   if(toggle) toggle.checked=(real==='light');
   if(lbl) lbl.textContent=real==='light'?'☀️ Modo claro':'🌙 Modo escuro';
   DB.saveTheme(t);
-  if(pieChart) renderPieChart([]);
+  if(pieChart) renderDashboard();
 }
 function initTheme() {
   applyTheme(DB.theme());
