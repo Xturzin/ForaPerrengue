@@ -1701,7 +1701,7 @@ function buildGastoItem(g) {
     : g.categoria;
   const badgeCls = isCartao ? 'badge badge-cartao' : 'badge badge-purple';
   const meta     = isCartao
-    ? `${fmt.dateLong(g.data)} <span style="color:var(--p4);font-size:.75rem">• sai no próximo mês</span>`
+    ? `${fmt.dateLong(g.data)} <span style="color:var(--p4);font-size:.75rem">(Pagamento apenas no próximo mês)</span>`
     : fmt.dateLong(g.data);
 
   const div = document.createElement('div'); div.className='item-row';
