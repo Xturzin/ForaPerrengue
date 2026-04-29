@@ -31,6 +31,7 @@ const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho',
 const DIAS_PT  = ['D','S','T','Q','Q','S','S'];
 
 let pieChart   = null;
+let barChart   = null;
 let currentUser= null;
 let _userId    = null;   
 let clockTimer = null;
@@ -1489,6 +1490,9 @@ async function renderDashboard() {
   renderBoxSaidasMes(s.mesAtu, rec, parc, futuras);
   renderBoxParcelados(parc);
   renderPieChart(gastos);
+  const compMeses = document.getElementById('comp-meses');
+  await renderBarChart(parseInt(compMeses.value));
+  compMeses.onchange = async () => await renderBarChart(parseInt(compMeses.value));
 
   const recBox = document.getElementById('list-recent-gastos');
   recBox.innerHTML='';
@@ -1755,6 +1759,76 @@ function renderPieChart(gastos) {
           </div>`;
         leg.appendChild(subDiv);
       });
+    }
+  });
+}
+
+async function renderBarChart(meses) {
+  const ctx   = document.getElementById('bar-chart');
+  const empty = document.getElementById('bar-empty');
+  if (!ctx) return;
+
+  const [gastos, rendas] = await Promise.all([DB.gastos(), DB.rendas()]);
+  const hoje = fmt.hoje();
+  const resultado = [];
+
+  for (let i = meses - 1; i >= 0; i--) {
+    const mes    = fmt.mesOffset(-i);
+    const [ano, m] = mes.split('-').map(Number);
+    const label  = new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+
+    const entradas = todasEntradasSync(rendas, mes + '-31')
+      .filter(e => e.data.startsWith(mes) && e.data <= hoje)
+      .reduce((a, e) => a + e.valor, 0);
+
+    const saidas = gastos
+      .filter(g => g.categoria !== 'cartao' && g.data.startsWith(mes))
+      .reduce((a, g) => a + g.valor, 0);
+
+    resultado.push({ label, entradas, saidas });
+  }
+
+  const temDados = resultado.some(r => r.entradas > 0 || r.saidas > 0);
+  if (!temDados) {
+    ctx.style.display = 'none'; empty.style.display = 'block';
+    if (barChart) { barChart.destroy(); barChart = null; }
+    return;
+  }
+  ctx.style.display = 'block'; empty.style.display = 'none';
+
+  const isDark  = document.documentElement.getAttribute('data-theme') !== 'light';
+  const labels  = resultado.map(r => r.label);
+  const entrArr = resultado.map(r => r.entradas);
+  const saidArr = resultado.map(r => r.saidas);
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Entradas', data: entrArr, backgroundColor: 'rgba(52,211,153,.75)', borderRadius: 6, borderSkipped: false },
+        { label: 'Saídas',   data: saidArr, backgroundColor: 'rgba(248,113,113,.75)', borderRadius: 6, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: isDark ? '#a49fc2' : '#4a4470', font: { size: 11 }, boxWidth: 12 } },
+        tooltip: {
+          backgroundColor: isDark ? '#24213d' : '#fff',
+          titleColor: isDark ? '#edeaff' : '#1a1630',
+          bodyColor: isDark ? '#a49fc2' : '#4a4470',
+          borderColor: isDark ? '#3a3560' : '#ddd6fe',
+          borderWidth: 1, padding: 10, cornerRadius: 8,
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmt.brl(ctx.raw)}` }
+        }
+      },
+      scales: {
+        x: { ticks: { color: isDark ? '#7c78a0' : '#6b6890', font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: isDark ? '#7c78a0' : '#6b6890', font: { size: 11 }, callback: v => fmt.brl(v) }, grid: { color: isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)' } }
+      },
+      animation: { duration: 600 }
     }
   });
 }

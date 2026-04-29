@@ -563,6 +563,23 @@
       <div class="dash-box" style="margin-top:14px">
         <div class="db-header">
           <div class="db-title-wrap">
+            <span class="db-title-icon">📈</span>
+            <h3 class="db-title">Comparativo Mensal</h3>
+          </div>
+          <select id="comp-meses" style="background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px 8px;font-size:.75rem;color:var(--txt);cursor:pointer;">
+            <option value="3">Últimos 3 meses</option>
+            <option value="6" selected>Últimos 6 meses</option>
+            <option value="12">Últimos 12 meses</option>
+          </select>
+        </div>
+        <div style="position:relative;height:220px;margin-top:10px;">
+          <canvas id="bar-chart"></canvas>
+          <p id="bar-empty" class="empty-msg" style="display:none">Sem dados suficientes ainda 📊</p>
+        </div>
+      </div>
+      <div class="dash-box" style="margin-top:14px">
+        <div class="db-header">
+          <div class="db-title-wrap">
             <span class="db-title-icon">🕐</span>
             <h3 class="db-title">Últimos Gastos</h3>
           </div>
