@@ -735,15 +735,48 @@ async function openApp(user, primeiroAcesso = false) {
   // Onboarding — apenas no primeiro acesso
   if (primeiroAcesso) {
     setTimeout(() => {
-      document.getElementById('onboarding').classList.remove('hidden');
+      const ob     = document.getElementById('onboarding');
+      const slides = ob.querySelectorAll('.ob-slide');
+      const dotsEl = document.getElementById('ob-dots');
+      const btnPrev = document.getElementById('btn-ob-prev');
+      const btnNext = document.getElementById('btn-ob-next');
+      let cur = 0;
+
+      // Criar dots
+      dotsEl.innerHTML = '';
+      slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'ob-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      const goTo = (idx) => {
+        slides[cur].classList.add('hidden');
+        cur = idx;
+        slides[cur].classList.remove('hidden');
+        // Atualiza dots
+        dotsEl.querySelectorAll('.ob-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+        // Botões
+        btnPrev.style.display = cur === 0 ? 'none' : 'block';
+        btnNext.textContent   = cur === slides.length - 1 ? 'Começar agora 🚀' : 'Próximo →';
+      };
+
+      btnNext.addEventListener('click', async () => {
+        if (cur < slides.length - 1) {
+          goTo(cur + 1);
+        } else {
+          ob.style.opacity = '0';
+          ob.style.transition = 'opacity .3s ease';
+          setTimeout(() => ob.classList.add('hidden'), 300);
+          await DB.savePrefs({ ja_entrou: true });
+        }
+      });
+
+      btnPrev.addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
+
+      ob.classList.remove('hidden');
     }, 600);
-    document.getElementById('btn-ob-start').addEventListener('click', async () => {
-      const ob = document.getElementById('onboarding');
-      ob.style.opacity = '0';
-      ob.style.transition = 'opacity .3s ease';
-      setTimeout(() => ob.classList.add('hidden'), 300);
-      await DB.savePrefs({ ja_entrou: true });
-    });
   }
 }
 

@@ -268,50 +268,86 @@
 </div>
 
 <!-- Onboarding -->
+<!-- Onboarding Slideshow -->
 <div id="onboarding" class="modal-backdrop hidden" style="align-items:center;">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:100%;max-width:540px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn .35s ease;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:100%;max-width:480px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn .35s ease;">
 
-    <div style="font-size:2.4rem;margin-bottom:10px;">👋</div>
-    <h2 style="font-size:1.35rem;font-weight:800;color:var(--txt);margin-bottom:6px;">Bem-vindo ao Fora Perrengue!</h2>
-    <p style="font-size:.84rem;color:var(--txt3);margin-bottom:20px;line-height:1.6;">Você está a um passo de ter suas finanças sob controle.<br>Veja o que você pode fazer por aqui:</p>
+    <!-- Indicador de progresso -->
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:24px;" id="ob-dots"></div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;">
-      <div class="ob-card">
-        <div class="ob-icon">💸</div>
-        <div class="ob-title">Gastos</div>
-        <div class="ob-desc">Registre e categorize cada saída do mês.</div>
+    <!-- Slides -->
+    <div id="ob-slides">
+
+      <!-- Slide 0 — Boas vindas -->
+      <div class="ob-slide">
+        <div style="font-size:2.8rem;margin-bottom:12px;">👋</div>
+        <h2 style="font-size:1.3rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Bem-vindo ao Fora Perrengue!</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Você está a um passo de ter suas finanças sob controle.<br>Vamos te mostrar tudo que dá pra fazer aqui em poucos passos.</p>
       </div>
-      <div class="ob-card">
-        <div class="ob-icon">💰</div>
-        <div class="ob-title">Rendas</div>
-        <div class="ob-desc">Cadastre entradas fixas e variáveis.</div>
+
+      <!-- Slide 1 — Gastos -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">💸</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Gastos</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Registre tudo que você gasta no dia a dia.<br>Cada gasto tem <strong style="color:var(--txt)">nome, valor, categoria e data</strong>.<br><br>Exemplo: <em>Ifood — R$ 35,00 — Alimentação</em></p>
+        <div class="ob-example">📊 Seus gastos aparecem no gráfico de pizza do Dashboard separados por categoria.</div>
       </div>
-      <div class="ob-card">
-        <div class="ob-icon">💳</div>
-        <div class="ob-title">Cartão</div>
-        <div class="ob-desc">Gastos no cartão entram no próximo mês.</div>
+
+      <!-- Slide 2 — Rendas -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">💰</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Rendas</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Cadastre suas entradas de dinheiro.<br>Pode ser <strong style="color:var(--txt)">avulsa</strong> (único mês) ou <strong style="color:var(--txt)">regular</strong> (todo mês no mesmo dia).<br><br>Exemplo: <em>Salário — R$ 3.000 — todo dia 5</em></p>
+        <div class="ob-example">💡 Rendas regulares são geradas automaticamente todo mês.</div>
       </div>
-      <div class="ob-card">
-        <div class="ob-icon">📦</div>
-        <div class="ob-title">Parceladas</div>
-        <div class="ob-desc">Acompanhe parcelas mês a mês.</div>
+
+      <!-- Slide 3 — Cartão -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">💳</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Cartão de Crédito</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Ao registrar um gasto como <strong style="color:var(--txt)">Cartão de Crédito</strong>, ele <strong style="color:var(--txt)">não sai do saldo agora</strong>.<br><br>Ele entra automaticamente como saída no <strong style="color:var(--txt)">próximo mês</strong>, no dia do vencimento da sua fatura.</p>
+        <div class="ob-example">📅 Você define o dia de vencimento na primeira compra no cartão.</div>
       </div>
-      <div class="ob-card">
-        <div class="ob-icon">🔁</div>
-        <div class="ob-title">Recorrentes</div>
-        <div class="ob-desc">Assinaturas e contas que se repetem.</div>
+
+      <!-- Slide 4 — Parceladas -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">📦</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Parceladas</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Para compras parceladas, informe o <strong style="color:var(--txt)">valor total, número de parcelas e dia de vencimento</strong>.<br><br>Exemplo: <em>TV — R$ 1.200 — 12x de R$ 100 — vence dia 10</em></p>
+        <div class="ob-example">✅ Marque cada parcela como paga conforme for quitando.</div>
       </div>
-      <div class="ob-card">
-        <div class="ob-icon">🔮</div>
-        <div class="ob-title">Futuras</div>
-        <div class="ob-desc">Planeje gastos que ainda vão acontecer.</div>
+
+      <!-- Slide 5 — Recorrentes -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">🔁</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Recorrentes</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Gastos que se repetem com frequência, como <strong style="color:var(--txt)">assinaturas e contas fixas</strong>.<br><br>Podem ser mensais, semanais ou quinzenais.<br><br>Exemplo: <em>Netflix — R$ 45 — mensal — dia 15</em></p>
+        <div class="ob-example">🔔 O sistema avisa quando estão próximos do vencimento.</div>
       </div>
+
+      <!-- Slide 6 — Futuras -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">🔮</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Despesas Futuras</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Planeje gastos que ainda vão acontecer e já se prepare financeiramente.<br><br>Exemplo: <em>Viagem de férias — R$ 2.000 — julho</em></p>
+        <div class="ob-example">📉 Despesas futuras já impactam a previsão do próximo mês no Dashboard.</div>
+      </div>
+
+      <!-- Slide 7 — Pronto -->
+      <div class="ob-slide hidden">
+        <div style="font-size:2.8rem;margin-bottom:12px;">🚀</div>
+        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Tudo pronto!</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Agora você já sabe como usar o <strong style="color:var(--accent)">Fora Perrengue</strong>.<br><br>Comece registrando sua primeira renda e seus gastos do mês. Boa sorte! 💜</p>
+      </div>
+
     </div>
 
-    <button id="btn-ob-start" class="btn-primary w-full" style="font-size:.95rem;padding:13px;">
-      Começar agora 🚀
-    </button>
-    <p style="font-size:.72rem;color:var(--txt3);margin-top:10px;">Você pode acessar o tutorial novamente pelo menu de configurações.</p>
+    <!-- Navegação -->
+    <div style="display:flex;gap:10px;margin-top:28px;align-items:center;">
+      <button id="btn-ob-prev" class="btn-danger" style="flex:1;display:none;">← Voltar</button>
+      <button id="btn-ob-next" class="btn-primary" style="flex:2;">Próximo →</button>
+    </div>
+
   </div>
 </div>
 

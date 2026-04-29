@@ -786,8 +786,8 @@ html,body{
 .loading-spinner{font-size:2.8rem;animation:float 1.5s ease-in-out infinite;}
 
 /* Onboarding */
-.ob-card{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center;transition:border-color var(--t),transform var(--t),box-shadow var(--t);}
-.ob-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.15);}
-.ob-icon{font-size:1.6rem;margin-bottom:6px;}
-.ob-title{font-size:.82rem;font-weight:700;color:var(--txt);margin-bottom:3px;}
-.ob-desc{font-size:.71rem;color:var(--txt3);line-height:1.5;}
+.ob-slide{animation:fadeSlide .3s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.ob-example{background:var(--surf2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:10px 14px;font-size:.78rem;color:var(--txt3);line-height:1.6;margin-top:16px;text-align:left;}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background var(--t),width var(--t);cursor:pointer;}
+.ob-dot.active{background:var(--accent);width:22px;border-radius:99px;}
