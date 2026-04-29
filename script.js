@@ -734,7 +734,6 @@ async function openApp(user) {
   showView('dashboard');
 
   // Onboarding — apenas no primeiro acesso
-  const prefs = await DB.getPrefs();
   if (!prefs.jaEntrou) {
     document.getElementById('onboarding').classList.remove('hidden');
     document.getElementById('btn-ob-start').addEventListener('click', async () => {
