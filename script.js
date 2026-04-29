@@ -1332,70 +1332,6 @@ function initHistorico() {
   });
 }
 
-function gerarInsight(gastos, parc, rec, futuras, rendas, saldos) {
-  const mesAtu  = fmt.mesAtual();
-  const proxM   = fmt.mesOffset(1);
-  const hoje    = fmt.hoje();
-  const insights = [];
-
-  // Categorias com mais gasto esse mês
-  const gastosMes = gastos.filter(g => g.categoria !== 'cartao' && g.data >= mesAtu+'-01' && g.data <= mesAtu+'-31');
-  if (gastosMes.length > 0) {
-    const porCat = {};
-    gastosMes.forEach(g => { porCat[g.categoria] = (porCat[g.categoria]||0) + g.valor; });
-    const topCat = Object.entries(porCat).sort((a,b)=>b[1]-a[1])[0];
-    if (topCat) insights.push({ e:'📊', txt:`Sua maior categoria de gasto esse mês é <strong>${topCat[0]}</strong> com <strong>${fmt.brl(topCat[1])}</strong>.` });
-  }
-
-  // Saldo negativo
-  if (saldos.disponivel < 0) {
-    insights.push({ e:'⚠️', txt:`Seu saldo está negativo em <strong>${fmt.brl(Math.abs(saldos.disponivel))}</strong>. Hora de revisar os gastos!` });
-  }
-
-  // Próximo mês negativo
-  if (saldos.proximoMes < 0) {
-    insights.push({ e:'📉', txt:`A previsão do próximo mês está negativa em <strong>${fmt.brl(Math.abs(saldos.proximoMes))}</strong>. Considere reduzir gastos.` });
-  }
-
-  // Parcelas a vencer nos próximos 5 dias
-  const emBreve = [];
-  parc.forEach(p => {
-    const parMes = p.parcelas.find(x => x.mesAno === mesAtu && !x.pago);
-    if (parMes && p.diaVenc) {
-      const dataVenc = `${mesAtu}-${String(p.diaVenc).padStart(2,'0')}`;
-      const diff = Math.ceil((new Date(dataVenc+'T12:00:00') - new Date()) / 86400000);
-      if (diff >= 0 && diff <= 5) emBreve.push({ nome: p.nome, diff, valor: parMes.valorParcela });
-    }
-  });
-  if (emBreve.length > 0) {
-    const item = emBreve[0];
-    const quando = item.diff === 0 ? 'hoje' : item.diff === 1 ? 'amanhã' : `em ${item.diff} dias`;
-    insights.push({ e:'⏰', txt:`Parcela de <strong>${item.nome}</strong> vence <strong>${quando}</strong> — ${fmt.brl(item.valor)}.` });
-  }
-
-  // Recorrentes atrasadas
-  const atrasadas = rec.filter(r => r.proximaData < hoje);
-  if (atrasadas.length > 0) {
-    insights.push({ e:'🔴', txt:`Você tem <strong>${atrasadas.length} pagamento${atrasadas.length > 1 ? 's' : ''} recorrente${atrasadas.length > 1 ? 's' : ''}</strong> em atraso.` });
-  }
-
-  // Fatura do cartão no próximo mês
-  const cartaoProx = gastos.filter(g => g.categoria === 'cartao' && g.data.startsWith(proxM));
-  if (cartaoProx.length > 0) {
-    const totalCartao = cartaoProx.reduce((a,g) => a+g.valor, 0);
-    insights.push({ e:'💳', txt:`Sua fatura do cartão no próximo mês será de <strong>${fmt.brl(totalCartao)}</strong>.` });
-  }
-
-  // Tudo bem
-  if (insights.length === 0) {
-    insights.push({ e:'✅', txt:`Tudo certo por aqui! Saldo positivo e sem compromissos urgentes. Continue assim! 💜` });
-  }
-
-  // Retorna um aleatório dentre os mais relevantes (máximo 3)
-  const escolhidos = insights.slice(0, 3);
-  return escolhidos[Math.floor(Math.random() * escolhidos.length)];
-}
-
 async function renderDashboard() {
   const [gastos, parc, rec, futuras, rendas] = await Promise.all([
     DB.gastos(), DB.parceladas(), DB.recorrentes(), DB.futuras(), DB.rendas()
@@ -1421,13 +1357,6 @@ async function renderDashboard() {
   recBox.innerHTML='';
   if (gastos.length===0) recBox.innerHTML='<p class="empty-msg">Nenhum gasto registrado.</p>';
   else gastos.slice(0,5).forEach(g=>recBox.appendChild(buildGastoItem(g)));
-
-  // Frase inteligente
-  const insight = gerarInsight(gastos, parc, rec, futuras, rendas, s);
-  const insightBox = document.getElementById('insight-box');
-  document.getElementById('insight-emoji').textContent = insight.e;
-  document.getElementById('insight-txt').innerHTML = insight.txt;
-  insightBox.classList.remove('hidden');
 }
 
 function renderBoxEntradasMes(s, rendas) {
