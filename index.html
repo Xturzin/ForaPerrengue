@@ -529,7 +529,13 @@
             </div>
           </div>
         </div>
-        <button id="btn-add-gasto" class="btn-primary">Adicionar Gasto</button>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button id="btn-add-gasto" class="btn-primary">Adicionar Gasto</button>
+          <span id="g-venc-info" class="hidden" style="font-size:.72rem;color:var(--txt3);display:flex;align-items:center;gap:5px;">
+            📅 Fatura dia <strong id="g-venc-dia-txt" style="color:var(--txt2);">—</strong>
+            <button id="btn-alterar-venc" type="button" style="background:none;border:none;color:var(--p4);font-size:.7rem;cursor:pointer;font-family:var(--font);padding:0;text-decoration:underline;">alterar</button>
+          </span>
+        </div>
       </div>
     </section>
 

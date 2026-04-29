@@ -951,9 +951,11 @@ function initGastos() {
       subcatWrap.classList.remove('hidden');
       const dia = await DB.getDiaVencCartao();
       document.getElementById('g-venc-dia-txt').textContent = dia ? dia : '—';
+      document.getElementById('g-venc-info').classList.remove('hidden');
     } else {
       subcatWrap.classList.add('hidden');
       document.getElementById('g-subcat').value = '';
+      document.getElementById('g-venc-info').classList.add('hidden');
     }
   });
 
