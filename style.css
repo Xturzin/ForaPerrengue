@@ -791,3 +791,22 @@ html,body{
 .ob-example{background:var(--surf2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:10px 14px;font-size:.78rem;color:var(--txt3);line-height:1.6;margin-top:16px;text-align:left;}
 .ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background var(--t),width var(--t);cursor:pointer;}
 .ob-dot.active{background:var(--accent);width:22px;border-radius:99px;}
+
+/* Notificações */
+.notif-wrap{position:relative;}
+.notif-bell{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;font-size:1rem;cursor:pointer;position:relative;transition:background var(--t),border-color var(--t);}
+.notif-bell:hover{background:var(--surf3);border-color:var(--accent);}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:.6rem;font-weight:800;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg);}
+.notif-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 16px 48px rgba(0,0,0,.35);z-index:999;animation:modalIn .2s ease;}
+.notif-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);font-size:.82rem;font-weight:700;color:var(--txt);}
+.notif-list{max-height:320px;overflow-y:auto;padding:8px 0;}
+.notif-empty{font-size:.8rem;color:var(--txt3);text-align:center;padding:20px 14px;}
+.notif-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background var(--t);cursor:default;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item:hover{background:var(--surf2);}
+.notif-item-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.notif-item-body{flex:1;}
+.notif-item-title{font-size:.8rem;font-weight:600;color:var(--txt);margin-bottom:2px;}
+.notif-item-sub{font-size:.72rem;color:var(--txt3);}
+.notif-item-val{font-size:.78rem;font-weight:700;color:var(--red);white-space:nowrap;}
+.notif-urgente .notif-item-title{color:var(--red);}

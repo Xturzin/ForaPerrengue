@@ -436,6 +436,21 @@
         </div>
       </div>
       <div class="tp-right">
+        <div class="notif-wrap" id="notif-wrap">
+          <button class="notif-bell" id="btn-notif" title="Notificações">
+            🔔
+            <span class="notif-badge hidden" id="notif-badge">0</span>
+          </button>
+          <div class="notif-dropdown hidden" id="notif-dropdown">
+            <div class="notif-header">
+              <span>🔔 Vencimentos</span>
+              <span id="notif-count-label" style="font-size:.72rem;color:var(--txt3)"></span>
+            </div>
+            <div id="notif-list" class="notif-list">
+              <p class="notif-empty">Nenhum vencimento próximo. ✅</p>
+            </div>
+          </div>
+        </div>
         <div id="clock-chip" class="clock-chip">
           <span id="clock-date" class="clock-date"></span>
           <span class="clock-sep">·</span>

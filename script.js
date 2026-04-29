@@ -775,7 +775,6 @@ async function openApp(user, primeiroAcesso = false) {
 
       btnPrev.addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
 
-      ob.style.visibility = 'visible';
       ob.classList.remove('hidden');
     }, 600);
   }
@@ -1368,6 +1367,97 @@ window.deletarRecorrente = async function(id) {
   await renderDashboard();
 };
 
+async function renderNotificacoes() {
+  const hoje   = fmt.hoje();
+  const mesAtu = fmt.mesAtual();
+  const [parc, rec, gastos] = await Promise.all([DB.parceladas(), DB.recorrentes(), DB.gastos()]);
+  const itens = [];
+
+  // Parcelas vencendo em até 7 dias
+  parc.forEach(p => {
+    const parMes = p.parcelas.find(x => x.mesAno === mesAtu && !x.pago);
+    if (parMes && p.diaVenc) {
+      const dataVenc = `${mesAtu}-${String(p.diaVenc).padStart(2,'0')}`;
+      const diff = Math.ceil((new Date(dataVenc+'T12:00:00') - new Date()) / 86400000);
+      if (diff >= 0 && diff <= 7) {
+        itens.push({
+          icon: '📦', urgente: diff <= 2,
+          title: p.nome,
+          sub: diff === 0 ? 'Vence hoje!' : diff === 1 ? 'Vence amanhã' : `Vence em ${diff} dias`,
+          val: parMes.valorParcela
+        });
+      }
+    }
+  });
+
+  // Recorrentes vencendo em até 7 dias
+  rec.forEach(r => {
+    if (!r.proximaData) return;
+    const diff = Math.ceil((new Date(r.proximaData+'T12:00:00') - new Date()) / 86400000);
+    if (diff >= 0 && diff <= 7) {
+      itens.push({
+        icon: '🔁', urgente: diff <= 2,
+        title: r.nome,
+        sub: diff === 0 ? 'Vence hoje!' : diff === 1 ? 'Vence amanhã' : `Vence em ${diff} dias`,
+        val: r.valor
+      });
+    }
+  });
+
+  // Fatura do cartão vencendo em até 7 dias
+  const proxM = fmt.mesOffset(1);
+  const diaVencCartao = await DB.getDiaVencCartao();
+  if (diaVencCartao) {
+    const dataFatura = `${mesAtu}-${String(diaVencCartao).padStart(2,'0')}`;
+    const diff = Math.ceil((new Date(dataFatura+'T12:00:00') - new Date()) / 86400000);
+    const totalCartao = gastos.filter(g => g.categoria === 'cartao' && g.data.startsWith(proxM)).reduce((a,g) => a+g.valor, 0);
+    if (diff >= 0 && diff <= 7 && totalCartao > 0) {
+      itens.push({
+        icon: '💳', urgente: diff <= 2,
+        title: 'Fatura do Cartão',
+        sub: diff === 0 ? 'Vence hoje!' : diff === 1 ? 'Vence amanhã' : `Vence em ${diff} dias`,
+        val: totalCartao
+      });
+    }
+  }
+
+  // Renderizar
+  const badge    = document.getElementById('notif-badge');
+  const list     = document.getElementById('notif-list');
+  const countLbl = document.getElementById('notif-count-label');
+
+  if (itens.length > 0) {
+    badge.textContent = itens.length;
+    badge.classList.remove('hidden');
+    countLbl.textContent = `${itens.length} pendente${itens.length > 1 ? 's' : ''}`;
+    list.innerHTML = '';
+    itens.sort((a,b) => b.urgente - a.urgente).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'notif-item' + (item.urgente ? ' notif-urgente' : '');
+      div.innerHTML = `
+        <div class="notif-item-icon">${item.icon}</div>
+        <div class="notif-item-body">
+          <div class="notif-item-title">${fmt.esc(item.title)}</div>
+          <div class="notif-item-sub">${item.sub}</div>
+        </div>
+        <div class="notif-item-val">− ${fmt.brl(item.val)}</div>`;
+      list.appendChild(div);
+    });
+  } else {
+    badge.classList.add('hidden');
+    countLbl.textContent = '';
+    list.innerHTML = '<p class="notif-empty">Nenhum vencimento próximo. ✅</p>';
+  }
+
+  // Toggle dropdown
+  const btn = document.getElementById('btn-notif');
+  const dd  = document.getElementById('notif-dropdown');
+  btn.onclick = (e) => { e.stopPropagation(); dd.classList.toggle('hidden'); };
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('notif-wrap').contains(e.target)) dd.classList.add('hidden');
+  }, { once: false });
+}
+
 function initHistorico() {
   document.getElementById('h-cat-filter').addEventListener('change', ()=>renderHistorico().catch(console.error));
   document.getElementById('btn-limpar').addEventListener('click', async () => {
@@ -1404,6 +1494,8 @@ async function renderDashboard() {
   recBox.innerHTML='';
   if (gastos.length===0) recBox.innerHTML='<p class="empty-msg">Nenhum gasto registrado.</p>';
   else gastos.slice(0,5).forEach(g=>recBox.appendChild(buildGastoItem(g)));
+
+  await renderNotificacoes();
 }
 
 function renderBoxEntradasMes(s, rendas) {
