@@ -1567,7 +1567,7 @@ async function gerarPDF() {
   if (incRendas && entradasMes.length > 0) {
     if (y > 240) { doc.addPage(); y = 20; }
     doc.setFontSize(12); doc.setFont('helvetica', 'bold');
-    doc.text('Rendas e Entradas', pad, y); y += 4;
+    doc.text('Entradas', pad, y); y += 4;
     doc.autoTable({
       startY: y,
       head: [['Nome', 'Valor', 'Data']],
