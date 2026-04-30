@@ -851,8 +851,8 @@ function initModals() {
     document.getElementById('pdf-mes').value = fmt.mesAtual();
     mPdf.classList.remove('hidden');
   });
-  document.getElementById('btn-close-pdf').addEventListener('click', () => mPdf.classList.add('hidden'));
-  mPdf.addEventListener('click', e => { if (e.target === mPdf) mPdf.classList.add('hidden'); });
+  document.getElementById('btn-close-pdf').addEventListener('click', () => { mPdf.classList.add('hidden'); showView('dashboard'); });
+  mPdf.addEventListener('click', e => { if (e.target === mPdf) { mPdf.classList.add('hidden'); showView('dashboard'); } });
   document.getElementById('btn-gerar-pdf').addEventListener('click', gerarPDF);
 }
 
@@ -1485,6 +1485,8 @@ async function gerarPDF() {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const mes     = document.getElementById('pdf-mes').value || fmt.mesAtual();
   const [ano, m] = mes.split('-').map(Number);
+  const fmtData = d => { if (!d || d==='-') return '-'; const [y,mo,di]=d.split('-'); return `${di}/${mo}/${y}`; };
+  const fmtData = d => { if (!d || d==='-') return '-'; const [y,mo,di]=d.split('-'); return `${di}/${mo}/${y}`; };
   const nomeMes = new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   const incGastos = document.getElementById('pdf-gastos').checked;
   const incRendas = document.getElementById('pdf-rendas').checked;
@@ -1546,7 +1548,7 @@ async function gerarPDF() {
     const rows = [];
     Object.entries(porCat).forEach(([cat, itens]) => {
       itens.forEach((g, i) => {
-        rows.push([i === 0 ? cat : '', g.nome, `R$ ${fmt.brl(g.valor)}`, g.data]);
+        rows.push([i === 0 ? cat : '', g.nome, `R$ ${fmt.brl(g.valor)}`, fmtData(g.data)]);
       });
     });
     doc.autoTable({
@@ -1570,7 +1572,7 @@ async function gerarPDF() {
     doc.autoTable({
       startY: y,
       head: [['Nome', 'Valor', 'Data']],
-      body: entradasMes.map(e => [e.nome, `R$ ${fmt.brl(e.valor)}`, e.data]),
+      body: entradasMes.map(e => [e.nome, `R$ ${fmt.brl(e.valor)}`, fmtData(e.data)]),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
@@ -1609,7 +1611,7 @@ async function gerarPDF() {
     doc.autoTable({
       startY: y,
       head: [['Nome', 'Valor', 'Frequência', 'Próximo']],
-      body: rec.map(r => [r.nome, `R$ ${fmt.brl(r.valor)}`, r.frequencia, r.proximaData || '-']),
+      body: rec.map(r => [r.nome, `R$ ${fmt.brl(r.valor)}`, r.frequencia, fmtData(r.proximaData)]),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
@@ -1629,7 +1631,7 @@ async function gerarPDF() {
       doc.autoTable({
         startY: y,
         head: [['Nome', 'Valor Estimado', 'Data']],
-        body: futMes.map(f => [f.nome, `R$ ${fmt.brl(f.valorEstimado)}`, f.data]),
+        body: futMes.map(f => [f.nome, `R$ ${fmt.brl(f.valorEstimado)}`, fmtData(f.data)]),
         theme: 'striped',
         headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
         bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
@@ -1647,7 +1649,8 @@ async function gerarPDF() {
     doc.text(`Fora Perrengue — Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
   }
 
-  doc.save(`fora-perrengue-${mes}.pdf`);
+  const [anoP, mesP] = mes.split('-');
+  doc.save(`fora-perrengue-${mesP}-${anoP}.pdf`);
   document.getElementById('modal-pdf').classList.add('hidden');
   toast('PDF gerado com sucesso! 📄', 'success', 3000);
   showView('dashboard');
