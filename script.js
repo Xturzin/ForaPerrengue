@@ -844,6 +844,16 @@ function initModals() {
     mVenc.classList.add('hidden');
     if (window._vencCartaoCallback) { window._vencCartaoCallback(dia); window._vencCartaoCallback = null; }
   });
+
+  // PDF
+  const mPdf = document.getElementById('modal-pdf');
+  document.getElementById('btn-open-pdf').addEventListener('click', () => {
+    document.getElementById('pdf-mes').value = fmt.mesAtual();
+    mPdf.classList.remove('hidden');
+  });
+  document.getElementById('btn-close-pdf').addEventListener('click', () => mPdf.classList.add('hidden'));
+  mPdf.addEventListener('click', e => { if (e.target === mPdf) mPdf.classList.add('hidden'); });
+  document.getElementById('btn-gerar-pdf').addEventListener('click', gerarPDF);
 }
 
 
@@ -1468,6 +1478,178 @@ function initHistorico() {
     await renderHistorico();
     toast('Gastos removidos.','info');
   });
+}
+
+async function gerarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const mes     = document.getElementById('pdf-mes').value || fmt.mesAtual();
+  const [ano, m] = mes.split('-').map(Number);
+  const nomeMes = new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const incGastos = document.getElementById('pdf-gastos').checked;
+  const incRendas = document.getElementById('pdf-rendas').checked;
+  const incParc   = document.getElementById('pdf-parc').checked;
+  const incRec    = document.getElementById('pdf-rec').checked;
+  const incFut    = document.getElementById('pdf-fut').checked;
+
+  const [gastos, rendas, parc, rec, futuras] = await Promise.all([
+    DB.gastos(), DB.rendas(), DB.parceladas(), DB.recorrentes(), DB.futuras()
+  ]);
+
+  const W = 210, pad = 16;
+  let y = 20;
+
+  // Cabeçalho
+  doc.setFillColor(109, 40, 217);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+  doc.text('Fora Perrengue', pad, 13);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text(`Relatório — ${nomeMes}`, pad, 21);
+  doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - pad, 21, { align: 'right' });
+  y = 38;
+
+  // Resumo financeiro
+  const gastosDoMes  = gastos.filter(g => g.categoria !== 'cartao' && g.data.startsWith(mes));
+  const totalGastos  = gastosDoMes.reduce((a, g) => a + g.valor, 0);
+  const entradasMes  = todasEntradasSync(rendas, mes + '-31').filter(e => e.data.startsWith(mes));
+  const totalEntradas= entradasMes.reduce((a, e) => a + e.valor, 0);
+  const saldo        = totalEntradas - totalGastos;
+
+  doc.setTextColor(30, 22, 48);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.text('Resumo do Mês', pad, y); y += 7;
+
+  doc.autoTable({
+    startY: y,
+    head: [['', 'Valor']],
+    body: [
+      ['💰 Total de Entradas', `R$ ${fmt.brl(totalEntradas)}`],
+      ['💸 Total de Gastos',   `R$ ${fmt.brl(totalGastos)}`],
+      ['📊 Saldo do Mês',      `R$ ${fmt.brl(saldo)}`],
+    ],
+    theme: 'grid',
+    headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+    bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
+    columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } },
+    margin: { left: pad, right: pad },
+  });
+  y = doc.lastAutoTable.finalY + 10;
+
+  // Gastos por categoria
+  if (incGastos && gastosDoMes.length > 0) {
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('Gastos por Categoria', pad, y); y += 4;
+    const porCat = {};
+    gastosDoMes.forEach(g => { porCat[g.categoria] = (porCat[g.categoria]||[]).concat(g); });
+    const rows = [];
+    Object.entries(porCat).forEach(([cat, itens]) => {
+      itens.forEach((g, i) => {
+        rows.push([i === 0 ? cat : '', g.nome, `R$ ${fmt.brl(g.valor)}`, g.data]);
+      });
+    });
+    doc.autoTable({
+      startY: y,
+      head: [['Categoria', 'Nome', 'Valor', 'Data']],
+      body: rows,
+      theme: 'striped',
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+      columnStyles: { 2: { halign: 'right' } },
+      margin: { left: pad, right: pad },
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Rendas
+  if (incRendas && entradasMes.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('Rendas e Entradas', pad, y); y += 4;
+    doc.autoTable({
+      startY: y,
+      head: [['Nome', 'Valor', 'Data']],
+      body: entradasMes.map(e => [e.nome, `R$ ${fmt.brl(e.valor)}`, e.data]),
+      theme: 'striped',
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+      columnStyles: { 1: { halign: 'right' } },
+      margin: { left: pad, right: pad },
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Parceladas
+  if (incParc && parc.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('Parceladas', pad, y); y += 4;
+    doc.autoTable({
+      startY: y,
+      head: [['Nome', 'Parcela', 'Valor', 'Status']],
+      body: parc.map(p => {
+        const parMes = p.parcelas.find(x => x.mesAno === mes);
+        return [p.nome, parMes ? `${parMes.num}/${p.numParcelas}` : '-', `R$ ${fmt.brl(p.valorParcela)}`, parMes?.pago ? 'Pago' : 'Pendente'];
+      }),
+      theme: 'striped',
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+      columnStyles: { 2: { halign: 'right' } },
+      margin: { left: pad, right: pad },
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Recorrentes
+  if (incRec && rec.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('Recorrentes', pad, y); y += 4;
+    doc.autoTable({
+      startY: y,
+      head: [['Nome', 'Valor', 'Frequência', 'Próximo']],
+      body: rec.map(r => [r.nome, `R$ ${fmt.brl(r.valor)}`, r.frequencia, r.proximaData || '-']),
+      theme: 'striped',
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+      columnStyles: { 1: { halign: 'right' } },
+      margin: { left: pad, right: pad },
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Futuras
+  if (incFut) {
+    const futMes = futuras.filter(f => f.data.startsWith(mes));
+    if (futMes.length > 0) {
+      if (y > 240) { doc.addPage(); y = 20; }
+      doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+      doc.text('Despesas Futuras', pad, y); y += 4;
+      doc.autoTable({
+        startY: y,
+        head: [['Nome', 'Valor Estimado', 'Data']],
+        body: futMes.map(f => [f.nome, `R$ ${fmt.brl(f.valorEstimado)}`, f.data]),
+        theme: 'striped',
+        headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+        bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+        columnStyles: { 1: { halign: 'right' } },
+        margin: { left: pad, right: pad },
+      });
+    }
+  }
+
+  // Rodapé
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8); doc.setTextColor(150);
+    doc.text(`Fora Perrengue — Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
+  }
+
+  doc.save(`fora-perrengue-${mes}.pdf`);
+  document.getElementById('modal-pdf').classList.add('hidden');
+  toast('PDF gerado com sucesso! 📄', 'success', 3000);
 }
 
 async function renderDashboard() {

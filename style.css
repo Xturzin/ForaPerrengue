@@ -810,3 +810,8 @@ html,body{
 .notif-item-sub{font-size:.72rem;color:var(--txt3);}
 .notif-item-val{font-size:.78rem;font-weight:700;color:var(--red);white-space:nowrap;}
 .notif-urgente .notif-item-title{color:var(--red);}
+
+/* PDF */
+.pdf-check{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--txt);cursor:pointer;padding:7px 10px;border-radius:var(--r-sm);transition:background var(--t);}
+.pdf-check:hover{background:var(--surf2);}
+.pdf-check input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;}

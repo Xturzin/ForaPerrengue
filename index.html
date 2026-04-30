@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <script src="script.js"></script>
 </head>
 <body>
@@ -419,6 +421,13 @@
           <span class="toggle-track"></span>
         </label>
       </div>
+      <button class="nav-item" id="btn-open-pdf" style="margin-top:auto;">
+            <span class="nav-icon">📄</span>
+            <span class="nav-label">Exportar PDF</span>
+          </button>
+      <button id="btn-open-pdf" class="nav-item" style="margin-bottom:4px;">
+        <span class="nav-icon">📄</span><span>Exportar PDF</span>
+      </button>
       <button id="btn-logout" class="btn-logout">🚪 Sair</button>
     </div>
   </aside>
@@ -903,6 +912,35 @@
     </section>
 
   </main>
+</div>
+
+<!-- Exportar PDF -->
+<div id="modal-pdf" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <button class="modal-close" id="btn-close-pdf">✕</button>
+    <div class="modal-hero">📄</div>
+    <h2 class="modal-title">Exportar Relatório</h2>
+    <p class="modal-byline">Escolha o período e o que incluir no relatório.</p>
+    <div class="modal-divider"></div>
+
+    <div class="form-group" style="margin-top:16px">
+      <label>Mês de referência</label>
+      <input type="month" id="pdf-mes" style="width:100%;margin-top:6px"/>
+    </div>
+
+    <div style="margin-top:14px">
+      <label style="font-size:.78rem;font-weight:700;color:var(--txt);display:block;margin-bottom:10px;">Incluir no relatório:</label>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label class="pdf-check"><input type="checkbox" id="pdf-gastos" checked> 💸 Gastos por categoria</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-rendas" checked> 💰 Rendas e entradas</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-parc" checked> 📦 Parceladas</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-rec" checked> 🔁 Recorrentes</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-fut" checked> 🔮 Despesas futuras</label>
+      </div>
+    </div>
+
+    <button id="btn-gerar-pdf" class="btn-primary w-full" style="margin-top:20px;">Gerar PDF 📄</button>
+  </div>
 </div>
 
 <script src="script.js"></script>
