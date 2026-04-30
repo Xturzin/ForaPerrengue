@@ -733,7 +733,7 @@ async function openApp(user, primeiroAcesso = false) {
   await renderAll();
   showView('dashboard');
 
-  // Onboarding — apenas no primeiro acesso
+  // Onboarding apenas no primeiro acesso
   if (primeiroAcesso) {
     setTimeout(() => {
       const ob     = document.getElementById('onboarding');
@@ -1054,7 +1054,7 @@ function initGastos() {
         document.getElementById('g-subcat-wrap').classList.add('hidden');
         pickers.gasto?.setValue(fmt.hoje());
         await renderDashboard();
-        toast(`💳 ${fmt.brl(valor)} no cartão — vence dia ${diaFinal} de ${fmt.mesOffset(1).split('-')[1]}/${fmt.mesOffset(1).split('-')[0]}`, 'info', 4000);
+        toast(`💳 ${fmt.brl(valor)} no cartão vence dia ${diaFinal} de ${fmt.mesOffset(1).split('-')[1]}/${fmt.mesOffset(1).split('-')[0]}`, 'info', 4000);
       };
 
       const diaJaSalvo = await DB.getDiaVencCartao();
@@ -1507,7 +1507,7 @@ async function gerarPDF() {
   doc.setFontSize(18); doc.setFont('helvetica', 'bold');
   doc.text('Fora Perrengue', pad, 13);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text(`Relatório — ${nomeMes}`, pad, 21);
+  doc.text(`Relatório ${nomeMes}`, pad, 21);
   doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - pad, 21, { align: 'right' });
   y = 38;
 
@@ -1596,7 +1596,7 @@ async function gerarPDF() {
           p.nome,
           parMes ? `${parMes.num}/${p.numParcelas}` : `${pagas}/${p.numParcelas}`,
           fmt.brl(p.valorParcela),
-          parMes ? (parMes.pago ? '✔ Pago' : '⏳ Pendente') : '— Fora do mês'
+          parMes ? (parMes.pago ? '✔ Pago' : '⏳ Pendente') : 'Fora do mês'
         ];
       }),
       theme: 'striped',
@@ -1605,7 +1605,7 @@ async function gerarPDF() {
       columnStyles: {
         0: { halign: 'left',   cellWidth: 70 },
         1: { halign: 'center', cellWidth: 25 },
-        2: { halign: 'right',  cellWidth: 35, fontStyle: 'bold' },
+        2: { halign: 'center', cellWidth: 35 },
         3: { halign: 'center', cellWidth: 35 },
       },
       margin: { left: pad, right: pad },
@@ -1656,7 +1656,7 @@ async function gerarPDF() {
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
     doc.setFontSize(8); doc.setTextColor(150);
-    doc.text(`Fora Perrengue — Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
+    doc.text(`Fora Perrengue Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
   }
 
   const [anoP, mesP] = mes.split('-');
@@ -1892,7 +1892,7 @@ function renderPieChart(gastos) {
             // Cabeçalho da subcategoria
             const header = document.createElement('div');
             header.style.cssText = 'font-size:.78rem;font-weight:700;color:var(--accent);margin-top:12px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;';
-            header.textContent = `${CAT_EMOJIS[sub]||'📦'} ${sub} — ${fmt.brl(subTotal)}`;
+            header.textContent = `${CAT_EMOJIS[sub]||'📦'} ${sub} ${fmt.brl(subTotal)}`;
             body.appendChild(header);
             // Itens da subcategoria
             gastos.forEach(g => {
@@ -1904,7 +1904,7 @@ function renderPieChart(gastos) {
             });
           });
         } else {
-          // Categoria normal — lista direto
+          // Categoria normal lista direto
           itens.sort((a,b)=>b.valor-a.valor).forEach(g => {
             const row = document.createElement('div');
             row.className = 'prev-section';
@@ -1923,7 +1923,7 @@ function renderPieChart(gastos) {
     }
   });
 
-  // Legend — cartão expande subcategorias
+  // cartão expande subcategorias
   leg.innerHTML='';
   Object.entries(totals).sort((a,b)=>b[1]-a[1]).forEach(([cat,val])=>{
     const pct=(total>0?(val/total*100).toFixed(0):0);
