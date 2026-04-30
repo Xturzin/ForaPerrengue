@@ -1650,6 +1650,7 @@ async function gerarPDF() {
   doc.save(`fora-perrengue-${mes}.pdf`);
   document.getElementById('modal-pdf').classList.add('hidden');
   toast('PDF gerado com sucesso! 📄', 'success', 3000);
+  showView('dashboard');
 }
 
 async function renderDashboard() {
