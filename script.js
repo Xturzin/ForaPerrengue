@@ -1533,7 +1533,7 @@ async function gerarPDF() {
     theme: 'striped',
     headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
     bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
-    columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } },
+    columnStyles: { 1: { halign: 'center', fontStyle: 'bold' } },
     margin: { left: pad, right: pad },
   });
   y = doc.lastAutoTable.finalY + 10;
@@ -1557,7 +1557,7 @@ async function gerarPDF() {
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 2: { halign: 'right' } },
+      columnStyles: { 2: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1575,7 +1575,7 @@ async function gerarPDF() {
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 1: { halign: 'right' } },
+      columnStyles: { 1: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1625,7 +1625,7 @@ async function gerarPDF() {
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 1: { halign: 'right' } },
+      columnStyles: { 1: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1645,7 +1645,7 @@ async function gerarPDF() {
         theme: 'striped',
         headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
         bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-        columnStyles: { 1: { halign: 'right' } },
+        columnStyles: { 1: { halign: 'center' } },
         margin: { left: pad, right: pad },
       });
     }
