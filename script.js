@@ -1588,21 +1588,26 @@ async function gerarPDF() {
     doc.text('Parceladas', pad, y); y += 4;
     doc.autoTable({
       startY: y,
-      head: [['Nome', 'Parcela', 'Valor', 'Status']],
+      head: [['Nome', 'Parcela', 'Valor (R$)', 'Status']],
       body: parc.map(p => {
         const parMes = p.parcelas.find(x => x.mesAno === mes);
         const pagas  = p.parcelas.filter(x => x.pago).length;
         return [
           p.nome,
           parMes ? `${parMes.num}/${p.numParcelas}` : `${pagas}/${p.numParcelas}`,
-          `R$ ${fmt.brl(p.valorParcela)}`,
-          parMes ? (parMes.pago ? 'Pago' : 'Pendente') : 'Fora do mês'
+          fmt.brl(p.valorParcela),
+          parMes ? (parMes.pago ? '✔ Pago' : '⏳ Pendente') : '— Fora do mês'
         ];
       }),
       theme: 'striped',
-      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8, halign: 'center' },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'center' } },
+      columnStyles: {
+        0: { halign: 'left',   cellWidth: 70 },
+        1: { halign: 'center', cellWidth: 25 },
+        2: { halign: 'right',  cellWidth: 35, fontStyle: 'bold' },
+        3: { halign: 'center', cellWidth: 35 },
+      },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
