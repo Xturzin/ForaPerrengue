@@ -1486,7 +1486,6 @@ async function gerarPDF() {
   const mes     = document.getElementById('pdf-mes').value || fmt.mesAtual();
   const [ano, m] = mes.split('-').map(Number);
   const fmtData = d => { if (!d || d==='-') return '-'; const [y,mo,di]=d.split('-'); return `${di}/${mo}/${y}`; };
-  const fmtData = d => { if (!d || d==='-') return '-'; const [y,mo,di]=d.split('-'); return `${di}/${mo}/${y}`; };
   const nomeMes = new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   const incGastos = document.getElementById('pdf-gastos').checked;
   const incRendas = document.getElementById('pdf-rendas').checked;
