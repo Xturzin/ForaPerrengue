@@ -1524,14 +1524,14 @@ async function gerarPDF() {
 
   doc.autoTable({
     startY: y,
-    head: [['', 'Valor']],
+    head: [['Descrição', 'Valor']],
     body: [
-      ['💰 Total de Entradas', `R$ ${fmt.brl(totalEntradas)}`],
-      ['💸 Total de Gastos',   `R$ ${fmt.brl(totalGastos)}`],
-      ['📊 Saldo do Mês',      `R$ ${fmt.brl(saldo)}`],
+      ['Total de Entradas', `R$ ${fmt.brl(totalEntradas)}`],
+      ['Total de Gastos',   `R$ ${fmt.brl(totalGastos)}`],
+      ['Saldo do Mês',      `R$ ${fmt.brl(saldo)}`],
     ],
-    theme: 'grid',
-    headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+    theme: 'striped',
+    headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
     bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
     columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } },
     margin: { left: pad, right: pad },
@@ -1591,12 +1591,18 @@ async function gerarPDF() {
       head: [['Nome', 'Parcela', 'Valor', 'Status']],
       body: parc.map(p => {
         const parMes = p.parcelas.find(x => x.mesAno === mes);
-        return [p.nome, parMes ? `${parMes.num}/${p.numParcelas}` : '-', `R$ ${fmt.brl(p.valorParcela)}`, parMes?.pago ? 'Pago' : 'Pendente'];
+        const pagas  = p.parcelas.filter(x => x.pago).length;
+        return [
+          p.nome,
+          parMes ? `${parMes.num}/${p.numParcelas}` : `${pagas}/${p.numParcelas}`,
+          `R$ ${fmt.brl(p.valorParcela)}`,
+          parMes ? (parMes.pago ? 'Pago' : 'Pendente') : 'Fora do mês'
+        ];
       }),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 2: { halign: 'right' } },
+      columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
