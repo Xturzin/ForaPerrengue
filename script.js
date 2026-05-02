@@ -1475,7 +1475,6 @@ function initHistorico() {
     toast('Gastos removidos.','info');
   });
 }
-
 async function gerarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -1508,12 +1507,12 @@ async function gerarPDF() {
   y = 38;
 
   // Resumo financeiro
-  const gastosDoMes  = gastos.filter(g => g.categoria !== 'cartao' && g.data.startsWith(mes));
+  const gastosDoMes     = gastos.filter(g => g.categoria !== 'cartao' && g.data.startsWith(mes));
   const gastosCartaoMes = gastos.filter(g => g.categoria === 'cartao' && g.data.startsWith(mes));
-  const totalGastos  = gastosDoMes.reduce((a, g) => a + g.valor, 0);
-  const entradasMes  = todasEntradasSync(rendas, mes + '-31').filter(e => e.data.startsWith(mes));
-  const totalEntradas= entradasMes.reduce((a, e) => a + e.valor, 0);
-  const saldo        = totalEntradas - totalGastos;
+  const totalGastos     = gastosDoMes.reduce((a, g) => a + g.valor, 0);
+  const entradasMes     = todasEntradasSync(rendas, mes + '-31').filter(e => e.data.startsWith(mes));
+  const totalEntradas   = entradasMes.reduce((a, e) => a + e.valor, 0);
+  const saldo           = totalEntradas - totalGastos;
 
   doc.setTextColor(30, 22, 48);
   doc.setFontSize(12); doc.setFont('helvetica', 'bold');
@@ -1523,12 +1522,12 @@ async function gerarPDF() {
     startY: y,
     head: [['Descrição', 'Valor']],
     body: [
-      ['Total de Entradas', `R$ ${fmt.brl(totalEntradas)}`],
-      ['Total de Gastos',   `R$ ${fmt.brl(totalGastos)}`],
-      ['Saldo do Mês',      `R$ ${fmt.brl(saldo)}`],
+      ['Total de Entradas', fmt.brl(totalEntradas)],
+      ['Total de Gastos',   fmt.brl(totalGastos)],
+      ['Saldo do Mês',      fmt.brl(saldo)],
     ],
     theme: 'striped',
-    headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
+    headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9 },
     bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
     columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' } },
     margin: { left: pad, right: pad },
@@ -1537,6 +1536,7 @@ async function gerarPDF() {
 
   // Gastos por categoria
   if (incGastos && gastosDoMes.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
     doc.setFontSize(12); doc.setFont('helvetica', 'bold');
     doc.text('Gastos por Categoria', pad, y); y += 4;
     const porCat = {};
@@ -1544,7 +1544,7 @@ async function gerarPDF() {
     const rows = [];
     Object.entries(porCat).forEach(([cat, itens]) => {
       itens.forEach((g, i) => {
-        rows.push([i === 0 ? cat : '', g.nome, `R$ ${fmt.brl(g.valor)}`, fmtData(g.data)]);
+        rows.push([i === 0 ? cat : '', g.nome, fmt.brl(g.valor), fmtData(g.data)]);
       });
     });
     doc.autoTable({
@@ -1554,7 +1554,7 @@ async function gerarPDF() {
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 2: { halign: 'center' } },
+      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'left' }, 2: { halign: 'center' }, 3: { halign: 'right' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1571,13 +1571,13 @@ async function gerarPDF() {
       body: gastosCartaoMes.map(g => [
         g.subcategoria || 'Outros',
         g.nome,
-        `R$ ${fmt.brl(g.valor)}`,
+        fmt.brl(g.valor),
         fmtData(g.dataCompra || g.data)
       ]),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 2: { halign: 'center' }, 3: { halign: 'center' } },
+      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'left' }, 2: { halign: 'center' }, 3: { halign: 'right' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1591,11 +1591,11 @@ async function gerarPDF() {
     doc.autoTable({
       startY: y,
       head: [['Nome', 'Valor', 'Data']],
-      body: entradasMes.map(e => [e.nome, `R$ ${fmt.brl(e.valor)}`, fmtData(e.data)]),
+      body: entradasMes.map(e => [e.nome, fmt.brl(e.valor), fmtData(e.data)]),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
+      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'right' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1621,18 +1621,12 @@ async function gerarPDF() {
       }),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
-      columnStyles: {
-        0: { halign: 'left',   cellWidth: 70 },
-        1: { halign: 'center', cellWidth: 25 },
-        2: { halign: 'center', cellWidth: 35 },
-        3: { halign: 'center', cellWidth: 35 },
-      },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
       columnStyles: {
-        0: { halign: 'left',   cellWidth: 70 },
+        0: { halign: 'left',   cellWidth: 65 },
         1: { halign: 'center', cellWidth: 25 },
         2: { halign: 'center', cellWidth: 35 },
-        3: { halign: 'center', cellWidth: 35 },
+        3: { halign: 'right',  cellWidth: 40 },
       },
       margin: { left: pad, right: pad },
     });
@@ -1647,11 +1641,11 @@ async function gerarPDF() {
     doc.autoTable({
       startY: y,
       head: [['Nome', 'Valor', 'Frequência', 'Próximo']],
-      body: rec.map(r => [r.nome, `R$ ${fmt.brl(r.valor)}`, r.frequencia, fmtData(r.proximaData)]),
+      body: rec.map(r => [r.nome, fmt.brl(r.valor), r.frequencia, fmtData(r.proximaData)]),
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 1: { halign: 'center' } },
+      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'right' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1667,11 +1661,11 @@ async function gerarPDF() {
       doc.autoTable({
         startY: y,
         head: [['Nome', 'Valor Estimado', 'Data']],
-        body: futMes.map(f => [f.nome, `R$ ${fmt.brl(f.valorEstimado)}`, fmtData(f.data)]),
+        body: futMes.map(f => [f.nome, fmt.brl(f.valorEstimado), fmtData(f.data)]),
         theme: 'striped',
         headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
         bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-        columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
+        columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'right' } },
         margin: { left: pad, right: pad },
       });
     }
@@ -1682,7 +1676,7 @@ async function gerarPDF() {
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
     doc.setFontSize(8); doc.setTextColor(150);
-    doc.text(`Fora Perrengue Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
+    doc.text(`Fora Perrengue — Página ${i} de ${pages}`, W / 2, 290, { align: 'center' });
   }
 
   const [anoP, mesP] = mes.split('-');
@@ -1691,7 +1685,6 @@ async function gerarPDF() {
   toast('PDF gerado com sucesso! 📄', 'success', 3000);
   showView('dashboard');
 }
-
 async function renderDashboard() {
   const [gastos, parc, rec, futuras, rendas] = await Promise.all([
     DB.gastos(), DB.parceladas(), DB.recorrentes(), DB.futuras(), DB.rendas()
