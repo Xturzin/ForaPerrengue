@@ -792,6 +792,23 @@ html,body{
 .ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background var(--t),width var(--t);cursor:pointer;}
 .ob-dot.active{background:var(--accent);width:22px;border-radius:99px;}
 
+/* Onboarding responsivo */
+#onboarding > div{
+  max-height:90vh;
+  overflow-y:auto;
+  scrollbar-width:thin;
+}
+@media(max-width:540px){
+  #onboarding > div{padding:24px 18px;max-width:100%;}
+  #onboarding > div > div[style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important;}
+  #onboarding .ob-slide p{font-size:.8rem;}
+  #onboarding > div > div[style*="flex"]{flex-direction:column;}
+  #onboarding > div > div[style*="flex"] button{flex:unset!important;width:100%;}
+}
+@media(max-width:360px){
+  #onboarding > div > div[style*="grid-template-columns"]{grid-template-columns:1fr!important;}
+}
+
 /* Notificações */
 .notif-wrap{position:relative;}
 .notif-bell{background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;font-size:1rem;cursor:pointer;position:relative;transition:background var(--t),border-color var(--t);}

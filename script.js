@@ -669,7 +669,6 @@ function initAuth() {
     err.classList.add('hidden');
     DB.saveSession({ username:u, nome:found.nome, remember:rem });
     const prefsLogin = await DB.getPrefs();
-    console.log('jaEntrou:', prefsLogin.jaEntrou, 'primeiroAcesso:', !prefsLogin.jaEntrou);
     if (titleEl) titleEl.textContent = prefsLogin.jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
     await openApp(found, !prefsLogin.jaEntrou);
   });
@@ -735,10 +734,8 @@ async function openApp(user, primeiroAcesso = false) {
   showView('dashboard');
 // Onboarding apenas no primeiro acesso
   if (primeiroAcesso) {
-    setTimeout(() => {
-      console.log('onboarding iniciando...');
+    setTimeout(() => {  
       const ob      = document.getElementById('onboarding');
-      console.log('elemento onboarding:', ob);
       const slides  = ob.querySelectorAll('.ob-slide');
       const dotsEl  = document.getElementById('ob-dots');
       const btnPrev = document.getElementById('btn-ob-prev');
