@@ -46,6 +46,7 @@ html,body{
   font-size:14px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
   transition:background var(--ts),color var(--ts);
+  overflow-x:hidden;
 }
 .hidden{display:none!important;}
 
@@ -489,7 +490,7 @@ html,body{
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:299;backdrop-filter:blur(3px);}
 
 /* Main */
-.main{margin-left:var(--sb-w);flex:1;padding:20px 24px;min-height:100vh;transition:margin var(--t);}
+.main{margin-left:var(--sb-w);flex:1;padding:20px 24px;min-height:100vh;transition:margin var(--t);max-width:100%;overflow-x:hidden;}
 
 /* Topbar */
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
