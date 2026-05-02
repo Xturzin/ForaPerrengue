@@ -1530,6 +1530,7 @@ async function gerarPDF() {
     headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9 },
     bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
     columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' } },
+    didParseCell: d => { if(d.column.index===0) d.cell.styles.halign='left'; if(d.column.index===1) d.cell.styles.halign='center'; },
     margin: { left: pad, right: pad },
   });
   y = doc.lastAutoTable.finalY + 10;
@@ -1596,6 +1597,7 @@ async function gerarPDF() {
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
       columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'right' } },
+      didParseCell: d => { if(d.column.index===0) d.cell.styles.halign='left'; if(d.column.index===1) d.cell.styles.halign='center'; if(d.column.index===2) d.cell.styles.halign='right'; },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1628,6 +1630,7 @@ async function gerarPDF() {
         2: { halign: 'center', cellWidth: 35 },
         3: { halign: 'right',  cellWidth: 40 },
       },
+      didParseCell: d => { const a=['left','center','center','right']; d.cell.styles.halign=a[d.column.index]||'left'; },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1666,6 +1669,7 @@ async function gerarPDF() {
         headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
         bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
         columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'right' } },
+        didParseCell: d => { if(d.column.index===0) d.cell.styles.halign='left'; if(d.column.index===1) d.cell.styles.halign='center'; if(d.column.index===2) d.cell.styles.halign='right'; },
         margin: { left: pad, right: pad },
       });
     }
