@@ -956,7 +956,7 @@ function initModals() {
       }
     });
   }
-
+}
 
 async function abrirModalPrevisao() {
   const proxM = fmt.mesOffset(1);
