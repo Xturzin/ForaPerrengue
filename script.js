@@ -1530,7 +1530,7 @@ async function gerarPDF() {
     theme: 'striped',
     headStyles: { fillColor: [109, 40, 217], textColor: 255, fontStyle: 'bold', fontSize: 9, halign: 'center' },
     bodyStyles: { fontSize: 9, textColor: [30, 22, 48] },
-    columnStyles: { 1: { halign: 'center', fontStyle: 'bold' } },
+    columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' } },
     margin: { left: pad, right: pad },
   });
   y = doc.lastAutoTable.finalY + 10;
@@ -1595,7 +1595,7 @@ async function gerarPDF() {
       theme: 'striped',
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-      columnStyles: { 1: { halign: 'center' } },
+      columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
@@ -1616,11 +1616,17 @@ async function gerarPDF() {
           p.nome,
           parMes ? `${parMes.num}/${p.numParcelas}` : `${pagas}/${p.numParcelas}`,
           fmt.brl(p.valorParcela),
-          parMes ? (parMes.pago ? '✔ Pago' : '⏳ Pendente') : 'Fora do mês'
+          parMes ? (parMes.pago ? 'Pago' : 'Pendente') : 'Fora do mês'
         ];
       }),
       theme: 'striped',
-      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8, halign: 'center' },
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      columnStyles: {
+        0: { halign: 'left',   cellWidth: 70 },
+        1: { halign: 'center', cellWidth: 25 },
+        2: { halign: 'center', cellWidth: 35 },
+        3: { halign: 'center', cellWidth: 35 },
+      },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
       columnStyles: {
         0: { halign: 'left',   cellWidth: 70 },
@@ -1665,7 +1671,7 @@ async function gerarPDF() {
         theme: 'striped',
         headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
         bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
-        columnStyles: { 1: { halign: 'center' } },
+        columnStyles: { 0: { halign: 'left' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
         margin: { left: pad, right: pad },
       });
     }
