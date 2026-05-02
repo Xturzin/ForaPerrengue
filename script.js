@@ -736,7 +736,9 @@ async function openApp(user, primeiroAcesso = false) {
 // Onboarding apenas no primeiro acesso
   if (primeiroAcesso) {
     setTimeout(() => {
+      console.log('onboarding iniciando...');
       const ob      = document.getElementById('onboarding');
+      console.log('elemento onboarding:', ob);
       const slides  = ob.querySelectorAll('.ob-slide');
       const dotsEl  = document.getElementById('ob-dots');
       const btnPrev = document.getElementById('btn-ob-prev');
