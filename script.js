@@ -196,7 +196,22 @@ async getPrefs() {
       await _supa.from('users').update(prefs).eq('id', _userId);
     } catch {}
   },
+  
+async getPerfil() {
+    try {
+      if (!_supa || !_userId) return null;
+      const { data } = await _supa.from('users').select('nome, username, created_at, emoji').eq('id', _userId).single();
+      return data;
+    } catch { return null; }
+  },
 
+  async updatePerfil(fields) {
+    try {
+      if (!_supa || !_userId) return false;
+      const { error } = await _supa.from('users').update(fields).eq('id', _userId);
+      return !error;
+    } catch { return false; }
+  },
   async gastos() {
     try {
       if (!_supa) return [];
@@ -715,7 +730,8 @@ async function openApp(user, primeiroAcesso = false) {
   document.getElementById('app').classList.remove('hidden');
   const nome = user.nome || user.username;
   document.getElementById('sb-name').textContent = nome;
-  document.getElementById('sb-avatar').textContent = nome.charAt(0).toUpperCase();
+  const perfilInicial = await DB.getPerfil();
+  document.getElementById('sb-avatar').textContent = perfilInicial?.emoji || nome.charAt(0).toUpperCase();
   document.getElementById('user-greet').textContent = fmt.saudacao(nome);
   // Campos month
   const mes = fmt.mesAtual();
@@ -850,6 +866,108 @@ function initModals() {
   document.getElementById('btn-close-pdf').addEventListener('click', () => { mPdf.classList.add('hidden'); showView('dashboard'); });
   mPdf.addEventListener('click', e => { if (e.target === mPdf) { mPdf.classList.add('hidden'); showView('dashboard'); } });
   document.getElementById('btn-gerar-pdf').addEventListener('click', gerarPDF);
+
+  // Perfil
+  const mPerfil = document.getElementById('modal-perfil');
+  let emojiSelecionado = '😊';
+
+  document.getElementById('btn-open-perfil').addEventListener('click', async () => {
+    const perfil = await DB.getPerfil();
+    if (!perfil) return;
+
+    emojiSelecionado = perfil.emoji || '😊';
+    document.getElementById('perfil-emoji-txt').textContent = emojiSelecionado;
+    document.getElementById('perfil-username').value = perfil.username || '';
+    document.getElementById('perfil-nome').value = perfil.nome || '';
+    document.getElementById('perfil-senha-atual').value = '';
+    document.getElementById('perfil-senha-nova').value = '';
+    document.getElementById('perfil-senha-conf').value = '';
+    document.getElementById('perfil-erro').classList.add('hidden');
+    document.getElementById('perfil-ok').classList.add('hidden');
+
+    // Data de criação
+    const criado = perfil.created_at ? new Date(perfil.created_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+    document.getElementById('perfil-criado').value = criado;
+
+    // Marca emoji selecionado
+    document.querySelectorAll('.emoji-opt').forEach(e => {
+      e.classList.toggle('selected', e.textContent === emojiSelecionado);
+    });
+
+    mPerfil.classList.remove('hidden');
+  });
+
+  document.getElementById('btn-close-perfil').addEventListener('click', () => mPerfil.classList.add('hidden'));
+  mPerfil.addEventListener('click', e => { if (e.target === mPerfil) mPerfil.classList.add('hidden'); });
+
+  // Emoji picker toggle
+  document.getElementById('perfil-avatar-display').addEventListener('click', () => {
+    document.getElementById('perfil-emoji-picker').classList.toggle('hidden');
+  });
+
+  // Selecionar emoji
+  document.querySelectorAll('.emoji-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      emojiSelecionado = opt.textContent;
+      document.getElementById('perfil-emoji-txt').textContent = emojiSelecionado;
+      document.getElementById('perfil-emoji-picker').classList.add('hidden');
+      document.querySelectorAll('.emoji-opt').forEach(e => e.classList.toggle('selected', e === opt));
+    });
+  });
+
+  // Salvar perfil
+  document.getElementById('btn-perfil-save').addEventListener('click', async () => {
+    const nome      = document.getElementById('perfil-nome').value.trim();
+    const senhaAt   = document.getElementById('perfil-senha-atual').value;
+    const senhaNova = document.getElementById('perfil-senha-nova').value;
+    const senhaConf = document.getElementById('perfil-senha-conf').value;
+    const erroEl    = document.getElementById('perfil-erro');
+    const okEl      = document.getElementById('perfil-ok');
+    const btn       = document.getElementById('btn-perfil-save');
+    const username  = document.getElementById('perfil-username').value;
+
+    erroEl.classList.add('hidden');
+    okEl.classList.add('hidden');
+
+    if (!nome) { erroEl.textContent = 'O nome não pode estar vazio.'; erroEl.classList.remove('hidden'); return; }
+
+    // Trocar senha se preencheu
+    if (senhaAt || senhaNova || senhaConf) {
+      if (!senhaAt)  { erroEl.textContent = 'Informe a senha atual.'; erroEl.classList.remove('hidden'); return; }
+      if (!senhaNova){ erroEl.textContent = 'Informe a nova senha.';  erroEl.classList.remove('hidden'); return; }
+      if (senhaNova !== senhaConf) { erroEl.textContent = 'As senhas não coincidem.'; erroEl.classList.remove('hidden'); return; }
+      if (senhaNova.length < 4)   { erroEl.textContent = 'Senha mín. 4 caracteres.'; erroEl.classList.remove('hidden'); return; }
+
+      const userOk = await DB.findUser(username, senhaAt);
+      if (!userOk) { erroEl.textContent = 'Senha atual incorreta.'; erroEl.classList.remove('hidden'); return; }
+
+      const { data: userData } = await _supa.from('users').select('password').eq('id', _userId).single();
+      if (userData?.password === senhaNova) { erroEl.textContent = 'A nova senha não pode ser igual à atual.'; erroEl.classList.remove('hidden'); return; }
+    }
+
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    const fields = { nome, emoji: emojiSelecionado };
+    if (senhaNova) fields.password = senhaNova;
+
+    const ok = await DB.updatePerfil(fields);
+    btn.disabled = false; btn.textContent = 'Salvar alterações';
+
+    if (ok) {
+      // Atualiza sidebar
+      document.getElementById('sb-name').textContent = nome;
+      document.getElementById('sb-avatar').textContent = emojiSelecionado;
+      currentUser.nome = nome;
+      okEl.textContent = '✅ Perfil atualizado com sucesso!';
+      okEl.classList.remove('hidden');
+      document.getElementById('perfil-senha-atual').value = '';
+      document.getElementById('perfil-senha-nova').value  = '';
+      document.getElementById('perfil-senha-conf').value  = '';
+    } else {
+      erroEl.textContent = 'Erro ao salvar. Tente novamente.';
+      erroEl.classList.remove('hidden');
+    }
+  });
 }
 
 

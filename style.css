@@ -833,3 +833,8 @@ html,body{
 .pdf-check{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--txt);cursor:pointer;padding:7px 10px;border-radius:var(--r-sm);transition:background var(--t);}
 .pdf-check:hover{background:var(--surf2);}
 .pdf-check input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;}
+
+/* Perfil */
+.emoji-opt{padding:4px;border-radius:6px;transition:background var(--t),transform var(--t);}
+.emoji-opt:hover{background:var(--surf3);transform:scale(1.2);}
+.emoji-opt.selected{background:var(--glowS);outline:2px solid var(--accent);}
