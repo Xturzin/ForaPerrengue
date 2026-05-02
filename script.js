@@ -669,6 +669,7 @@ function initAuth() {
     err.classList.add('hidden');
     DB.saveSession({ username:u, nome:found.nome, remember:rem });
     const prefsLogin = await DB.getPrefs();
+    console.log('jaEntrou:', prefsLogin.jaEntrou, 'primeiroAcesso:', !prefsLogin.jaEntrou);
     if (titleEl) titleEl.textContent = prefsLogin.jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
     await openApp(found, !prefsLogin.jaEntrou);
   });
