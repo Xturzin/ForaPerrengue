@@ -733,18 +733,25 @@ async function openApp(user, primeiroAcesso = false) {
   applyTheme(prefs.tema);
   await renderAll();
   showView('dashboard');
-
-  // Onboarding apenas no primeiro acesso
+// Onboarding apenas no primeiro acesso
   if (primeiroAcesso) {
     setTimeout(() => {
-      const ob     = document.getElementById('onboarding');
-      const slides = ob.querySelectorAll('.ob-slide');
-      const dotsEl = document.getElementById('ob-dots');
+      const ob      = document.getElementById('onboarding');
+      const slides  = ob.querySelectorAll('.ob-slide');
+      const dotsEl  = document.getElementById('ob-dots');
       const btnPrev = document.getElementById('btn-ob-prev');
       const btnNext = document.getElementById('btn-ob-next');
       let cur = 0;
 
-      // Criar dots
+      const goTo = (idx) => {
+        slides[cur].classList.add('hidden');
+        cur = idx;
+        slides[cur].classList.remove('hidden');
+        dotsEl.querySelectorAll('.ob-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+        btnPrev.style.display = cur === 0 ? 'none' : 'block';
+        btnNext.textContent   = cur === slides.length - 1 ? 'Começar agora 🚀' : 'Próximo →';
+      };
+
       dotsEl.innerHTML = '';
       slides.forEach((_, i) => {
         const d = document.createElement('div');
@@ -752,17 +759,6 @@ async function openApp(user, primeiroAcesso = false) {
         d.addEventListener('click', () => goTo(i));
         dotsEl.appendChild(d);
       });
-
-      const goTo = (idx) => {
-        slides[cur].classList.add('hidden');
-        cur = idx;
-        slides[cur].classList.remove('hidden');
-        // Atualiza dots
-        dotsEl.querySelectorAll('.ob-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
-        // Botões
-        btnPrev.style.display = cur === 0 ? 'none' : 'block';
-        btnNext.textContent   = cur === slides.length - 1 ? 'Começar agora 🚀' : 'Próximo →';
-      };
 
       btnNext.addEventListener('click', async () => {
         if (cur < slides.length - 1) {
@@ -777,11 +773,11 @@ async function openApp(user, primeiroAcesso = false) {
 
       btnPrev.addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
 
+      ob.style.visibility = 'visible';
       ob.classList.remove('hidden');
     }, 600);
   }
 }
-
 function initNav() {
   document.querySelectorAll('.nav-item').forEach(btn=>{
     btn.addEventListener('click',()=>{showView(btn.dataset.view);closeSB();});
