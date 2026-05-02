@@ -1509,6 +1509,7 @@ async function gerarPDF() {
 
   // Resumo financeiro
   const gastosDoMes  = gastos.filter(g => g.categoria !== 'cartao' && g.data.startsWith(mes));
+  const gastosCartaoMes = gastos.filter(g => g.categoria === 'cartao' && g.data.startsWith(mes));
   const totalGastos  = gastosDoMes.reduce((a, g) => a + g.valor, 0);
   const entradasMes  = todasEntradasSync(rendas, mes + '-31').filter(e => e.data.startsWith(mes));
   const totalEntradas= entradasMes.reduce((a, e) => a + e.valor, 0);
@@ -1554,6 +1555,29 @@ async function gerarPDF() {
       headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
       columnStyles: { 2: { halign: 'center' } },
+      margin: { left: pad, right: pad },
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Gastos no Cartão
+  if (incGastos && gastosCartaoMes.length > 0) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('Gastos no Cartão', pad, y); y += 4;
+    doc.autoTable({
+      startY: y,
+      head: [['Subcategoria', 'Nome', 'Valor', 'Compra em']],
+      body: gastosCartaoMes.map(g => [
+        g.subcategoria || 'Outros',
+        g.nome,
+        `R$ ${fmt.brl(g.valor)}`,
+        fmtData(g.dataCompra || g.data)
+      ]),
+      theme: 'striped',
+      headStyles: { fillColor: [109, 40, 217], textColor: 255, fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [30, 22, 48] },
+      columnStyles: { 2: { halign: 'center' }, 3: { halign: 'center' } },
       margin: { left: pad, right: pad },
     });
     y = doc.lastAutoTable.finalY + 10;
