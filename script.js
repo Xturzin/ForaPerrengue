@@ -872,8 +872,7 @@ function initModals() {
   if (mPerfil) {
     let emojiSelecionado = '😊';
 
-    document.addEventListener('click', async (e) => {
-      if (!e.target.closest('#btn-open-perfil')) return;
+    document.getElementById('btn-open-perfil').addEventListener('click', async () => {
       const perfil = await DB.getPerfil();
       if (!perfil) return;
       emojiSelecionado = perfil.emoji || '😊';
