@@ -988,7 +988,51 @@
       <label>Membro desde</label>
       <div class="input-icon-wrap">
         <span class="input-icon">📅</span>
-        <input type="text" id="p
+        <input type="text" id="perfil-criado" readonly style="opacity:.6;cursor:not-allowed;"/>
+      </div>
+    </div>
+
+    <!-- Nome -->
+    <div class="form-group" style="margin-top:10px">
+      <label>Nome</label>
+      <div class="input-icon-wrap">
+        <span class="input-icon">✏️</span>
+        <input type="text" id="perfil-nome" placeholder="Seu nome"/>
+      </div>
+    </div>
+
+    <!-- Trocar senha -->
+    <div style="margin-top:10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;">
+      <div style="font-size:.78rem;font-weight:700;color:var(--txt);margin-bottom:10px;">🔒 Alterar senha</div>
+      <div class="form-group">
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="perfil-senha-atual" placeholder="Senha atual"/>
+          <button class="btn-eye" data-t="perfil-senha-atual" type="button">👁️</button>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:8px">
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="perfil-senha-nova" placeholder="Nova senha"/>
+          <button class="btn-eye" data-t="perfil-senha-nova" type="button">👁️</button>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:8px">
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="perfil-senha-conf" placeholder="Confirmar nova senha"/>
+          <button class="btn-eye" data-t="perfil-senha-conf" type="button">👁️</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="perfil-erro" class="msg-err hidden" style="margin-top:8px"></p>
+    <p id="perfil-ok" class="hidden" style="margin-top:8px;font-size:.8rem;color:var(--green);font-weight:600"></p>
+
+    <button id="btn-perfil-save" class="btn-primary w-full" style="margin-top:16px;">Salvar alterações</button>
+  </div>
+</div>
 
 </body>
 </html>
