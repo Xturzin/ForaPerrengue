@@ -945,30 +945,15 @@
   <div class="modal-box">
     <button class="modal-close" id="btn-close-perfil">✕</button>
 
-    <!-- Avatar com emoji -->
+    <!-- Avatar -->
     <div style="text-align:center;margin-bottom:16px;">
-      <div id="perfil-avatar-display" style="width:72px;height:72px;background:linear-gradient(135deg,var(--p5),var(--p3));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 10px;cursor:pointer;position:relative;" title="Clique para trocar o emoji">
-        <span id="perfil-emoji-txt">😊</span>
-        <span style="position:absolute;bottom:-4px;right:-4px;font-size:.7rem;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 5px;">✏️</span>
+      <div id="perfil-avatar-display" style="width:80px;height:80px;border-radius:50%;margin:0 auto 10px;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--p5),var(--p3));display:flex;align-items:center;justify-content:center;" title="Clique para trocar a foto">
+        <img id="perfil-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+        <span id="perfil-avatar-inicial" style="font-size:2rem;color:#fff;">A</span>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);padding:3px 0;font-size:.6rem;color:#fff;text-align:center;">trocar</div>
       </div>
-      <div id="perfil-emoji-picker" class="hidden" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-top:8px;max-width:260px;margin-left:auto;margin-right:auto;">
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">😊</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">😎</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🤑</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🦁</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🐯</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🦊</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🐼</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🐨</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🦄</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🐸</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🤖</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">👑</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🌙</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">⚡</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">🔥</span>
-        <span class="emoji-opt" style="font-size:1.4rem;cursor:pointer;">💜</span>
-      </div>
+      <input type="file" id="perfil-foto-input" accept="image/*" style="display:none"/>
+      <p class="form-hint" style="margin-top:0">Clique na foto para alterar. Máx. 2MB.</p>
     </div>
 
     <div class="modal-divider"></div>

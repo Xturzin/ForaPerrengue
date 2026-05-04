@@ -228,6 +228,18 @@ async getPerfil() {
     }
   },
 
+  async uploadAvatar(file, userId) {
+    try {
+      if (!_supa) return null;
+      const ext  = file.name.split('.').pop();
+      const path = `${userId}/avatar.${ext}`;
+      const { error } = await _supa.storage.from('avatars').upload(path, file, { upsert: true });
+      if (error) { console.error('Erro upload:', error); return null; }
+      const { data } = _supa.storage.from('avatars').getPublicUrl(path);
+      return data.publicUrl + '?t=' + Date.now();
+    } catch(e) { console.error(e); return null; }
+  },
+
   async saveGastos(list) {
     try {
       if (!_supa) return;
@@ -731,7 +743,12 @@ async function openApp(user, primeiroAcesso = false) {
   const nome = user.nome || user.username;
   document.getElementById('sb-name').textContent = nome;
   const perfilInicial = await DB.getPerfil();
-  document.getElementById('sb-avatar').textContent = perfilInicial?.emoji || nome.charAt(0).toUpperCase();
+  const sbAvatar = document.getElementById('sb-avatar');
+  if (perfilInicial?.avatar_url) {
+    sbAvatar.innerHTML = `<img src="${perfilInicial.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`;
+  } else {
+    sbAvatar.textContent = nome.charAt(0).toUpperCase();
+  }
   document.getElementById('user-greet').textContent = fmt.saudacao(nome);
   // Campos month
   const mes = fmt.mesAtual();
@@ -877,7 +894,20 @@ function initModals() {
       const perfil = await DB.getPerfil();
       if (!perfil) { console.log('sem perfil'); return; }
       emojiSelecionado = perfil.emoji || '😊';
-      document.getElementById('perfil-emoji-txt').textContent = emojiSelecionado;
+
+      // Carregar foto atual
+      const avatarImg = document.getElementById('perfil-avatar-img');
+      const avatarInicial = document.getElementById('perfil-avatar-inicial');
+      if (perfil.avatar_url) {
+        avatarImg.src = perfil.avatar_url;
+        avatarImg.style.display = 'block';
+        avatarInicial.style.display = 'none';
+      } else {
+        avatarImg.style.display = 'none';
+        avatarInicial.style.display = 'block';
+        avatarInicial.textContent = (perfil.nome || perfil.username || '?').charAt(0).toUpperCase();
+      }
+      document.getElementById('perfil-foto-input').value = '';
       document.getElementById('perfil-username').value = perfil.username || '';
       document.getElementById('perfil-nome').value = perfil.nome || '';
       document.getElementById('perfil-senha-atual').value = '';
@@ -896,17 +926,23 @@ function initModals() {
     document.getElementById('btn-close-perfil').addEventListener('click', () => mPerfil.classList.add('hidden'));
     mPerfil.addEventListener('click', e => { if (e.target === mPerfil) mPerfil.classList.add('hidden'); });
 
+    // Clique no avatar abre o input de arquivo
     document.getElementById('perfil-avatar-display').addEventListener('click', () => {
-      document.getElementById('perfil-emoji-picker').classList.toggle('hidden');
+      document.getElementById('perfil-foto-input').click();
     });
 
-    document.querySelectorAll('.emoji-opt').forEach(opt => {
-      opt.addEventListener('click', () => {
-        emojiSelecionado = opt.textContent;
-        document.getElementById('perfil-emoji-txt').textContent = emojiSelecionado;
-        document.getElementById('perfil-emoji-picker').classList.add('hidden');
-        document.querySelectorAll('.emoji-opt').forEach(e => e.classList.toggle('selected', e === opt));
-      });
+    // Preview da foto selecionada
+    document.getElementById('perfil-foto-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { toast('Imagem muito grande. Máx. 2MB.', 'error'); return; }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('perfil-avatar-img').src = ev.target.result;
+        document.getElementById('perfil-avatar-img').style.display = 'block';
+        document.getElementById('perfil-avatar-inicial').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
     });
 
     document.getElementById('btn-perfil-save').addEventListener('click', async () => {
@@ -936,14 +972,26 @@ function initModals() {
       }
 
       btn.disabled = true; btn.textContent = 'Salvando...';
-      const fields = { nome, emoji: emojiSelecionado };
+      const fotoInput = document.getElementById('perfil-foto-input');
+      const file = fotoInput.files[0];
+      let avatarUrl = null;
+      if (file) {
+        btn.textContent = 'Enviando foto...';
+        avatarUrl = await DB.uploadAvatar(file, _userId);
+        if (!avatarUrl) { erroEl.textContent = 'Erro ao enviar foto.'; erroEl.classList.remove('hidden'); btn.disabled=false; btn.textContent='Salvar alterações'; return; }
+      }
+      const fields = { nome };
       if (senhaNova) fields.password = senhaNova;
+      if (avatarUrl) fields.avatar_url = avatarUrl;
       const ok = await DB.updatePerfil(fields);
       btn.disabled = false; btn.textContent = 'Salvar alterações';
 
       if (ok) {
         document.getElementById('sb-name').textContent = nome;
-        document.getElementById('sb-avatar').textContent = emojiSelecionado;
+        if (avatarUrl) {
+          const sbAvatar = document.getElementById('sb-avatar');
+          sbAvatar.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`;
+        }
         currentUser.nome = nome;
         okEl.textContent = '✅ Perfil atualizado com sucesso!';
         okEl.classList.remove('hidden');
