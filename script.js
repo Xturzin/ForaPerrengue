@@ -908,7 +908,7 @@ function initModals() {
         avatarInicial.textContent = (perfil.nome || perfil.username || '?').charAt(0).toUpperCase();
       }
       document.getElementById('perfil-foto-input').value = '';
-      document.getElementById('perfil-username').value = perfil.username || '';
+      document.getElementById('perfil-username').textContent = '@' + (perfil.username || '');
       document.getElementById('perfil-nome').value = perfil.nome || '';
       document.getElementById('perfil-senha-atual').value = '';
       document.getElementById('perfil-senha-nova').value = '';
@@ -925,6 +925,13 @@ function initModals() {
 
     document.getElementById('btn-close-perfil').addEventListener('click', () => mPerfil.classList.add('hidden'));
     mPerfil.addEventListener('click', e => { if (e.target === mPerfil) mPerfil.classList.add('hidden'); });
+
+    document.getElementById('btn-toggle-senha').addEventListener('click', () => {
+      const fields = document.getElementById('senha-fields');
+      const icon   = document.getElementById('toggle-senha-icon');
+      fields.classList.toggle('hidden');
+      icon.textContent = fields.classList.contains('hidden') ? '▼' : '▲';
+    });
 
     // Clique no avatar abre o input de arquivo
     document.getElementById('perfil-avatar-display').addEventListener('click', () => {

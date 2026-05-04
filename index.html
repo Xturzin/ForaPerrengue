@@ -957,14 +957,7 @@
 
     <div class="modal-divider"></div>
 
-    <!-- Username (somente leitura) -->
-    <div class="form-group" style="margin-top:14px">
-      <label>Username</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">👤</span>
-        <input type="text" id="perfil-username" readonly style="opacity:.6;cursor:not-allowed;"/>
-      </div>
-    </div>
+    <p id="perfil-username" style="text-align:center;font-size:.88rem;font-weight:600;color:var(--txt2);margin:10px 0 4px;">@username</p>
 
     <!-- Nome -->
     <div class="form-group" style="margin-top:10px">
@@ -976,8 +969,12 @@
     </div>
 
     <!-- Trocar senha -->
-    <div style="margin-top:10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;">
-      <div style="font-size:.78rem;font-weight:700;color:var(--txt);margin-bottom:10px;">🔒 Alterar senha</div>
+    <div style="margin-top:10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;">
+      <button id="btn-toggle-senha" type="button" style="width:100%;background:none;border:none;padding:12px 14px;font-size:.78rem;font-weight:700;color:var(--txt);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--font);">
+        <span>🔒 Alterar senha</span>
+        <span id="toggle-senha-icon">▼</span>
+      </button>
+      <div id="senha-fields" class="hidden" style="padding:0 14px 14px;">
       <div class="form-group">
         <div class="input-icon-wrap">
           <span class="input-icon">🔒</span>
@@ -999,6 +996,7 @@
           <button class="btn-eye" data-t="perfil-senha-conf" type="button">👁️</button>
         </div>
       </div>
+    </div>
     </div>
 
     <p id="perfil-erro" class="msg-err hidden" style="margin-top:8px"></p>
