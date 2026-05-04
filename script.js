@@ -916,7 +916,7 @@ function initModals() {
       document.getElementById('perfil-erro').classList.add('hidden');
       document.getElementById('perfil-ok').classList.add('hidden');
       const criado = perfil.created_at ? new Date(perfil.created_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' }) : '—';
-      document.getElementById('perfil-criado').value = criado;
+      document.getElementById('perfil-criado').textContent = criado;
       document.querySelectorAll('.emoji-opt').forEach(e => {
         e.classList.toggle('selected', e.textContent === emojiSelecionado);
       });
