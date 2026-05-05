@@ -928,9 +928,7 @@ function initModals() {
 
     document.getElementById('btn-toggle-senha').addEventListener('click', () => {
       const fields = document.getElementById('senha-fields');
-      const icon   = document.getElementById('toggle-senha-icon');
       fields.classList.toggle('hidden');
-      icon.textContent = fields.classList.contains('hidden') ? '▼' : '▲';
     });
 
     // Clique no avatar abre o input de arquivo
