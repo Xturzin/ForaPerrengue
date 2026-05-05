@@ -149,10 +149,10 @@ async getPrefs() {
     } catch {}
   },
   
-async getPerfil() {
+  async getPerfil() {
     try {
       if (!_supa || !_userId) return null;
-      const { data } = await _supa.from('users').select('nome, username, created_at, emoji').eq('id', _userId).single();
+      const { data } = await _supa.from('perfis').select('nome, username, created_at, email, avatar_url').eq('id', _userId).single();
       return data;
     } catch { return null; }
   },
@@ -160,7 +160,7 @@ async getPerfil() {
   async updatePerfil(fields) {
     try {
       if (!_supa || !_userId) return false;
-      const { error } = await _supa.from('users').update(fields).eq('id', _userId);
+      const { error } = await _supa.from('perfis').update(fields).eq('id', _userId);
       return !error;
     } catch { return false; }
   },
