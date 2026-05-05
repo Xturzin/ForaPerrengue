@@ -2404,9 +2404,10 @@ document.addEventListener('DOMContentLoaded', () => {
       errEl.textContent = 'Erro ao salvar. Tente novamente.';
       errEl.classList.remove('hidden');
     } else {
-      document.getElementById('modal-nova-senha').classList.add('hidden');
-      window.location.hash = '';
       toast('Senha alterada com sucesso! 🔑', 'success', 3500);
+      setTimeout(() => {
+        window.location.replace(window.location.pathname);
+      }, 2000);
     }
   });
 
