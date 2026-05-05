@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
 
@@ -140,12 +140,13 @@
         <div class="auth-form-sub">Entre na sua conta para continuar</div>
 
         <div class="form-group">
-          <label>Usuário</label>
+          <label>E-mail</label>
           <div class="input-icon-wrap">
-            <span class="input-icon">👤</span>
-            <input type="text" id="l-user" placeholder="seu usuário" autocomplete="username"/>
+            <span class="input-icon">📧</span>
+          <input type="email" id="l-user" placeholder="seu@email.com" autocomplete="email"/>
           </div>
         </div>
+
         <div class="form-group">
           <label>Senha</label>
           <div class="input-icon-wrap">
@@ -191,7 +192,14 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Login</label>
+          <label>E-mail</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">📧</span>
+            <input type="email" id="r-email" placeholder="seu@email.com" autocomplete="email"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nome de usuário</label>
           <div class="input-icon-wrap">
             <span class="input-icon">👤</span>
             <input type="text" id="r-user" placeholder="ex: arthur123"/>
@@ -201,7 +209,7 @@
           <label>Senha</label>
           <div class="input-icon-wrap">
             <span class="input-icon">🔒</span>
-            <input type="password" id="r-pass" placeholder="mín. 4 caracteres"/>
+            <input type="password" id="r-pass" placeholder="mín. 8 caracteres"/>
             <button class="btn-eye" data-t="r-pass" type="button">👁️</button>
           </div>
         </div>
@@ -231,40 +239,23 @@
     <button class="modal-close" id="btn-fp-cancel">✕</button>
     <div class="modal-hero">🔑</div>
     <h2 class="modal-title">Redefinir senha</h2>
-    <p class="modal-byline">Digite seu usuário e escolha uma nova senha.</p>
+    <p class="modal-byline">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
     <div class="modal-divider"></div>
 
     <div class="form-group" style="text-align:left;margin-top:14px">
-      <label>Usuário</label>
+      <label>E-mail</label>
       <div class="input-icon-wrap">
-        <span class="input-icon">👤</span>
-        <input type="text" id="fp-user" placeholder="seu usuário" autocomplete="username"/>
+        <span class="input-icon">📧</span>
+        <input type="email" id="fp-email" placeholder="seu@email.com" autocomplete="email"/>
       </div>
     </div>
 
-    <div class="form-group" style="text-align:left;margin-top:12px">
-      <label>Nova senha</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">🔒</span>
-        <input type="password" id="fp-pass" placeholder="••••••••"/>
-        <button class="btn-eye" data-t="fp-pass" type="button">👁️</button>
-      </div>
-    </div>
-
-    <div class="form-group" style="text-align:left;margin-top:12px">
-      <label>Confirmar nova senha</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">🔒</span>
-        <input type="password" id="fp-pass2" placeholder="••••••••"/>
-        <button class="btn-eye" data-t="fp-pass2" type="button">👁️</button>
-      </div>
-    </div>
-
-    <p id="fp-error" class="msg-err hidden" style="text-align:left">Usuário não encontrado.</p>
+    <p id="fp-error" class="msg-err hidden" style="text-align:left">E-mail não encontrado.</p>
+    <p id="fp-success" class="msg-ok hidden" style="text-align:left">E-mail enviado! Verifique sua caixa de entrada.</p>
 
     <div style="display:flex;gap:10px;margin-top:18px">
       <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
-      <button id="btn-fp-save" class="btn-primary" style="flex:2">Salvar</button>
+      <button id="btn-fp-save" class="btn-primary" style="flex:2">Enviar link</button>
     </div>
   </div>
 </div>

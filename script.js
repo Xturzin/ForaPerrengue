@@ -2,6 +2,15 @@
 
 let _supa = null;
 
+const _cache = {
+  gastos: null,
+  rendas: null,
+  parceladas: null,
+  futuras: null,
+  recorrentes: null,
+  invalidar() { this.gastos=null; this.rendas=null; this.parceladas=null; this.futuras=null; this.recorrentes=null; }
+};
+
 async function initSupabase() {
   try {
     const SUPABASE_URL = "https://wmyzhifyihcxuphkicwu.supabase.co";
@@ -9,14 +18,20 @@ async function initSupabase() {
 
     _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    console.log("✅ Supabase conectado");
+    const { data: { session } } = await _supa.auth.getSession();
+
+    if (session) {
+      _userId = session.user.id; 
+      console.log("✅ Sessão restaurada:", session.user.email);
+    } else {
+      console.log("ℹ️ Nenhuma sessão ativa");
+    }
 
   } catch (err) {
     console.error("❌ Erro Supabase:", err);
     _supa = null;
   }
 }
-
 const CAT_EMOJIS = {
   'Alimentação':'🍔','Transporte':'🚗','Lazer':'🎮',
   'Contas':'💡','Saúde':'🏥','Educação':'📚',
@@ -62,34 +77,8 @@ const _recDB       = r => ({ id:r.id, user_id:_userId, nome:r.nome, valor:r.valo
   frequencia:r.frequencia, proxima_data:r.proximaData, ultimo_gasto_id:r.ultimoGastoId||null });
 
 const DB = {
-  session:     () => { try{return JSON.parse(sessionStorage.getItem('fp7_session'));}catch{return null;} },
-  saveSession: v  => sessionStorage.setItem('fp7_session', JSON.stringify(v)),
-  clearSession:() => sessionStorage.removeItem('fp7_session'),
   theme:       () => 'auto',
   saveTheme:   v  => {},
-
-  async findUser(username, password) {
-    try {
-      if (!_supa) return null;
-
-      const { data, error } = await _supa
-        .from('users')
-        .select('*')
-        .eq('username', username)
-        .eq('password', password)
-        .single();
-
-      if (error || !data) return null;
-
-      _userId = data.id;
-
-      return { id: data.id, nome: data.nome, username: data.username };
-
-    } catch (err) {
-      console.error("Erro login:", err);
-      return null;
-    }
-  },
 
   async findUserByUsername(username) {
     try {
@@ -126,43 +115,6 @@ const DB = {
       return !!data;
 
     } catch {
-      return false;
-    }
-  },
-
-  async createUser(nome, username, password) {
-    try {
-      if (!_supa) return null;
-
-      const { data, error } = await _supa
-        .from('users')
-        .insert({ nome, username, password })
-        .select()
-        .single();
-
-      if (error || !data) {
-        console.error("Erro ao criar usuário:", error);
-        return null;
-      }
-
-      return { id: data.id, nome: data.nome, username: data.username };
-
-    } catch (err) {
-      console.error("Erro createUser:", err);
-      return null;
-    }
-  },
-
-  async updatePassword(username, newPassword) {
-    try {
-      if (!_supa) return false;
-      const { error } = await _supa
-        .from('users')
-        .update({ password: newPassword })
-        .eq('username', username);
-      return !error;
-    } catch (err) {
-      console.error('Erro updatePassword:', err);
       return false;
     }
   },
@@ -212,20 +164,18 @@ async getPerfil() {
       return !error;
     } catch { return false; }
   },
+
   async gastos() {
     try {
       if (!_supa) return [];
-
+      if (_cache.gastos) return _cache.gastos;
       const { data } = await _supa.from('gastos')
         .select('*')
         .eq('user_id', _userId)
         .order('ordem', { ascending:true });
-
-      return (data||[]).map(_gastoFromDB);
-
-    } catch {
-      return [];
-    }
+      _cache.gastos = (data||[]).map(_gastoFromDB);
+      return _cache.gastos;
+    } catch { return []; }
   },
 
   async uploadAvatar(file, userId) {
@@ -243,13 +193,10 @@ async getPerfil() {
   async saveGastos(list) {
     try {
       if (!_supa) return;
-
-      await _supa.from('gastos').delete().eq('user_id', _userId);
-
-      if (list.length) {
-        await _supa.from('gastos')
-          .insert(list.map((g,i) => ({ ..._gastoDB(g), ordem:i })));
-      }
+      _cache.invalidar();
+      await _supa.from('gastos')
+        .upsert(list.map((g,i) => ({ ..._gastoDB(g), user_id:_userId, ordem:i })),
+          { onConflict: 'id' });
     } catch (err) {
       console.error("Erro saveGastos:", err);
     }
@@ -258,29 +205,23 @@ async getPerfil() {
   async rendas() {
     try {
       if (!_supa) return [];
-
+      if (_cache.rendas) return _cache.rendas;
       const { data } = await _supa.from('rendas')
         .select('*')
         .eq('user_id', _userId)
         .order('ordem', { ascending:true });
-
-      return (data||[]).map(_rendaFromDB);
-
-    } catch {
-      return [];
-    }
+      _cache.rendas = (data||[]).map(_rendaFromDB);
+      return _cache.rendas;
+    } catch { return []; }
   },
 
   async saveRendas(list) {
     try {
       if (!_supa) return;
-
-      await _supa.from('rendas').delete().eq('user_id', _userId);
-
-      if (list.length) {
-        await _supa.from('rendas')
-          .insert(list.map((r,i) => ({ ..._rendaDB(r), ordem:i })));
-      }
+      _cache.invalidar();
+      await _supa.from('rendas')
+        .upsert(list.map((r,i) => ({ ..._rendaDB(r), user_id:_userId, ordem:i })),
+          { onConflict: 'id' });
     } catch (err) {
       console.error("Erro saveRendas:", err);
     }
@@ -289,29 +230,23 @@ async getPerfil() {
   async parceladas() {
     try {
       if (!_supa) return [];
-
+      if (_cache.parceladas) return _cache.parceladas;
       const { data } = await _supa.from('parceladas')
         .select('*')
         .eq('user_id', _userId)
         .order('ordem', { ascending:true });
-
-      return (data||[]).map(_parcFromDB);
-
-    } catch {
-      return [];
-    }
+      _cache.parceladas = (data||[]).map(_parcFromDB);
+      return _cache.parceladas;
+    } catch { return []; }
   },
 
   async saveParcelas(list) {
     try {
       if (!_supa) return;
-
-      await _supa.from('parceladas').delete().eq('user_id', _userId);
-
-      if (list.length) {
-        await _supa.from('parceladas')
-          .insert(list.map((p,i) => ({ ..._parcDB(p), ordem:i })));
-      }
+      _cache.invalidar();
+      await _supa.from('parceladas')
+        .upsert(list.map((p,i) => ({ ..._parcDB(p), user_id:_userId, ordem:i })),
+          { onConflict: 'id' });
     } catch (err) {
       console.error("Erro saveParcelas:", err);
     }
@@ -320,29 +255,23 @@ async getPerfil() {
   async futuras() {
     try {
       if (!_supa) return [];
-
+      if (_cache.futuras) return _cache.futuras;
       const { data } = await _supa.from('futuras')
         .select('*')
         .eq('user_id', _userId)
         .order('ordem', { ascending:true });
-
-      return (data||[]).map(_futFromDB);
-
-    } catch {
-      return [];
-    }
+      _cache.futuras = (data||[]).map(_futFromDB);
+      return _cache.futuras;
+    } catch { return []; }
   },
 
   async saveFuturas(list) {
     try {
       if (!_supa) return;
-
-      await _supa.from('futuras').delete().eq('user_id', _userId);
-
-      if (list.length) {
-        await _supa.from('futuras')
-          .insert(list.map((f,i) => ({ ..._futDB(f), ordem:i })));
-      }
+      _cache.invalidar();
+      await _supa.from('futuras')
+        .upsert(list.map((f,i) => ({ ..._futDB(f), user_id:_userId, ordem:i })),
+          { onConflict: 'id' });
     } catch (err) {
       console.error("Erro saveFuturas:", err);
     }
@@ -351,34 +280,89 @@ async getPerfil() {
   async recorrentes() {
     try {
       if (!_supa) return [];
-
+      if (_cache.recorrentes) return _cache.recorrentes;
       const { data } = await _supa.from('recorrentes')
         .select('*')
         .eq('user_id', _userId)
         .order('ordem', { ascending:true });
-
-      return (data||[]).map(_recFromDB);
-
-    } catch {
-      return [];
-    }
+      _cache.recorrentes = (data||[]).map(_recFromDB);
+      return _cache.recorrentes;
+    } catch { return []; }
   },
 
   async saveRecorr(list) {
     try {
       if (!_supa) return;
-
-      await _supa.from('recorrentes').delete().eq('user_id', _userId);
-
-      if (list.length) {
-        await _supa.from('recorrentes')
-          .insert(list.map((r,i) => ({ ..._recDB(r), ordem:i })));
-      }
+      _cache.invalidar();
+      await _supa.from('recorrentes')
+        .upsert(list.map((r,i) => ({ ..._recDB(r), user_id:_userId, ordem:i })),
+          { onConflict: 'id' });
     } catch (err) {
       console.error("Erro saveRecorr:", err);
     }
   },
 };
+
+async function login(email, password) {
+  try {
+    if (!_supa) return null;
+
+    const { data, error } = await _supa.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error || !data.user) return null;
+
+    _userId = data.user.id;
+
+    const { data: perfil } = await _supa
+      .from('perfis')
+      .select('nome, username')
+      .eq('id', _userId)
+      .single();
+
+    if (!perfil) return null;
+
+    return { id: _userId, nome: perfil.nome, username: perfil.username };
+
+  } catch (err) {
+    console.error("Erro login:", err);
+    return null;
+  }
+}
+
+async function cadastrar(nome, username, email, password) {
+  try {
+    if (!_supa) return null;
+
+    // Cria o usuário no Supabase Auth (senha fica criptografada)
+    const { data, error } = await _supa.auth.signUp({ email, password });
+
+    if (error || !data.user) {
+      console.error("Erro signUp:", error);
+      return null;
+    }
+
+    _userId = data.user.id;
+
+    // Salva nome e username na tabela perfis
+    const { error: perfilError } = await _supa
+      .from('perfis')
+      .insert({ id: _userId, nome, username, email });
+
+    if (perfilError) {
+      console.error("Erro ao criar perfil:", perfilError);
+      return null;
+    }
+
+    return { id: _userId, nome, username };
+
+  } catch (err) {
+    console.error("Erro cadastrar:", err);
+    return null;
+  }
+}
 
 const fmt = {
   brl:      v  => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),
@@ -627,10 +611,9 @@ function initAuth() {
   
   // Esqueci a senha
   document.getElementById('btn-forgot').addEventListener('click', () => {
-    document.getElementById('fp-user').value = document.getElementById('l-user').value;
-    document.getElementById('fp-pass').value  = '';
-    document.getElementById('fp-pass2').value = '';
+    document.getElementById('fp-email').value = document.getElementById('l-user').value;
     document.getElementById('fp-error').classList.add('hidden');
+    document.getElementById('fp-success').classList.add('hidden');
     document.getElementById('modal-forgot').classList.remove('hidden');
   });
 
@@ -641,93 +624,76 @@ function initAuth() {
   });
 
   document.getElementById('btn-fp-save').addEventListener('click', async () => {
-    const username = document.getElementById('fp-user').value.trim();
-    const pass1    = document.getElementById('fp-pass').value;
-    const pass2    = document.getElementById('fp-pass2').value;
-    const errEl    = document.getElementById('fp-error');
-    const btn      = document.getElementById('btn-fp-save');
+    const email = document.getElementById('fp-email').value.trim();
+    const errEl = document.getElementById('fp-error');
+    const sucEl = document.getElementById('fp-success');
+    const btn   = document.getElementById('btn-fp-save');
 
     errEl.classList.add('hidden');
-    if (!username || !pass1) { errEl.textContent='Preencha todos os campos.'; errEl.classList.remove('hidden'); return; }
-    if (pass1 !== pass2)     { errEl.textContent='As senhas não coincidem.';   errEl.classList.remove('hidden'); return; }
-    if (pass1.length < 4)    { errEl.textContent='Senha muito curta (mín. 4 caracteres).'; errEl.classList.remove('hidden'); return; }
+    sucEl.classList.add('hidden');
 
-    btn.disabled = true; btn.textContent = 'Verificando...';
-
-    // Busca o usuário pelo username para pegar a senha atual
-    const { data: userData } = await _supa.from('users').select('password').eq('username', username).single();
-
-    if (!userData) {
-      errEl.textContent = 'Usuário não encontrado.';
+    if (!email.includes('@')) {
+      errEl.textContent = 'Digite um e-mail válido.';
       errEl.classList.remove('hidden');
-      btn.disabled = false; btn.textContent = 'Salvar';
       return;
     }
 
-    if (userData.password === pass1) {
-      errEl.textContent = 'Essa senha já está em uso. Escolha uma diferente.';
+    btn.disabled = true; btn.textContent = 'Enviando...';
+
+    const { error } = await _supa.auth.resetPasswordForEmail(email);
+
+    btn.disabled = false; btn.textContent = 'Enviar link';
+
+    if (error) {
+      errEl.textContent = 'Erro ao enviar. Tente novamente.';
       errEl.classList.remove('hidden');
-      btn.disabled = false; btn.textContent = 'Salvar';
-      return;
-    }
-
-    const ok = await DB.updatePassword(username, pass1);
-    btn.disabled = false; btn.textContent = 'Salvar';
-
-    if (ok) {
-      document.getElementById('modal-forgot').classList.add('hidden');
-      toast('Senha alterada com sucesso! 🔑', 'success', 3500);
     } else {
-      errEl.textContent = 'Erro ao salvar. Tente novamente.';
-      errEl.classList.remove('hidden');
+      sucEl.classList.remove('hidden');
     }
   });
 
   document.getElementById('btn-login').addEventListener('click', async () => {
     const u   = document.getElementById('l-user').value.trim();
     const p   = document.getElementById('l-pass').value;
-    const rem = document.getElementById('l-remember').checked;
     const err = document.getElementById('l-error');
     const btn = document.getElementById('btn-login');
     btn.disabled = true;
-    const found = await DB.findUser(u, p);
+    const found = await login(u, p);
     btn.disabled = false;
     if (!found) { err.classList.remove('hidden'); document.getElementById('l-pass').value=''; return; }
     err.classList.add('hidden');
-    DB.saveSession({ username:u, nome:found.nome, remember:rem });
     const prefsLogin = await DB.getPrefs();
     if (titleEl) titleEl.textContent = prefsLogin.jaEntrou ? 'Bem-vindo de volta 👋' : 'Bem-vindo! 👋';
     await openApp(found, !prefsLogin.jaEntrou);
   });
-
+  
   document.getElementById('btn-register').addEventListener('click', async () => {
     const nome  = document.getElementById('r-nome').value.trim();
     const user  = document.getElementById('r-user').value.trim();
+    const email = document.getElementById('r-email').value.trim();
     const pass  = document.getElementById('r-pass').value;
     const pass2 = document.getElementById('r-pass2').value;
     const err   = document.getElementById('r-error');
     const btn   = document.getElementById('btn-register');
     err.classList.add('hidden');
-    if (nome.length<2)   { err.textContent='Nome muito curto.';           err.classList.remove('hidden'); return; }
-    if (user.length<3)   { err.textContent='Login mín. 3 caracteres.';    err.classList.remove('hidden'); return; }
-    if (pass.length<4)   { err.textContent='Senha mín. 4 caracteres.';    err.classList.remove('hidden'); return; }
-    if (pass!==pass2)    { err.textContent='Senhas não coincidem.';        err.classList.remove('hidden'); return; }
+    if (nome.length<2)    { err.textContent='Nome muito curto.';           err.classList.remove('hidden'); return; }
+    if (user.length<3)    { err.textContent='Usuário mín. 3 caracteres.';  err.classList.remove('hidden'); return; }
+    if (!email.includes('@')){ err.textContent='E-mail inválido.';         err.classList.remove('hidden'); return; }
+    if (pass.length<8)    { err.textContent='Senha mín. 8 caracteres.';    err.classList.remove('hidden'); return; }
+    if (pass!==pass2)     { err.textContent='Senhas não coincidem.';       err.classList.remove('hidden'); return; }
     btn.disabled = true;
-    const exists = await DB.usernameExists(user);
-    if (exists) { err.textContent='Login já existe.'; err.classList.remove('hidden'); btn.disabled=false; return; }
-    const newUser = await DB.createUser(nome, user, pass);
+    const newUser = await cadastrar(nome, user, email, pass);
     btn.disabled = false;
     if (!newUser) { err.textContent='Erro ao criar conta. Tente novamente.'; err.classList.remove('hidden'); return; }
     document.querySelector('.auth-tab[data-tab="login"]').click();
-    document.getElementById('l-user').value = user;
-    ['r-nome','r-user','r-pass','r-pass2'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('l-user').value = email;
+    ['r-nome','r-user','r-email','r-pass','r-pass2'].forEach(id=>document.getElementById(id).value='');
     toast('Conta criada! Faça login 🎉','success',4000);
   });
 
-  document.getElementById('btn-logout').addEventListener('click', () => {
+  document.getElementById('btn-logout').addEventListener('click', async () => {
     if (!confirm('Deseja sair?')) return;
-    const sess = DB.session();
-    if (!sess?.remember) DB.clearSession();
+    await _supa.auth.signOut();
     currentUser=null; _userId=null;
     clearInterval(clockTimer);
     document.getElementById('app').classList.add('hidden');
@@ -1613,14 +1579,21 @@ async function renderNotificacoes() {
     countLbl.textContent = '';
     list.innerHTML = '<p class="notif-empty">Nenhum vencimento próximo. ✅</p>';
   }
+}
 
-  // Toggle dropdown
+function initNotificacoes() {
   const btn = document.getElementById('btn-notif');
   const dd  = document.getElementById('notif-dropdown');
-  btn.onclick = (e) => { e.stopPropagation(); dd.classList.toggle('hidden'); };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dd.classList.toggle('hidden');
+  });
+
   document.addEventListener('click', (e) => {
-    if (!document.getElementById('notif-wrap').contains(e.target)) dd.classList.add('hidden');
-  }, { once: false });
+    const wrap = document.getElementById('notif-wrap');
+    if (wrap && !wrap.contains(e.target)) dd.classList.add('hidden');
+  });
 }
 
 function initHistorico() {
@@ -2416,6 +2389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initNav();
         initModalCatDetalhe();
         initModals();
+        initNotificacoes();
         initMiniTabs();
         initGastos();
         initRendas();
@@ -2430,28 +2404,29 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        const sess = DB.session();
+        const { data: { session } } = await _supa.auth.getSession();
 
-        if (sess) {
+        if (session) {
           try {
 
-            const u = await Promise.race([
-              DB.findUserByUsername(sess.username),
-              new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Timeout usuário")), 4000)
-              )
-            ]);
+            _userId = session.user.id;
 
-            if (u) {
-              await openApp(u);
+            const { data: perfil } = await _supa
+              .from('perfis')
+              .select('nome, username')
+              .eq('id', _userId)
+              .single();
+
+            if (perfil) {
+              await openApp({ id: _userId, nome: perfil.nome, username: perfil.username });
             } else {
-              DB.clearSession();
+              await _supa.auth.signOut();
               showLoginScreen();
             }
 
           } catch (e) {
             console.error('Erro ao restaurar sessão:', e);
-            DB.clearSession();
+            await _supa.auth.signOut();
             showLoginScreen();
           }
 
