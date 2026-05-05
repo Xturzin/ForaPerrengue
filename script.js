@@ -2378,6 +2378,38 @@ async function renderAll() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+// Detecta link de reset de senha vindo do e-mail
+  const hash = window.location.hash;
+  if (hash.includes('type=recovery')) {
+    document.getElementById('modal-nova-senha').classList.remove('hidden');
+  }
+
+  document.getElementById('btn-ns-save').addEventListener('click', async () => {
+    const pass  = document.getElementById('ns-pass').value;
+    const pass2 = document.getElementById('ns-pass2').value;
+    const errEl = document.getElementById('ns-error');
+    const btn   = document.getElementById('btn-ns-save');
+
+    errEl.classList.add('hidden');
+    if (pass.length < 8)  { errEl.textContent = 'Senha mín. 8 caracteres.'; errEl.classList.remove('hidden'); return; }
+    if (pass !== pass2)   { errEl.textContent = 'Senhas não coincidem.';     errEl.classList.remove('hidden'); return; }
+
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    const { error } = await _supa.auth.updateUser({ password: pass });
+
+    btn.disabled = false; btn.textContent = 'Salvar nova senha';
+
+    if (error) {
+      errEl.textContent = 'Erro ao salvar. Tente novamente.';
+      errEl.classList.remove('hidden');
+    } else {
+      document.getElementById('modal-nova-senha').classList.add('hidden');
+      window.location.hash = '';
+      toast('Senha alterada com sucesso! 🔑', 'success', 3500);
+    }
+  });
+
   initSupabase()
     .catch(err => {
       console.error("Erro Supabase:", err);
