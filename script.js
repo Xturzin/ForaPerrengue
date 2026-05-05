@@ -303,26 +303,28 @@ async getPerfil() {
   },
 };
 
-async function login(email, password) {
+async function login(username, password) {
   try {
     if (!_supa) return null;
 
+    // Busca o e-mail pelo username na tabela perfis
+    const { data: perfil, error: perfilError } = await _supa
+      .from('perfis')
+      .select('email, nome, username')
+      .eq('username', username)
+      .single();
+
+    if (perfilError || !perfil) return null;
+
+    // Faz o login com o e-mail encontrado
     const { data, error } = await _supa.auth.signInWithPassword({
-      email,
+      email: perfil.email,
       password
     });
 
     if (error || !data.user) return null;
 
     _userId = data.user.id;
-
-    const { data: perfil } = await _supa
-      .from('perfis')
-      .select('nome, username')
-      .eq('id', _userId)
-      .single();
-
-    if (!perfil) return null;
 
     return { id: _userId, nome: perfil.nome, username: perfil.username };
 
@@ -686,7 +688,7 @@ function initAuth() {
     btn.disabled = false;
     if (!newUser) { err.textContent='Erro ao criar conta. Tente novamente.'; err.classList.remove('hidden'); return; }
     document.querySelector('.auth-tab[data-tab="login"]').click();
-    document.getElementById('l-user').value = email;
+    document.getElementById('l-user').value = user;
     ['r-nome','r-user','r-email','r-pass','r-pass2'].forEach(id=>document.getElementById(id).value='');
     toast('Conta criada! Faça login 🎉','success',4000);
   });
