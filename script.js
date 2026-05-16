@@ -13,8 +13,9 @@ const _cache = {
 
 async function initSupabase() {
   try {
-    const SUPABASE_URL = "https://wmyzhifyihcxuphkicwu.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_Jsofa9dlC_Pl9ZkdgvPGcA_7fAlfpTB";
+    const cfgRes = await fetch('/api/config');
+    if (!cfgRes.ok) throw new Error('Falha ao carregar configuração');
+    const { url: SUPABASE_URL, key: SUPABASE_KEY } = await cfgRes.json();
 
     _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
