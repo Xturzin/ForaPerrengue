@@ -54,31 +54,35 @@ let clockTimer = null;
 // Modo visitante — sem banco de dados
 let _modoVisitante = false;
 
+const _hoje = () => new Date().toISOString().slice(0,10);
+const _mesAtual = () => new Date().toISOString().slice(0,7);
+const _mesOffset = (n) => { const d = new Date(); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); };
+
 const DEMO_DATA = {
   gastos: [
-    { id:'d1', nome:'iFood',        valor:45.90,  categoria:'Alimentação', subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
-    { id:'d2', nome:'Uber',         valor:22.50,  categoria:'Transporte',  subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
-    { id:'d3', nome:'Netflix',      valor:45.90,  categoria:'Lazer',       subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
-    { id:'d4', nome:'Conta de Luz', valor:180.00, categoria:'Contas',      subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
-    { id:'d5', nome:'Farmácia',     valor:67.30,  categoria:'Saúde',       subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
-    { id:'d6', nome:'Curso Online', valor:97.00,  categoria:'Educação',    subcategoria:'', data: fmt?.hoje() || new Date().toISOString().slice(0,10) },
+    { id:'d1', nome:'iFood',        valor:45.90,  categoria:'Alimentação', subcategoria:'', data: _hoje() },
+    { id:'d2', nome:'Uber',         valor:22.50,  categoria:'Transporte',  subcategoria:'', data: _hoje() },
+    { id:'d3', nome:'Netflix',      valor:45.90,  categoria:'Lazer',       subcategoria:'', data: _hoje() },
+    { id:'d4', nome:'Conta de Luz', valor:180.00, categoria:'Contas',      subcategoria:'', data: _hoje() },
+    { id:'d5', nome:'Farmácia',     valor:67.30,  categoria:'Saúde',       subcategoria:'', data: _hoje() },
+    { id:'d6', nome:'Curso Online', valor:97.00,  categoria:'Educação',    subcategoria:'', data: _hoje() },
   ],
   rendas: [
     { id:'r1', tipo:'regular', nome:'Salário',  valor:3500.00, diaMes:5,  mesInicio: new Date().toISOString().slice(0,7), tipoTermino:'indeterminado', mesFim:null, data:null },
     { id:'r2', tipo:'pontual', nome:'Freela',   valor:800.00,  data: new Date().toISOString().slice(0,10), diaMes:null, mesInicio:null, tipoTermino:null, mesFim:null },
   ],
   parceladas: [
-    { id:'p1', nome:'Notebook',  valorTotal:3600.00, valorParcela:300.00, numParcelas:12, inicio: new Date().toISOString().slice(0,7), tipo:'total', diaVenc:10, parcelas:[false,false,false,false,false,false,false,false,false,false,false,false] },
-    { id:'p2', nome:'Headphone', valorTotal:600.00,  valorParcela:100.00, numParcelas:6,  inicio: new Date().toISOString().slice(0,7), tipo:'total', diaVenc:15, parcelas:[false,false,false,false,false,false] },
+    { id:'p1', nome:'Notebook',  valorTotal:3600.00, valorParcela:300.00, numParcelas:12, inicio: _mesAtual(), tipo:'total', diaVenc:10, parcelas:[false,false,false,false,false,false,false,false,false,false,false,false] },
+    { id:'p2', nome:'Headphone', valorTotal:600.00,  valorParcela:100.00, numParcelas:6,  inicio: _mesAtual(), tipo:'total', diaVenc:15, parcelas:[false,false,false,false,false,false] },
   ],
   futuras: [
-    { id:'f1', nome:'Viagem de férias', valorEstimado:2000.00, data: new Date(new Date().setMonth(new Date().getMonth()+2)).toISOString().slice(0,10), obs:'Guardar todo mês' },
-    { id:'f2', nome:'Tênis novo',       valorEstimado:450.00,  data: new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString().slice(0,10), obs:'' },
+    { id:'f1', nome:'Viagem de férias', valorEstimado:2000.00, data: _mesOffset(2), obs:'Guardar todo mês' },
+    { id:'f2', nome:'Tênis novo',       valorEstimado:450.00,  data: _mesOffset(1), obs:'' },
   ],
   recorrentes: [
-    { id:'rc1', nome:'Spotify',  valor:21.90, frequencia:'mensal',    proximaData: new Date().toISOString().slice(0,10), ultimoGastoId:null },
-    { id:'rc2', nome:'Academia', valor:99.90, frequencia:'mensal',    proximaData: new Date().toISOString().slice(0,10), ultimoGastoId:null },
-    { id:'rc3', nome:'Água',     valor:55.00, frequencia:'quinzenal', proximaData: new Date().toISOString().slice(0,10), ultimoGastoId:null },
+    { id:'rc1', nome:'Spotify',  valor:21.90, frequencia:'mensal',    proximaData: _hoje(), ultimoGastoId:null },
+    { id:'rc2', nome:'Academia', valor:99.90, frequencia:'mensal',    proximaData: _hoje(), ultimoGastoId:null },
+    { id:'rc3', nome:'Água',     valor:55.00, frequencia:'quinzenal', proximaData: _hoje(), ultimoGastoId:null },
   ],
 };
 
