@@ -68,8 +68,8 @@ const DEMO_DATA = {
     { id:'d6', nome:'Curso Online', valor:97.00,  categoria:'Educação',    subcategoria:'', data: _hoje() },
   ],
   rendas: [
-    { id:'r1', tipo:'regular', nome:'Salário',  valor:3500.00, diaMes:5,  mesInicio: new Date().toISOString().slice(0,7), tipoTermino:'indeterminado', mesFim:null, data:null },
-    { id:'r2', tipo:'pontual', nome:'Freela',   valor:800.00,  data: new Date().toISOString().slice(0,10), diaMes:null, mesInicio:null, tipoTermino:null, mesFim:null },
+    { id:'r1', tipo:'regular', nome:'Salário',  valor:3500.00, diaMes:5,  mesInicio: _mesAtual(), tipoTermino:'indeterminado', mesFim:null, data:null },
+    { id:'r2', tipo:'pontual', nome:'Freela',   valor:800.00,  data: _hoje(), diaMes:null, mesInicio:null, tipoTermino:null, mesFim:null },
   ],
   parceladas: [
     { id:'p1', nome:'Notebook',  valorTotal:3600.00, valorParcela:300.00, numParcelas:12, inicio: _mesAtual(), tipo:'total', diaVenc:10, parcelas:[false,false,false,false,false,false,false,false,false,false,false,false] },
