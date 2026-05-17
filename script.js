@@ -198,6 +198,7 @@ async getPrefs() {
 
   async gastos() {
     try {
+      if (_modoVisitante) return DEMO_DATA.gastos;
       if (!_supa) return [];
       if (_cache.gastos) return _cache.gastos;
       const { data } = await _supa.from('gastos')
@@ -244,6 +245,7 @@ async getPrefs() {
 
   async rendas() {
     try {
+      if (_modoVisitante) return DEMO_DATA.rendas;
       if (!_supa) return [];
       if (_cache.rendas) return _cache.rendas;
       const { data } = await _supa.from('rendas')
@@ -278,6 +280,7 @@ async getPrefs() {
 
   async parceladas() {
     try {
+      if (_modoVisitante) return DEMO_DATA.parceladas;
       if (!_supa) return [];
       if (_cache.parceladas) return _cache.parceladas;
       const { data } = await _supa.from('parceladas')
@@ -312,6 +315,7 @@ async getPrefs() {
 
   async futuras() {
     try {
+      if (_modoVisitante) return DEMO_DATA.futuras;
       if (!_supa) return [];
       if (_cache.futuras) return _cache.futuras;
       const { data } = await _supa.from('futuras')
@@ -346,6 +350,7 @@ async getPrefs() {
 
   async recorrentes() {
     try {
+      if (_modoVisitante) return DEMO_DATA.recorrentes;
       if (!_supa) return [];
       if (_cache.recorrentes) return _cache.recorrentes;
       const { data } = await _supa.from('recorrentes')
