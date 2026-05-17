@@ -513,18 +513,19 @@
           </div>
         </div>
 
-        <!-- Saídas do mês -->
+        <!-- Grafíco -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
-              <span class="db-title-icon">📤</span>
-              <h3 class="db-title">Saídas do Mês</h3>
+              <span class="db-title-icon">📊</span>
+              <h3 class="db-title">Gastos por Categoria</h3>
             </div>
-            <button class="db-btn" data-view="recorrentes" title="Ir para Recorrentes">＋</button>
           </div>
-          <div id="list-saidas-futuras" class="db-list">
-            <p class="empty-msg">Nenhuma saída este mês.</p>
+          <div class="chart-wrap">
+            <canvas id="pie-chart"></canvas>
           </div>
+          <div id="cat-legend" class="cat-legend"></div>
+          <p id="chart-empty" class="empty-msg" style="display:none">Nenhum gasto ainda 🙂</p>
         </div>
 
         <!-- Parcelados -->
@@ -541,19 +542,18 @@
           </div>
         </div>
 
-        <!-- Grafíco -->
+        <!-- Saídas do mês -->
         <div class="dash-box">
           <div class="db-header">
             <div class="db-title-wrap">
-              <span class="db-title-icon">📊</span>
-              <h3 class="db-title">Gastos por Categoria</h3>
+              <span class="db-title-icon">📤</span>
+              <h3 class="db-title">Saídas do Mês</h3>
             </div>
+            <button class="db-btn" data-view="recorrentes" title="Ir para Recorrentes">＋</button>
           </div>
-          <div class="chart-wrap">
-            <canvas id="pie-chart"></canvas>
+          <div id="list-saidas-futuras" class="db-list">
+            <p class="empty-msg">Nenhuma saída este mês.</p>
           </div>
-          <div id="cat-legend" class="cat-legend"></div>
-          <p id="chart-empty" class="empty-msg" style="display:none">Nenhum gasto ainda 🙂</p>
         </div>
       </div>
 
