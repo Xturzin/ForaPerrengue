@@ -769,7 +769,21 @@ function initAuth() {
     toast('Conta criada! Faça login 🎉','success',4000);
   });
 
+  document.getElementById('btn-visitante').addEventListener('click', async () => {
+    _modoVisitante = true;
+    await openApp({ nome: 'Visitante', username: 'visitante' }, false);
+  });
+
   document.getElementById('btn-logout').addEventListener('click', async () => {
+    if (_modoVisitante) {
+      _modoVisitante = false;
+      currentUser = null;
+      _userId = null;
+      clearInterval(clockTimer);
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      return;
+    }
     if (!confirm('Deseja sair?')) return;
     await _supa.auth.signOut();
     currentUser=null; _userId=null;
