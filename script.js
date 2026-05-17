@@ -224,6 +224,7 @@ async getPrefs() {
 
   async saveGastos(list) {
     try {
+      if (_modoVisitante) { toast('Crie uma conta para salvar dados 😊', 'info', 3000); return; }
       if (!_supa) return;
       _cache.invalidar();
       const ids = list.map(g => g.id);
@@ -259,6 +260,7 @@ async getPrefs() {
 
   async saveRendas(list) {
     try {
+      if (_modoVisitante) { toast('Crie uma conta para salvar dados 😊', 'info', 3000); return; }
       if (!_supa) return;
       _cache.invalidar();
       const ids = list.map(r => r.id);
@@ -292,8 +294,9 @@ async getPrefs() {
     } catch { return []; }
   },
 
-  async saveParcelas(list) {
+  async saveParceladas(list) {
     try {
+      if (_modoVisitante) { toast('Crie uma conta para salvar dados 😊', 'info', 3000); return; }
       if (!_supa) return;
       _cache.invalidar();
       const ids = list.map(p => p.id);
@@ -329,6 +332,7 @@ async getPrefs() {
 
   async saveFuturas(list) {
     try {
+      if (_modoVisitante) { toast('Crie uma conta para salvar dados 😊', 'info', 3000); return; }
       if (!_supa) return;
       _cache.invalidar();
       const ids = list.map(f => f.id);
@@ -362,8 +366,9 @@ async getPrefs() {
     } catch { return []; }
   },
 
-  async saveRecorr(list) {
+  async saveRecorrentes(list) {
     try {
+      if (_modoVisitante) { toast('Crie uma conta para salvar dados 😊', 'info', 3000); return; }
       if (!_supa) return;
       _cache.invalidar();
       const ids = list.map(r => r.id);
