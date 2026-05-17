@@ -194,10 +194,18 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      const { error } = await _supa.from('gastos')
-        .upsert(list.map((g,i) => ({ ..._gastoDB(g), user_id:_userId, ordem:i })),
-          { onConflict: 'id' });
-      if (error) console.error("❌ Erro saveGastos:", error);
+      const ids = list.map(g => g.id);
+      if (ids.length > 0) {
+        await _supa.from('gastos').delete().eq('user_id', _userId).not('id', 'in', `(${ids.join(',')})`);
+      } else {
+        await _supa.from('gastos').delete().eq('user_id', _userId);
+      }
+      if (list.length > 0) {
+        const { error } = await _supa.from('gastos')
+          .upsert(list.map((g,i) => ({ ..._gastoDB(g), user_id:_userId, ordem:i })),
+            { onConflict: 'id' });
+        if (error) console.error("❌ Erro saveGastos:", error);
+      }
     } catch (err) {
       console.error("Erro saveGastos:", err);
     }
@@ -220,9 +228,18 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      await _supa.from('rendas')
-        .upsert(list.map((r,i) => ({ ..._rendaDB(r), user_id:_userId, ordem:i })),
-          { onConflict: 'id' });
+      const ids = list.map(r => r.id);
+      if (ids.length > 0) {
+        await _supa.from('rendas').delete().eq('user_id', _userId).not('id', 'in', `(${ids.join(',')})`);
+      } else {
+        await _supa.from('rendas').delete().eq('user_id', _userId);
+      }
+      if (list.length > 0) {
+        const { error } = await _supa.from('rendas')
+          .upsert(list.map((r,i) => ({ ..._rendaDB(r), user_id:_userId, ordem:i })),
+            { onConflict: 'id' });
+        if (error) console.error("❌ Erro saveRendas:", error);
+      }
     } catch (err) {
       console.error("Erro saveRendas:", err);
     }
@@ -245,9 +262,18 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      await _supa.from('parceladas')
-        .upsert(list.map((p,i) => ({ ..._parcDB(p), user_id:_userId, ordem:i })),
-          { onConflict: 'id' });
+      const ids = list.map(p => p.id);
+      if (ids.length > 0) {
+        await _supa.from('parceladas').delete().eq('user_id', _userId).not('id', 'in', `(${ids.join(',')})`);
+      } else {
+        await _supa.from('parceladas').delete().eq('user_id', _userId);
+      }
+      if (list.length > 0) {
+        const { error } = await _supa.from('parceladas')
+          .upsert(list.map((p,i) => ({ ..._parcDB(p), user_id:_userId, ordem:i })),
+            { onConflict: 'id' });
+        if (error) console.error("❌ Erro saveParcelas:", error);
+      }
     } catch (err) {
       console.error("Erro saveParcelas:", err);
     }
@@ -270,9 +296,18 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      await _supa.from('futuras')
-        .upsert(list.map((f,i) => ({ ..._futDB(f), user_id:_userId, ordem:i })),
-          { onConflict: 'id' });
+      const ids = list.map(f => f.id);
+      if (ids.length > 0) {
+        await _supa.from('futuras').delete().eq('user_id', _userId).not('id', 'in', `(${ids.join(',')})`);
+      } else {
+        await _supa.from('futuras').delete().eq('user_id', _userId);
+      }
+      if (list.length > 0) {
+        const { error } = await _supa.from('futuras')
+          .upsert(list.map((f,i) => ({ ..._futDB(f), user_id:_userId, ordem:i })),
+            { onConflict: 'id' });
+        if (error) console.error("❌ Erro saveFuturas:", error);
+      }
     } catch (err) {
       console.error("Erro saveFuturas:", err);
     }
@@ -295,9 +330,18 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      await _supa.from('recorrentes')
-        .upsert(list.map((r,i) => ({ ..._recDB(r), user_id:_userId, ordem:i })),
-          { onConflict: 'id' });
+      const ids = list.map(r => r.id);
+      if (ids.length > 0) {
+        await _supa.from('recorrentes').delete().eq('user_id', _userId).not('id', 'in', `(${ids.join(',')})`);
+      } else {
+        await _supa.from('recorrentes').delete().eq('user_id', _userId);
+      }
+      if (list.length > 0) {
+        const { error } = await _supa.from('recorrentes')
+          .upsert(list.map((r,i) => ({ ..._recDB(r), user_id:_userId, ordem:i })),
+            { onConflict: 'id' });
+        if (error) console.error("❌ Erro saveRecorr:", error);
+      }
     } catch (err) {
       console.error("Erro saveRecorr:", err);
     }
