@@ -782,6 +782,7 @@ function initAuth() {
   document.getElementById('btn-visitante').addEventListener('click', async () => {
     _modoVisitante = true;
     await openApp({ nome: 'Visitante', username: 'visitante' }, false);
+    document.getElementById('visitante-banner').style.display = 'block';
   });
 
   document.getElementById('btn-logout').addEventListener('click', async () => {
@@ -790,6 +791,7 @@ function initAuth() {
       currentUser = null;
       _userId = null;
       clearInterval(clockTimer);
+      document.getElementById('visitante-banner').style.display = 'none';
       document.getElementById('app').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
       return;
