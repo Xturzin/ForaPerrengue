@@ -1884,7 +1884,7 @@ async function renderDashboard() {
   proxEl.style.color = s.proximoMes<0?'var(--red)':'';
 
   renderBoxEntradasMes(s, rendas);
-  renderBoxCategoriasMes(s.mesAtu, gastos);
+  renderBoxSaidasMes(s.mesAtu, rec, parc, futuras);
   renderBoxParcelados(parc);
   renderPieChart(gastos);
   const compMeses = document.getElementById('comp-meses');
@@ -1922,37 +1922,50 @@ function renderBoxEntradasMes(s, rendas) {
   });
 }
 
-function renderBoxCategoriasMes(mesAtu, gastos) {
-  const box = document.getElementById('list-saidas-futuras');
+function renderBoxSaidasMes(mesAtu, rec, parc, futuras) {
+  const box  = document.getElementById('list-saidas-futuras');
   box.innerHTML = '';
+  const seen = new Set(), itens = [];
 
-  const doMes = gastos.filter(g => g.data >= mesAtu+'-01' && g.data <= mesAtu+'-31');
-
-  if (doMes.length === 0) { box.innerHTML = '<p class="empty-msg">Nenhum gasto este mês.</p>'; return; }
-
-  const porCat = {};
-  doMes.forEach(g => {
-    const cat = g.categoria || 'Outros';
-    if (!porCat[cat]) porCat[cat] = { total: 0, count: 0 };
-    porCat[cat].total += g.valor;
-    porCat[cat].count++;
+  rec.forEach(r=>{
+    const key=`rec_${r.id}`;
+    if (r.proximaData.startsWith(mesAtu)&&!seen.has(key)) {
+      seen.add(key);
+      itens.push({icon:'🔄',nome:r.nome,data:r.proximaData,valor:r.valor});
+    }
+  });
+  parc.forEach(p=>{
+    const parMes = p.parcelas.find(x=>x.mesAno===mesAtu&&!x.pago);
+    if (parMes) {
+      const key=`parc_${p.id}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        const diaF = parMes.diaVenc||1;
+        itens.push({icon:'💳',nome:`${p.nome} (${parMes.num}/${p.numParcelas})`,data:mesAtu+'-'+String(diaF).padStart(2,'0'),valor:parMes.valorParcela});
+      }
+    }
+  });
+  futuras.forEach(f=>{
+    const key=`fut_${f.id}`;
+    if (f.data.startsWith(mesAtu)&&!seen.has(key)) {
+      seen.add(key);
+      itens.push({icon:'🛍️',nome:f.nome,data:f.data,valor:f.valorEstimado});
+    }
   });
 
-  Object.entries(porCat)
-    .sort((a, b) => b[1].total - a[1].total)
-    .forEach(([cat, info]) => {
-      const icon = CAT_EMOJIS[cat] || '📦';
-      const row = document.createElement('div'); row.className = 'item-row';
-      row.innerHTML = `
-        <div class="item-icon">${icon}</div>
-        <div class="item-body">
-          <div class="item-name">${fmt.esc(cat)}</div>
-          <div class="item-meta">${info.count} gasto${info.count > 1 ? 's' : ''}</div>
-        </div>
-        <div class="item-val neg">− ${fmt.brl(info.total)}</div>
-      `;
-      box.appendChild(row);
-    });
+  if (itens.length===0) { box.innerHTML='<p class="empty-msg">Nenhuma saída este mês.</p>'; return; }
+  itens.sort((a,b)=>a.data.localeCompare(b.data)).forEach(item=>{
+    const row=document.createElement('div'); row.className='item-row';
+    row.innerHTML=`
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-body">
+        <div class="item-name">${fmt.esc(item.nome)}</div>
+        <div class="item-meta">${fmt.date(item.data)}</div>
+      </div>
+      <div class="item-val neg">− ${fmt.brl(item.valor)}</div>
+    `;
+    box.appendChild(row);
+  });
 }
 
 function renderBoxParcelados(lista) {
