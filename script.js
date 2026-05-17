@@ -194,9 +194,10 @@ async getPrefs() {
     try {
       if (!_supa) return;
       _cache.invalidar();
-      await _supa.from('gastos')
+      const { error } = await _supa.from('gastos')
         .upsert(list.map((g,i) => ({ ..._gastoDB(g), user_id:_userId, ordem:i })),
           { onConflict: 'id' });
+      if (error) console.error("❌ Erro saveGastos:", error);
     } catch (err) {
       console.error("Erro saveGastos:", err);
     }
