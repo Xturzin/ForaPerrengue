@@ -1,0 +1,10 @@
+# Gerador de mídias (dependências pesadas — não versionar)
+gerador-de-midias/
+midias/
+
+# node_modules caso existam na raiz
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

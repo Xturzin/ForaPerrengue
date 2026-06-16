@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fora Perrengue 💜</title>
+  <title>Fora Perrengue</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,51 +17,61 @@
 </head>
 <body>
 
-<!-- Tela de carregamento -->
+<!-- Carregamento -->
 <div id="loading-overlay" class="loading-overlay">
-  <div class="loading-spinner">💸</div>
+  <div class="loading-spinner"><i data-lucide="wallet" width="22" height="22"></i></div>
   <p>Carregando...</p>
 </div>
 
-<!-- Notificação -->
-<div id="toast" class="toast hidden">
-  <span id="toast-icon"></span>
-  <span id="toast-msg"></span>
-</div>
-
-<!-- Box sobre  -->
-<div id="modal-about" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <button class="modal-close" id="btn-close-about">✕</button>
-    <div class="modal-hero">💸</div>
-    <h2 class="modal-title">Fora Perrengue</h2>
-    <p class="modal-byline">Desenvolvido por <strong>Arthur Couto</strong> 💜</p>
-    <div class="modal-divider"></div>
-    <p class="modal-desc">
-      Chega de susto no fim do mês, de não saber pra onde o dinheiro foi ou de viver no limite.
-      Com o <strong>Fora Perrengue</strong>, você transforma desorganização em controle
-      e preocupação em planejamento.<br><br>
-      Aqui, cada escolha financeira fica mais clara, e cada passo te afasta do perrengue.
-    </p>
-    <span class="modal-tag">🚧 Em desenvolvimento 🚧</span>
+<!-- Toast -->
+<div class="toast-host">
+  <div id="toast" class="toast hidden">
+    <span id="toast-icon" class="fp-ic"></span>
+    <span id="toast-msg"></span>
   </div>
 </div>
 
-<!-- Box previsão proximo mes -->
-<div id="modal-previsao" class="modal-backdrop hidden">
-  <div class="modal-box modal-box-wide">
-    <button class="modal-close" id="btn-close-previsao">✕</button>
-    <h2 class="modal-title" id="modal-prev-titulo">Previsão de Janeiro</h2>
-    <p class="modal-byline" style="margin-bottom:18px">O que esperar do próximo mês</p>
+<!-- ══ MODAIS ══════════════════════════════════════════════════════════════════ -->
+
+<!-- Modal Sobre -->
+<div id="modal-about" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:440px">
+    <button class="icon-btn m-close" id="btn-close-about"><i data-lucide="x" width="16" height="16"></i></button>
+    <div class="m-hero"><i data-lucide="wallet" width="22" height="22"></i></div>
+    <h2 class="m-title">Fora Perrengue</h2>
+    <p class="m-sub">Desenvolvido por <strong>Arthur Couto</strong></p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
+    <p style="font-size:13px;color:var(--txt2);line-height:1.7">
+      Chega de susto no fim do mês, de não saber pra onde o dinheiro foi ou de viver no limite.
+      Com o <strong style="color:var(--txt)">Fora Perrengue</strong>, você transforma desorganização em controle
+      e preocupação em planejamento.<br><br>
+      Aqui, cada escolha financeira fica mais clara, e cada passo te afasta do perrengue.
+    </p>
+    <div style="margin-top:14px">
+      <span class="pill pill-warn"><i data-lucide="construction" width="11" height="11"></i> Em desenvolvimento</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Previsão Próximo Mês -->
+<div id="modal-previsao" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:580px">
+    <button class="icon-btn m-close" id="btn-close-previsao"><i data-lucide="x" width="16" height="16"></i></button>
+    <h2 class="m-title" id="modal-prev-titulo">Previsão de Janeiro</h2>
+    <p class="m-sub" style="margin-bottom:18px">O que esperar do próximo mês</p>
 
     <div class="prev-grid">
       <div class="prev-section prev-entradas">
-        <div class="prev-section-title">📥 Entradas previstas</div>
+        <div class="prev-section-title">
+          <i data-lucide="trending-up" width="14" height="14"></i> Entradas previstas
+        </div>
         <div id="prev-list-entradas" class="prev-list"></div>
         <div class="prev-total" id="prev-total-entradas">R$ 0,00</div>
       </div>
       <div class="prev-section prev-saidas">
-        <div class="prev-section-title">📤 Saídas previstas</div>
+        <div class="prev-section-title">
+          <i data-lucide="trending-down" width="14" height="14"></i> Saídas previstas
+        </div>
         <div id="prev-list-saidas" class="prev-list"></div>
         <div class="prev-total" id="prev-total-saidas">R$ 0,00</div>
       </div>
@@ -73,993 +84,1119 @@
   </div>
 </div>
 
-<!-- Box detalhes categoria -->
-<div id="modal-cat-detalhe" class="modal-backdrop hidden">
-  <div class="modal-box modal-box-wide">
-    <button class="modal-close" id="btn-close-cat-detalhe">✕</button>
-    <div class="modal-hero" id="cat-detalhe-hero">📦</div>
-    <h2 class="modal-title" id="cat-detalhe-titulo">Categoria</h2>
-    <p class="modal-byline" id="cat-detalhe-total">Total: R$ 0,00</p>
-    <div class="modal-divider"></div>
+<!-- Modal Detalhes Categoria -->
+<div id="modal-cat-detalhe" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:520px">
+    <button class="icon-btn m-close" id="btn-close-cat-detalhe"><i data-lucide="x" width="16" height="16"></i></button>
+    <div class="m-hero" id="cat-detalhe-hero"><i data-lucide="package" width="22" height="22"></i></div>
+    <h2 class="m-title" id="cat-detalhe-titulo">Categoria</h2>
+    <p class="m-sub" id="cat-detalhe-total">Total: R$ 0,00</p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
     <div id="cat-detalhe-body" class="prev-list" style="text-align:left;margin-top:14px;max-height:55vh;overflow-y:auto;"></div>
   </div>
 </div>
 
-<!-- box Vencimento do Cartão -->
-<div id="modal-venc-cartao" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <div class="modal-hero">💳</div>
-    <h2 class="modal-title">Dia do vencimento</h2>
-    <p class="modal-byline">Qual o dia que sua fatura vence todo mês?</p>
-    <div class="modal-divider"></div>
-    <div class="form-group" style="margin-top:16px">
+<!-- Modal Vencimento do Cartão -->
+<div id="modal-venc-cartao" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:400px">
+    <div class="m-hero"><i data-lucide="credit-card" width="22" height="22"></i></div>
+    <h2 class="m-title">Dia do vencimento</h2>
+    <p class="m-sub">Qual o dia que sua fatura vence todo mês?</p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
+    <div class="field" style="margin-top:16px">
       <label>Dia do vencimento</label>
-      <input type="number" id="venc-cartao-dia" min="1" max="31" placeholder="ex: 10" style="width:100%;margin-top:6px"/>
+      <input type="number" id="venc-cartao-dia" class="inp no-spin" min="1" max="31" placeholder="ex: 10"/>
     </div>
-    <p id="venc-cartao-erro" class="msg-err hidden">Informe um dia válido entre 1 e 31.</p>
-    <button id="btn-venc-cartao-save" class="btn-primary w-full" style="margin-top:16px">Confirmar</button>
+    <p id="venc-cartao-erro" class="msg-err hidden" style="margin-top:8px">Informe um dia válido entre 1 e 31.</p>
+    <button id="btn-venc-cartao-save" class="btn btn-primary btn-block" style="margin-top:16px">Confirmar</button>
   </div>
 </div>
 
-<section id="login-screen" class="login-screen hidden">
+<!-- ══ TELA DE LOGIN ════════════════════════════════════════════════════════════ -->
+<section id="login-screen" class="auth hidden">
 
-  <!-- Login parte especificações -->
-  <div class="login-left">
-    <div class="login-brand">
-      <div class="login-brand-icon">💸</div>
-      <h1 class="login-brand-name">Fora<br>Perrengue</h1>
+  <!-- Lado esquerdo (brand) -->
+  <div class="auth-brand">
+    <div class="brand-row">
+      <div class="brand-mark"><i data-lucide="banknote" width="20" height="20"></i></div>
+      <div>
+        <div class="brand-name">Fora Perrengue</div>
+        <div class="brand-sub">controle financeiro pessoal</div>
+      </div>
     </div>
-    <p class="login-brand-tagline">
-      Chega de não saber<br>pra onde o dinheiro foi.
-    </p>
-    <div class="login-features">
-      <div class="lf-item"><span class="lf-icon">💰</span> Saldo em tempo real</div>
-      <div class="lf-item"><span class="lf-icon">💳</span> Controle de parcelamentos</div>
-      <div class="lf-item"><span class="lf-icon">📊</span> Previsões do próximo mês</div>
-      <div class="lf-item"><span class="lf-icon">🔄</span> Gastos recorrentes</div>
+
+    <div class="auth-pitch">
+      <h1>Chega de não saber <em>pra onde o dinheiro foi.</em></h1>
+      <p>Saldo em tempo real, parcelamentos sob controle e a previsão do próximo mês antes dele chegar.</p>
+      <div class="auth-feats">
+        <div class="auth-feat">
+          <span class="fp-ic"><i data-lucide="wallet" width="16" height="16"></i></span>
+          Saldo em tempo real
+        </div>
+        <div class="auth-feat">
+          <span class="fp-ic"><i data-lucide="credit-card" width="16" height="16"></i></span>
+          Controle de parcelamentos
+        </div>
+        <div class="auth-feat">
+          <span class="fp-ic"><i data-lucide="trending-up" width="16" height="16"></i></span>
+          Previsões do próximo mês
+        </div>
+        <div class="auth-feat">
+          <span class="fp-ic"><i data-lucide="repeat" width="16" height="16"></i></span>
+          Gastos recorrentes
+        </div>
+      </div>
     </div>
-    <div class="login-orbs">
-      <div class="l-orb l-orb-1"></div>
-      <div class="l-orb l-orb-2"></div>
-      <div class="l-orb l-orb-3"></div>
-    </div>
+
+    <div class="auth-foot">Desenvolvido por Arthur Couto · 2026</div>
+
   </div>
 
-  <!-- Login parte login -->
-  <div class="login-right">
-    <div class="login-form-wrap">
-      <!-- Abas -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">Entrar</button>
+  <!-- Lado direito (formulário) -->
+  <div class="auth-side">
+    <div class="auth-box">
+
+      <div class="seg">
+        <div class="seg-indicator" id="auth-indicator"></div>
+        <button class="auth-tab on" data-tab="login">Entrar</button>
         <button class="auth-tab" data-tab="register">Criar conta</button>
       </div>
 
       <!-- Login -->
-      <div id="tab-login" class="auth-form active">
-        <div class="auth-form-title">Bem-vindo de volta 👋</div>
-        <div class="auth-form-sub">Entre na sua conta para continuar</div>
+      <div id="tab-login" class="auth-form on">
+        <div class="auth-form-title auth-ttl">Bem-vindo de volta</div>
+        <div class="auth-form-sub auth-sub">Entre na sua conta para continuar</div>
 
-        <div class="form-group">
-          <label>Usuário</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">👤</span>
-            <input type="text" id="l-user" placeholder="seu usuário" autocomplete="username"/>
+        <div class="auth-form-fields">
+          <div class="field">
+            <label>Usuário</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="user" width="15" height="15"></i></span>
+              <input type="text" id="l-user" class="inp" placeholder="seu usuário" autocomplete="username"/>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>Senha</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"/>
-            <button class="btn-eye" data-t="l-pass" type="button">👁️</button>
+          <div class="field">
+            <label>Senha</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="lock" width="15" height="15"></i></span>
+              <input type="password" id="l-pass" class="inp" placeholder="••••••••" autocomplete="current-password"/>
+              <span class="inp-suffix">
+                <button class="icon-btn btn-eye" data-t="l-pass" type="button"><i data-lucide="eye" width="15" height="15"></i></button>
+              </span>
+            </div>
           </div>
-        </div>
 
-        <label class="check-label">
-          <input type="checkbox" id="l-remember"/>
-          <span class="check-box"></span>
-          Lembrar neste dispositivo
-        </label>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="chk on" id="chk-remember" role="checkbox" aria-checked="true" tabindex="0">
+              <span class="box"><i data-lucide="check" width="12" height="12"></i></span>
+              Lembrar neste dispositivo
+            </span>
+            <button id="btn-forgot" type="button" class="auth-link">Esqueci minha senha</button>
+          </div>
 
-        <p id="l-error" class="msg-err hidden">Usuário ou senha incorretos.</p>
-        <button id="btn-login" class="btn-primary w-full btn-login-main">
-          <span>Entrar</span>
-          <span class="btn-arrow">→</span>
-        </button>
+          <p id="l-error" class="auth-err hidden">Usuário ou senha incorretos.</p>
 
-        <div style="text-align:center;margin-top:10px;">
-          <button id="btn-forgot" type="button" style="background:none;border:none;color:var(--p4);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:var(--font);">
-            Esqueci minha senha
+          <button id="btn-login" class="btn btn-primary btn-lg btn-block">
+            <span>Entrar</span>
+            <span class="fp-ic"><i data-lucide="arrow-right" width="16" height="16"></i></span>
           </button>
-        </div>
 
-        <div class="auth-demo-hint">
-           <button id="btn-visitante" type="button" style="
-              width:100%;
-              margin-top:8px;
-              background:none;
-              border:1px solid var(--border);
-              border-radius:var(--r);
-              padding:11px;
-              font-size:.85rem;
-              font-weight:600;
-              color:var(--txt2);
-              cursor:pointer;
-              font-family:var(--font);
-              transition:border-color .2s, color .2s;
-           ">
-              👀 Entrar como visitante
-           </button>
+          <div class="auth-or">ou</div>
+
+          <button id="btn-visitante" type="button" class="btn btn-ghost btn-lg btn-block">
+            <i data-lucide="eye" width="15" height="15"></i>
+            Entrar como visitante
+          </button>
         </div>
       </div>
 
       <!-- Cadastro -->
       <div id="tab-register" class="auth-form">
-        <div class="auth-form-title">Crie sua conta ✨</div>
-        <div class="auth-form-sub">Comece a controlar seu dinheiro agora</div>
+        <div class="auth-form-title auth-ttl">Crie sua conta</div>
+        <div class="auth-form-sub auth-sub">Comece a controlar seu dinheiro agora</div>
 
-        <div class="form-group">
-          <label>Como quer ser chamado?</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">😊</span>
-            <input type="text" id="r-nome" placeholder="ex: Arthur"/>
+        <div class="auth-form-fields">
+          <div class="field">
+            <label>Como quer ser chamado?</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="smile" width="15" height="15"></i></span>
+              <input type="text" id="r-nome" class="inp" placeholder="Seu nome"/>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>E-mail</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">📧</span>
-            <input type="email" id="r-email" placeholder="seu@email.com" autocomplete="email"/>
+          <div class="field">
+            <label>E-mail</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="mail" width="15" height="15"></i></span>
+              <input type="email" id="r-email" class="inp" placeholder="seu.email@gmail.com" autocomplete="email"/>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Nome de usuário</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">👤</span>
-            <input type="text" id="r-user" placeholder="ex: arthur123"/>
+          <div class="field">
+            <label>Nome de usuário</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="user" width="15" height="15"></i></span>
+              <input type="text" id="r-user" class="inp" placeholder="Usuario de login"/>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Senha</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="r-pass" placeholder="mín. 8 caracteres"/>
-            <button class="btn-eye" data-t="r-pass" type="button">👁️</button>
+          <div class="field">
+            <label>Senha</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="lock" width="15" height="15"></i></span>
+              <input type="password" id="r-pass" class="inp" placeholder="mín. 8 caracteres"/>
+              <span class="inp-suffix">
+                <button class="icon-btn btn-eye" data-t="r-pass" type="button"><i data-lucide="eye" width="15" height="15"></i></button>
+              </span>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Confirmar senha</label>
-          <div class="input-icon-wrap">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="r-pass2" placeholder="repita a senha"/>
-          <button class="btn-eye" data-t="r-pass2" type="button">👁️</button>
+          <div class="field">
+            <label>Confirmar senha</label>
+            <div class="inp-wrap has-ic">
+              <span class="fp-ic"><i data-lucide="lock" width="15" height="15"></i></span>
+              <input type="password" id="r-pass2" class="inp" placeholder="repita a senha"/>
+              <span class="inp-suffix">
+                <button class="icon-btn btn-eye" data-t="r-pass2" type="button"><i data-lucide="eye" width="15" height="15"></i></button>
+              </span>
+            </div>
           </div>
-        </div>
 
-        <p id="r-error" class="msg-err hidden">Erro.</p>
-        <button id="btn-register" class="btn-primary w-full btn-login-main">
-          <span>Criar conta</span>
-          <span class="btn-arrow">→</span>
-        </button>
+          <p id="r-error" class="auth-err hidden">Erro.</p>
+          <button id="btn-register" class="btn btn-primary btn-block">
+            <span>Criar conta</span>
+            <span class="fp-ic"><i data-lucide="arrow-right" width="16" height="16"></i></span>
+          </button>
+        </div>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- Esqueceu a Senha -->
-<div id="modal-forgot" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <button class="modal-close" id="btn-fp-cancel">✕</button>
-    <div class="modal-hero">🔑</div>
-    <h2 class="modal-title">Redefinir senha</h2>
-    <p class="modal-byline">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
-    <div class="modal-divider"></div>
+<!-- Modal Esqueceu a Senha -->
+<div id="modal-forgot" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:400px">
+    <button class="icon-btn m-close" id="btn-fp-cancel"><i data-lucide="x" width="16" height="16"></i></button>
+    <div class="m-hero"><i data-lucide="key" width="22" height="22"></i></div>
+    <h2 class="m-title">Redefinir senha</h2>
+    <p class="m-sub">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
 
-    <div class="form-group" style="text-align:left;margin-top:14px">
+    <div class="field" style="text-align:left;margin-top:14px">
       <label>E-mail</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">📧</span>
-        <input type="email" id="fp-email" placeholder="seu@email.com" autocomplete="email"/>
+      <div class="inp-wrap has-ic">
+        <span class="fp-ic"><i data-lucide="mail" width="15" height="15"></i></span>
+        <input type="email" id="fp-email" class="inp" placeholder="seu@email.com" autocomplete="email"/>
       </div>
     </div>
 
-    <p id="fp-error" class="msg-err hidden" style="text-align:left">E-mail não encontrado.</p>
-    <p id="fp-success" class="msg-ok hidden" style="text-align:left">E-mail enviado! Verifique sua caixa de entrada.</p>
+    <p id="fp-error" class="auth-err hidden" style="margin-top:8px">E-mail não encontrado.</p>
+    <p id="fp-success" class="auth-err auth-ok hidden" style="margin-top:8px">E-mail enviado! Verifique sua caixa de entrada.</p>
 
     <div style="display:flex;gap:10px;margin-top:18px">
-      <button id="btn-fp-cancel2" class="btn-danger" style="flex:1">Cancelar</button>
-      <button id="btn-fp-save" class="btn-primary" style="flex:2">Enviar link</button>
+      <button id="btn-fp-cancel2" class="btn btn-ghost" style="flex:1">Cancelar</button>
+      <button id="btn-fp-save" class="btn btn-primary" style="flex:2">Enviar link</button>
     </div>
   </div>
 </div>
 
 <!-- Onboarding -->
-<div id="onboarding" class="modal-backdrop hidden" style="align-items:center;visibility:hidden;">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:100%;max-width:480px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn .35s ease;">
+<div id="onboarding" class="fp-scrim hidden" style="visibility:hidden">
+  <div class="fp-modal" style="max-width:480px;text-align:center">
 
-    <!-- Indicador de progresso -->
-    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:24px;" id="ob-dots"></div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:24px" id="ob-dots"></div>
 
-    <!-- Slides -->
     <div id="ob-slides">
 
-      <!-- Slide Boas vindas -->
       <div class="ob-slide">
-        <div style="font-size:2.8rem;margin-bottom:12px;">👋</div>
-        <h2 style="font-size:1.3rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Bem-vindo ao Fora Perrengue!</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Você está a um passo de ter suas finanças sob controle.<br>Vamos te mostrar tudo que dá pra fazer aqui em poucos passos.</p>
+        <div class="m-hero" style="margin:0 auto 14px">
+          <i data-lucide="hand-metal" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:8px">Bem-vindo ao Fora Perrengue!</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Você está a um passo de ter suas finanças sob controle.<br>Vamos te mostrar tudo que dá pra fazer aqui em poucos passos.</p>
       </div>
 
-      <!-- Slide Gastos -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">💸</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Gastos</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Registre tudo que você gasta no dia a dia.<br>Cada gasto tem <strong style="color:var(--txt)">nome, valor, categoria e data</strong>.<br><br>Exemplo: <em>Ifood  R$ 35,00  Alimentação</em></p>
-        <div class="ob-example">📊 Seus gastos aparecem no gráfico de pizza do Dashboard separados por categoria.</div>
+        <div class="m-hero" style="margin:0 auto 14px;background:var(--bad-soft);border-color:rgba(245,138,155,.25);color:var(--bad)">
+          <i data-lucide="receipt" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Gastos</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Registre tudo que você gasta no dia a dia.<br>Cada gasto tem <strong style="color:var(--txt)">nome, valor, categoria e data</strong>.<br><br>Exemplo: <em>Ifood · R$ 35,00 · Alimentação</em></p>
+        <div class="ob-example">Seus gastos aparecem no gráfico de pizza do Dashboard separados por categoria.</div>
       </div>
 
-      <!-- Slide Rendas -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">💰</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Rendas</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Cadastre suas entradas de dinheiro.<br>Pode ser <strong style="color:var(--txt)">avulsa</strong> (único mês) ou <strong style="color:var(--txt)">regular</strong> (todo mês no mesmo dia).<br><br>Exemplo: <em>Salário  R$ 3.000  todo dia 5</em></p>
-        <div class="ob-example">💡 Rendas regulares são geradas automaticamente todo mês.</div>
+        <div class="m-hero" style="margin:0 auto 14px;background:var(--ok-soft);border-color:rgba(74,222,157,.2);color:var(--ok)">
+          <i data-lucide="banknote" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Rendas</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Cadastre suas entradas de dinheiro.<br>Pode ser <strong style="color:var(--txt)">avulsa</strong> (único mês) ou <strong style="color:var(--txt)">regular</strong> (todo mês no mesmo dia).<br><br>Exemplo: <em>Salário · R$ 3.000 · todo dia 5</em></p>
+        <div class="ob-example">Rendas regulares são geradas automaticamente todo mês.</div>
       </div>
 
-      <!-- Slide Cartão -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">💳</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Cartão de Crédito</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Ao registrar um gasto como <strong style="color:var(--txt)">Cartão de Crédito</strong>, ele <strong style="color:var(--txt)">não sai do saldo agora</strong>.<br><br>Ele entra automaticamente como saída no <strong style="color:var(--txt)">próximo mês</strong>, no dia do vencimento da sua fatura.</p>
-        <div class="ob-example">📅 Você define o dia de vencimento na primeira compra no cartão.</div>
+        <div class="m-hero" style="margin:0 auto 14px">
+          <i data-lucide="credit-card" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Cartão de Crédito</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Ao registrar um gasto como <strong style="color:var(--txt)">Cartão de Crédito</strong>, ele <strong style="color:var(--txt)">não sai do saldo agora</strong>.<br><br>Ele entra automaticamente como saída no <strong style="color:var(--txt)">próximo mês</strong>, no dia do vencimento da sua fatura.</p>
+        <div class="ob-example">Você define o dia de vencimento na primeira compra no cartão.</div>
       </div>
 
-      <!-- Slide Parceladas -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">📦</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Parceladas</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Para compras parceladas, informe o <strong style="color:var(--txt)">valor total, número de parcelas e dia de vencimento</strong>.<br><br>Exemplo: <em>TV  R$ 1.200  12x de R$ 100  vence dia 10</em></p>
-        <div class="ob-example">✅ Marque cada parcela como paga conforme for quitando.</div>
+        <div class="m-hero" style="margin:0 auto 14px;background:var(--warn-soft);border-color:rgba(239,194,114,.25);color:var(--warn)">
+          <i data-lucide="package" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Parceladas</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Para compras parceladas, informe o <strong style="color:var(--txt)">valor total, número de parcelas e dia de vencimento</strong>.<br><br>Exemplo: <em>TV · R$ 1.200 · 12x de R$ 100 · vence dia 10</em></p>
+        <div class="ob-example">Marque cada parcela como paga conforme for quitando.</div>
       </div>
 
-      <!-- Slide Recorrentes -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">🔁</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Recorrentes</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Gastos que se repetem com frequência, como <strong style="color:var(--txt)">assinaturas e contas fixas</strong>.<br><br>Podem ser mensais, semanais ou quinzenais.<br><br>Exemplo: <em>Netflix  R$ 45  mensal  dia 15</em></p>
-        <div class="ob-example">🔔 O sistema avisa quando estão próximos do vencimento.</div>
+        <div class="m-hero" style="margin:0 auto 14px;background:var(--info-soft);border-color:rgba(134,181,248,.2);color:var(--info)">
+          <i data-lucide="refresh-cw" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Recorrentes</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Gastos que se repetem com frequência, como <strong style="color:var(--txt)">assinaturas e contas fixas</strong>.<br><br>Podem ser mensais, semanais ou quinzenais.<br><br>Exemplo: <em>Netflix · R$ 45 · mensal · dia 15</em></p>
+        <div class="ob-example">O sistema avisa quando estão próximos do vencimento.</div>
       </div>
 
-      <!-- Slide Futuras -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">🔮</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Despesas Futuras</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Planeje gastos que ainda vão acontecer e já se prepare financeiramente.<br><br>Exemplo: <em>Viagem de férias  R$ 2.000  julho</em></p>
-        <div class="ob-example">📉 Despesas futuras já impactam a previsão do próximo mês no Dashboard.</div>
+        <div class="m-hero" style="margin:0 auto 14px">
+          <i data-lucide="sparkles" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Despesas Futuras</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Planeje gastos que ainda vão acontecer e já se prepare financeiramente.<br><br>Exemplo: <em>Viagem de férias · R$ 2.000 · julho</em></p>
+        <div class="ob-example">Despesas futuras já impactam a previsão do próximo mês no Dashboard.</div>
       </div>
 
-      <!-- Slide Pronto -->
       <div class="ob-slide hidden">
-        <div style="font-size:2.8rem;margin-bottom:12px;">🚀</div>
-        <h2 style="font-size:1.2rem;font-weight:800;color:var(--txt);margin-bottom:8px;">Tudo pronto!</h2>
-        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7;">Agora você já sabe como usar o <strong style="color:var(--accent)">Fora Perrengue</strong>.<br><br>Comece registrando sua primeira renda e seus gastos do mês. Boa sorte! 💜</p>
+        <div class="m-hero" style="margin:0 auto 14px;background:linear-gradient(135deg,var(--acg1),var(--acg2));border:none;color:var(--lav-ink)">
+          <i data-lucide="rocket" width="24" height="24"></i>
+        </div>
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Tudo pronto!</h2>
+        <p style="font-size:.85rem;color:var(--txt3);line-height:1.7">Agora você já sabe como usar o <strong style="color:var(--ac)">Fora Perrengue</strong>.<br><br>Comece registrando sua primeira renda e seus gastos do mês. Boa sorte!</p>
       </div>
 
     </div>
 
-    <!-- Navegação -->
-    <div style="display:flex;gap:10px;margin-top:28px;align-items:center;">
-      <button id="btn-ob-prev" class="btn-danger" style="flex:1;display:none;">← Voltar</button>
-      <button id="btn-ob-next" class="btn-primary" style="flex:2;">Próximo →</button>
+    <div style="display:flex;gap:10px;margin-top:28px;align-items:center">
+      <button id="btn-ob-prev" class="btn btn-ghost" style="flex:1;display:none">← Voltar</button>
+      <button id="btn-ob-next" class="btn btn-primary" style="flex:2">Próximo →</button>
     </div>
 
   </div>
 </div>
 
-  </div>
-</div>
-
-<!-- Aplicativo principal -->
+<!-- ══ APP ═══════════════════════════════════════════════════════════════════════ -->
 <div id="app" class="app hidden">
 
-  <!-- Menu -->
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
-    <div class="sb-top">
-      <button class="sb-brand" id="btn-about" title="Sobre o sistema">
-        <div class="sb-brand-icon">💸</div>
-        <div class="sb-brand-info">
-          <span class="sb-brand-name">Fora Perrengue</span>
-          <span class="sb-brand-sub">controle financeiro</span>
-        </div>
+
+    <div class="sb-head">
+      <button class="brand-mark" id="btn-about" title="Sobre o sistema">
+        <i data-lucide="banknote" width="18" height="18"></i>
       </button>
-      <button class="sb-close-btn" id="btn-sb-close">✕</button>
-    </div>
-
-    <div class="sb-profile">
-      <div class="sb-avatar" id="sb-avatar">A</div>
-      <div id="btn-open-perfil" style="flex:1;cursor:pointer;">
-        <div class="sb-name" id="sb-name">Usuário</div>
-        <div class="sb-status"><span class="sb-dot"></span>online</div>
+      <div class="sb-tt" id="btn-about2">
+        <div class="brand-name">Fora Perrengue</div>
+        <div class="brand-sub">controle financeiro</div>
       </div>
+      <button class="icon-btn sb-collapse" id="btn-sb-collapse" title="Recolher menu">
+        <i data-lucide="panel-left-close" width="17" height="17"></i>
+      </button>
     </div>
 
-    <div id="visitante-banner" style="
-       display:none;
-       margin:0 12px 8px;
-       padding:8px 12px;
-       background:rgba(124,58,237,0.1);
-       border:1px solid rgba(124,58,237,0.3);
-       border-radius:8px;
-       font-size:.72rem;
-       color:#a78bfa;
-       text-align:center;
-       line-height:1.5;
-    ">
-       👀 Modo visitante<br>
-       <span style="color:var(--txt3)">Dados não são salvos</span>
-    </div>
 
     <nav class="sb-nav">
-      <button class="nav-item active" data-view="dashboard">
-        <span class="nav-icon">🏠</span><span>Dashboard</span>
+      <button class="nav-item on" data-view="dashboard">
+        <span class="fp-ic"><i data-lucide="layout-dashboard" width="17" height="17"></i></span>
+        <span class="lbl">Início</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
+
+      <div class="nav-sep"></div>
       <button class="nav-item" data-view="gastos">
-        <span class="nav-icon">💸</span><span>Novo Gasto</span>
+        <span class="fp-ic"><i data-lucide="receipt" width="17" height="17"></i></span>
+        <span class="lbl">Novo gasto</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
       <button class="nav-item" data-view="rendas">
-        <span class="nav-icon">💰</span><span>Rendas</span>
+        <span class="fp-ic"><i data-lucide="wallet" width="17" height="17"></i></span>
+        <span class="lbl">Rendas</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
 
-      <div class="sb-divider"></div>
-
+      <div class="nav-sep"></div>
       <button class="nav-item" data-view="parceladas">
-        <span class="nav-icon">💳</span><span>Parceladas</span>
-      </button>
-      <button class="nav-item" data-view="futuras">
-        <span class="nav-icon">🛍️</span><span>Compras Futuras</span>
+        <span class="fp-ic"><i data-lucide="credit-card" width="17" height="17"></i></span>
+        <span class="lbl">Parceladas</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
       <button class="nav-item" data-view="recorrentes">
-        <span class="nav-icon">🔄</span><span>Recorrentes</span>
+        <span class="fp-ic"><i data-lucide="repeat" width="17" height="17"></i></span>
+        <span class="lbl">Recorrentes</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
+      </button>
+      <button class="nav-item" data-view="futuras">
+        <span class="fp-ic"><i data-lucide="shopping-bag" width="17" height="17"></i></span>
+        <span class="lbl">Lista de desejos</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
 
-      <div class="sb-divider"></div>
-
+      <div class="nav-sep"></div>
       <button class="nav-item" data-view="historico">
-        <span class="nav-icon">📋</span><span>Histórico</span>
-      </button>
-      <button class="nav-item" data-view="simulacao">
-        <span class="nav-icon">⚡</span><span>Simulação</span>
+        <span class="fp-ic"><i data-lucide="history" width="17" height="17"></i></span>
+        <span class="lbl">Histórico</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
       </button>
       <button class="nav-item" id="btn-open-pdf">
-            <span class="nav-icon">📄</span>
-            <span class="nav-label">Exportar PDF</span>
-            <span class="nav-badge">novo</span>
-          </button>
+        <span class="fp-ic"><i data-lucide="file-text" width="17" height="17"></i></span>
+        <span class="lbl">Relatório</span>
+        <span class="nav-chev fp-ic"><i data-lucide="chevron-right" width="13" height="13"></i></span>
+      </button>
     </nav>
 
-    <div class="sb-footer">
-      <div class="theme-row">
-        <span id="theme-lbl" class="theme-lbl">🌙 Modo escuro</span>
-        <label class="toggle-sw">
-          <input type="checkbox" id="theme-toggle"/>
-          <span class="toggle-track"></span>
-        </label>
+    <div class="sb-foot">
+      <button class="icon-btn sb-mini-theme" id="btn-mini-theme" title="Alternar tema">
+        <i data-lucide="moon" width="17" height="17"></i>
+      </button>
+      <input type="checkbox" id="theme-toggle" style="display:none"/>
+      <div class="theme-seg">
+        <button id="btn-theme-dark" class="on" data-theme-btn="dark">
+          <i data-lucide="moon" width="13" height="13"></i><span> Escuro</span>
+        </button>
+        <button id="btn-theme-light" data-theme-btn="light">
+          <i data-lucide="sun" width="13" height="13"></i><span> Claro</span>
+        </button>
       </div>
-      <button id="btn-logout" class="btn-logout">🚪 Sair</button> 
+      <div class="sb-user">
+        <div class="sb-ava" id="sb-avatar">A</div>
+        <div id="btn-open-perfil" class="sb-user-info">
+          <div class="n" id="sb-name">Usuário</div>
+          <div class="s">online</div>
+        </div>
+        <button class="icon-btn" id="btn-logout" title="Sair">
+          <span class="fp-ic"><i data-lucide="log-out" width="15" height="15"></i></span>
+        </button>
+      </div>
     </div>
   </aside>
 
-  <div class="sb-overlay" id="sb-overlay"></div>
+  <div class="sb-scrim" id="sb-overlay"></div>
 
   <!-- Main -->
-  <main class="main">
+  <div class="main">
     <header class="topbar">
-      <div class="tp-left">
-        <button class="btn-hamburger" id="btn-hamburger">☰</button>
-        <div>
-          <h2 id="page-title" class="page-title">Dashboard</h2>
-          <p id="user-greet" class="user-greet"></p>
-        </div>
+      <button class="icon-btn tb-burger" id="btn-hamburger" title="Menu">
+        <i data-lucide="menu" width="18" height="18"></i>
+      </button>
+      <div>
+        <h2 id="page-title" class="tb-title">Início</h2>
+        <p id="user-greet" class="tb-greet"></p>
       </div>
-      <div class="tp-right" style="display:flex;align-items:center;gap:10px;">
+      <div class="tb-right">
         <div class="notif-wrap" id="notif-wrap">
-          <button class="notif-bell" id="btn-notif" title="Notificações">
-            🔔
+          <button class="icon-btn" id="btn-notif" title="Notificações">
+            <span class="fp-ic"><i data-lucide="bell" width="17" height="17"></i></span>
             <span class="notif-badge hidden" id="notif-badge">0</span>
           </button>
-          <div class="notif-dropdown hidden" id="notif-dropdown">
-            <div class="notif-header">
-              <span>🔔 Vencimentos</span>
-              <span id="notif-count-label" style="font-size:.72rem;color:var(--txt3)"></span>
+          <div class="drop hidden" id="notif-dropdown">
+            <div class="drop-hd">
+              <span style="display:flex;align-items:center;gap:7px">
+                <i data-lucide="bell" width="14" height="14"></i> Vencimentos
+              </span>
+              <span id="notif-count-label"></span>
             </div>
-            <div id="notif-list" class="notif-list">
-              <p class="notif-empty">Nenhum vencimento próximo. ✅</p>
+            <div id="notif-list">
+              <p class="notif-empty">
+                <i data-lucide="check-circle" width="14" height="14"></i>
+                Nenhum vencimento próximo.
+              </p>
             </div>
           </div>
         </div>
-        <div id="clock-chip" class="clock-chip">
-          <span id="clock-date" class="clock-date"></span>
-          <span class="clock-sep">·</span>
-          <span id="clock-time" class="clock-time"></span>
+        <div id="clock-chip" class="tb-chip">
+          <span id="clock-date" class="tb-date t-num"></span>
+          <span id="clock-time" class="t-num"></span>
         </div>
       </div>
     </header>
 
-    <!-- Dashboard -->
-    <section id="view-dashboard" class="view active">
-      <div class="saldo-grid">
-        <div class="saldo-card sc-green">
-          <div class="sc-accent-bar"></div>
-          <div class="sc-icon-wrap">💰</div>
-          <div class="sc-body">
-            <div class="sc-label">Saldo Disponível</div>
-            <div class="sc-value" id="val-disponivel">R$ 0,00</div>
-            <div class="sc-sub">o que você tem agora</div>
-          </div>
-        </div>
-        <div class="saldo-card sc-purple">
-          <div class="sc-accent-bar"></div>
-          <div class="sc-icon-wrap">⏳</div>
-          <div class="sc-body">
-            <div class="sc-label">A Receber (mês)</div>
-            <div class="sc-value" id="val-previsto">R$ 0,00</div>
-            <div class="sc-sub">ainda não recebido este mês</div>
-          </div>
-        </div>
-        <div class="saldo-card sc-red">
-          <div class="sc-accent-bar"></div>
-          <div class="sc-icon-wrap">📤</div>
-          <div class="sc-body">
-            <div class="sc-label">Saídas do Mês</div>
-            <div class="sc-value" id="val-saidas-mes">R$ 0,00</div>
-            <div class="sc-sub">gastos + parcelas pagas</div>
-          </div>
-        </div>
-        <!-- Box proximo mês  -->
-        <div class="saldo-card sc-blue clickable-card" id="card-proximo-mes" title="Clique para ver detalhes">
-          <div class="sc-accent-bar"></div>
-          <div class="sc-icon-wrap">📅</div>
-          <div class="sc-body">
-            <div class="sc-label">Previsão Próx. Mês <span class="sc-click-hint">↗</span></div>
-            <div class="sc-value" id="val-proximo-mes">R$ 0,00</div>
-            <div class="sc-sub">rendas − compromissos</div>
-          </div>
-        </div>
-      </div>
+    <!-- ── Dashboard ────────────────────────────────────────────── -->
+    <section id="view-dashboard" class="view on">
+      <div class="content">
 
-      <div class="dash-grid">
-        <!-- Entradas do mês -->
-        <div class="dash-box">
-          <div class="db-header">
-            <div class="db-title-wrap">
-              <span class="db-title-icon">📥</span>
-              <h3 class="db-title">Entradas do Mês</h3>
+        <div class="hero-grid">
+          <div class="stat stat-hero">
+            <div class="s-top">
+              <span class="t-micro">Saldo Disponível</span>
+              <div class="s-ic"><i data-lucide="wallet" width="15" height="15"></i></div>
             </div>
-            <button class="db-btn" data-view="rendas" title="Ir para Rendas">＋</button>
+            <div class="s-val t-num" id="val-disponivel">R$ 0,00</div>
+            <div class="s-sub">o que você tem agora</div>
           </div>
-          <div id="list-entradas-mes" class="db-list">
-            <p class="empty-msg">Nenhuma entrada este mês.</p>
+          <div class="stat">
+            <div class="s-top">
+              <span class="t-micro">A Receber (mês)</span>
+              <div class="s-ic"><i data-lucide="clock" width="15" height="15"></i></div>
+            </div>
+            <div class="s-val t-num" id="val-previsto">R$ 0,00</div>
+            <div class="s-sub">ainda não recebido</div>
+          </div>
+          <div class="stat">
+            <div class="s-top">
+              <span class="t-micro">Saídas do Mês</span>
+              <div class="s-ic"><i data-lucide="trending-down" width="15" height="15"></i></div>
+            </div>
+            <div class="s-val t-num" id="val-saidas-mes">R$ 0,00</div>
+            <div class="s-sub">gastos + parcelas pagas</div>
+          </div>
+          <div class="stat is-link" id="card-proximo-mes" title="Clique para ver detalhes">
+            <div class="s-top">
+              <span class="t-micro">Previsão Próx. Mês</span>
+              <div class="s-ic"><i data-lucide="calendar" width="15" height="15"></i></div>
+            </div>
+            <div class="s-val t-num" id="val-proximo-mes">R$ 0,00</div>
+            <div class="s-sub">rendas − compromissos</div>
           </div>
         </div>
 
-        <!-- Grafíco -->
-        <div class="dash-box">
-          <div class="db-header">
-            <div class="db-title-wrap">
-              <span class="db-title-icon">📊</span>
-              <h3 class="db-title">Gastos por Categoria</h3>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="trending-up" width="15" height="15"></i></span>
+                Entradas do Mês
+              </h3>
+              <button class="icon-btn" data-view="rendas" title="Ir para Rendas"><i data-lucide="plus" width="16" height="16"></i></button>
+            </div>
+            <div id="list-entradas-mes">
+              <p class="empty-msg">Nada entrou ainda este mês. Bora mudar isso?</p>
             </div>
           </div>
-          <div class="chart-wrap">
-            <canvas id="pie-chart"></canvas>
-          </div>
-          <div id="cat-legend" class="cat-legend"></div>
-          <p id="chart-empty" class="empty-msg" style="display:none">Nenhum gasto ainda 🙂</p>
-        </div>
 
-        <!-- Parcelados -->
-        <div class="dash-box">
-          <div class="db-header">
-            <div class="db-title-wrap">
-              <span class="db-title-icon">💳</span>
-              <h3 class="db-title">Parcelados</h3>
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="pie-chart" width="15" height="15"></i></span>
+                Gastos por Categoria
+              </h3>
             </div>
-            <button class="db-btn" data-view="parceladas" title="Ir para Parceladas">＋</button>
-          </div>
-          <div id="list-parcelados-dash" class="db-list">
-            <p class="empty-msg">Nenhum parcelamento.</p>
-          </div>
-        </div>
-
-        <!-- Saídas do mês -->
-        <div class="dash-box">
-          <div class="db-header">
-            <div class="db-title-wrap">
-              <span class="db-title-icon">📤</span>
-              <h3 class="db-title">Saídas do Mês</h3>
+            <div class="donut-flex">
+              <div id="pie-chart-wrap" class="canvas-wrap"></div>
+              <div id="cat-legend" class="legend"></div>
             </div>
-            <button class="db-btn" data-view="recorrentes" title="Ir para Recorrentes">＋</button>
+            <p id="chart-empty" class="empty-msg" style="display:none">Tá economizando ou esquecendo de anotar?</p>
           </div>
-          <div id="list-saidas-futuras" class="db-list">
-            <p class="empty-msg">Nenhuma saída este mês.</p>
-          </div>
-        </div>
-      </div>
 
-      <div class="dash-box" style="margin-top:14px">
-        <div class="db-header">
-          <div class="db-title-wrap">
-            <span class="db-title-icon">📈</span>
-            <h3 class="db-title">Comparativo Mensal</h3>
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="credit-card" width="15" height="15"></i></span>
+                Parcelados
+              </h3>
+              <button class="icon-btn" data-view="parceladas" title="Ir para Parceladas"><i data-lucide="plus" width="16" height="16"></i></button>
+            </div>
+            <div id="list-parcelados-dash">
+              <p class="empty-msg">Nenhum parcelamento. Seu eu do futuro agradece.</p>
+            </div>
           </div>
-          <select id="comp-meses" style="background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px 8px;font-size:.75rem;color:var(--txt);cursor:pointer;">
-            <option value="1" selected>Último mês</option>
-            <option value="2">Últimos 2 meses</option>
-            <option value="3">Últimos 3 meses</option>
-            <option value="6">Últimos 6 meses</option>
-            <option value="12">Últimos 12 meses</option>
-          </select>
-        </div>
-        <div style="position:relative;height:220px;margin-top:10px;">
-          <canvas id="bar-chart"></canvas>
-          <p id="bar-empty" class="empty-msg" style="display:none">Sem dados suficientes ainda 📊</p>
-        </div>
-      </div>
-      <div class="dash-box" style="margin-top:14px">
-        <div class="db-header">
-          <div class="db-title-wrap">
-            <span class="db-title-icon">🕐</span>
-            <h3 class="db-title">Últimos Gastos</h3>
+
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="trending-down" width="15" height="15"></i></span>
+                Saídas do Mês
+              </h3>
+              <button class="icon-btn" data-view="recorrentes" title="Ir para Recorrentes"><i data-lucide="plus" width="16" height="16"></i></button>
+            </div>
+            <div id="list-saidas-futuras">
+              <p class="empty-msg">Nenhuma saída este mês.</p>
+            </div>
           </div>
-          <button class="db-btn" data-view="gastos" title="Ir para Novo Gasto">＋</button>
         </div>
-        <div id="list-recent-gastos" class="db-list">
-          <p class="empty-msg">Nenhum gasto registrado.</p>
+
+        <div class="card full-card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="bar-chart-2" width="15" height="15"></i></span>
+              Comparativo Mensal
+            </h3>
+            <div style="display:flex;align-items:center;gap:16px">
+              <div class="chart-legend">
+                <span class="cl"><i style="background:var(--lav)"></i>Entradas</span>
+                <span class="cl"><i style="background:var(--ac)"></i>Saídas</span>
+              </div>
+              <select id="comp-meses" class="inp" style="height:34px;width:auto;font-size:12.5px;padding:0 32px 0 12px">
+                <option value="1" selected>Último mês</option>
+                <option value="2">Últimos 2 meses</option>
+                <option value="3">Últimos 3 meses</option>
+                <option value="6">Últimos 6 meses</option>
+                <option value="12">Últimos 12 meses</option>
+              </select>
+            </div>
+          </div>
+          <div id="bar-chart-wrap"></div>
+          <p id="bar-empty" class="empty-msg" style="display:none">Sem dados suficientes ainda</p>
         </div>
+
+        <div class="card full-card" style="margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="receipt" width="15" height="15"></i></span>
+              Últimos Gastos
+            </h3>
+            <button class="icon-btn" data-view="gastos" title="Registrar gasto"><i data-lucide="plus" width="16" height="16"></i></button>
+          </div>
+          <div id="list-recent-gastos">
+            <p class="empty-msg">Nenhum gasto registrado.</p>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- Novo gasto -->
+    <!-- ── Novo Gasto ─────────────────────────────────────────────── -->
     <section id="view-gastos" class="view">
-      <div class="card form-card">
-        <div class="card-hdr"><h3 class="card-ttl">💸 Registrar Gasto</h3></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="g-nome" placeholder="Ifood, Uber..."/>
+      <div class="content page-narrow">
+        <div class="card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="receipt" width="16" height="16"></i></span>
+              Registrar Gasto
+            </h3>
           </div>
-          <div class="form-group">
-            <label>Valor (R$)</label>
-            <input type="text" id="g-valor" class="money-inp" placeholder="0"/>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" id="g-nome" class="inp" placeholder="Ifood, Uber..."/>
+            </div>
+            <div class="field">
+              <label>Valor (R$)</label>
+              <input type="text" id="g-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Categoria</label>
+              <select id="g-cat" class="inp">
+                <option value="">Selecione...</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Contas">Contas</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Educação">Educação</option>
+                <option value="Beleza">Beleza</option>
+                <option value="Outros">Outros</option>
+                <option value="cartao">Cartão de Crédito</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Data</label>
+              <input type="date" id="g-data" class="inp date-hidden"/>
+            </div>
+            <div class="field span-2 hidden" id="g-subcat-wrap">
+              <label>Categoria do cartão</label>
+              <select id="g-subcat" class="inp">
+                <option value="">Selecione a categoria...</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Contas">Contas</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Educação">Educação</option>
+                <option value="Beleza">Beleza</option>
+                <option value="Outros">Outros</option>
+              </select>
+              <p class="form-hint" style="margin-top:7px">
+                <i data-lucide="lightbulb" width="14" height="14" style="flex-shrink:0;color:var(--ac)"></i>
+                <span>Gastos no cartão <strong>não saem do saldo agora</strong>, entram como saída no <strong>próximo mês</strong>.</span>
+              </p>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Categoria</label>
-            <select id="g-cat">
-              <option value="">Selecione...</option>
-              <option value="Alimentação">🍔 Alimentação</option>
-              <option value="Transporte">🚗 Transporte</option>
-              <option value="Lazer">🎮 Lazer</option>
-              <option value="Contas">💡 Contas</option>
-              <option value="Saúde">🏥 Saúde</option>
-              <option value="Educação">📚 Educação</option>
-              <option value="Beleza">💅 Beleza</option>
-              <option value="Outros">📦 Outros</option>
-              <option value="cartao">💳 Cartão de Crédito</option>
-            </select>
+          <div class="form-foot">
+            <button id="btn-add-gasto" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Adicionar Gasto
+            </button>
+            <span id="g-venc-info" class="venc-chip hidden">
+              <i data-lucide="calendar" width="14" height="14"></i>
+              Vencimento: <b id="g-venc-dia-txt"></b>
+              <span style="width:1px;height:11px;background:var(--border);display:inline-block"></span>
+              <button id="btn-alterar-venc" type="button" class="auth-link">alterar</button>
+            </span>
           </div>
-          <div class="form-group">
-            <label>Data</label>
-            <input type="date" id="g-data" class="date-hidden"/>
-          </div>
-          <!-- Campo subcategoria que aparece só ao selecionar Cartão de Crédito -->
-          <div class="form-group span-2 hidden" id="g-subcat-wrap">
-            <label>Categoria do cartão</label>
-            <select id="g-subcat">
-              <option value="">Selecione a categoria...</option>
-              <option value="Alimentação">🍔 Alimentação</option>
-              <option value="Transporte">🚗 Transporte</option>
-              <option value="Lazer">🎮 Lazer</option>
-              <option value="Contas">💡 Contas</option>
-              <option value="Saúde">🏥 Saúde</option>
-              <option value="Educação">📚 Educação</option>
-              <option value="Beleza">💅 Beleza</option>
-              <option value="Outros">📦 Outros</option>
-            </select>
-            <p class="form-hint" style="margin-top:7px;margin-bottom:0">
-              💡 Gastos no cartão <strong>não saem do saldo agora</strong> entram como saída no <strong>próximo mês</strong>.
-            </p>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;">
-          <button id="btn-add-gasto" class="btn-primary" style="margin-top:0;">Adicionar Gasto</button>
-          <span id="g-venc-info" class="hidden" style="display:inline-flex;align-items:center;gap:7px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-size:.78rem;color:var(--txt3);white-space:nowrap;">
-            📅 Dia de vencimento: <strong id="g-venc-dia-txt" style="color:var(--txt);font-size:.82rem;">—</strong>
-            <span style="width:1px;height:11px;background:var(--border);display:inline-block;"></span>
-            <button id="btn-alterar-venc" type="button" style="background:none;border:none;color:var(--p4);font-size:.75rem;font-weight:600;cursor:pointer;font-family:var(--font);padding:0;">alterar</button>
-          </span>
         </div>
       </div>
     </section>
 
-    <!-- Rendas -->
+    <!-- ── Rendas ──────────────────────────────────────────────────── -->
     <section id="view-rendas" class="view">
-      <div class="mini-tabs-wrap">
-        <button class="mini-tab active" data-mt="renda-pontual">Entrada avulsa</button>
-        <button class="mini-tab" data-mt="renda-regular">Renda regular</button>
-      </div>
+      <div class="content page-narrow">
 
-      <div id="mt-renda-pontual" class="mt-content card form-card">
-        <div class="card-hdr"><h3 class="card-ttl">💰 Registrar entrada avulsa</h3></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Descrição</label>
-            <input type="text" id="rp-nome" placeholder="Freela, Venda..."/>
-          </div>
-          <div class="form-group">
-            <label>Valor (R$)</label>
-            <input type="text" id="rp-valor" class="money-inp" placeholder="0"/>
-          </div>
-          <div class="form-group span-2">
-            <label>Data de recebimento</label>
-            <input type="date" id="rp-data" class="date-hidden"/>
-          </div>
+        <div class="mini-tabs-wrap">
+          <button class="mini-tab on" data-mt="renda-pontual">Entrada avulsa</button>
+          <button class="mini-tab" data-mt="renda-regular">Renda regular</button>
         </div>
-        <button id="btn-add-rp" class="btn-primary">Registrar entrada</button>
-      </div>
 
-      <div id="mt-renda-regular" class="mt-content card form-card" style="display:none;margin-top:14px">
-        <div class="card-hdr"><h3 class="card-ttl">🔁 Adicionar renda regular</h3></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="rr-nome" placeholder="ex: Salário CLT"/>
+        <div id="mt-renda-pontual" class="card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="banknote" width="16" height="16"></i></span>
+              Registrar entrada avulsa
+            </h3>
           </div>
-          <div class="form-group">
-            <label>Valor (R$)</label>
-            <input type="text" id="rr-valor" class="money-inp" placeholder="0"/>
-          </div>
-          <div class="form-group">
-            <label>Dia do mês </label>
-            <input type="number" id="rr-dia" placeholder="ex: 5" min="1" max="31" class="no-spin"/>
-          </div>
-          <div class="form-group">
-            <label>Mês de início</label>
-            <input type="month" id="rr-inicio"/>
-          </div>
-          <div class="form-group span-2">
-            <label>Prazo</label>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="rr-prazo" value="indeterminado" checked/>
-                <span>Prazo indeterminado</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="rr-prazo" value="determinado"/>
-                <span>Prazo determinado</span>
-              </label>
+          <div class="form-grid">
+            <div class="field">
+              <label>Descrição</label>
+              <input type="text" id="rp-nome" class="inp" placeholder="Freela, Venda..."/>
+            </div>
+            <div class="field">
+              <label>Valor (R$)</label>
+              <input type="text" id="rp-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field span-2">
+              <label>Data de recebimento</label>
+              <input type="date" id="rp-data" class="inp date-hidden"/>
             </div>
           </div>
-          <div class="form-group span-2" id="rr-fim-wrap" style="display:none">
-            <label>Mês de encerramento</label>
-            <input type="month" id="rr-fim"/>
+          <div class="form-foot">
+            <button id="btn-add-rp" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Registrar entrada
+            </button>
           </div>
         </div>
-        <button id="btn-add-rr" class="btn-primary">Adicionar renda regular</button>
-      </div>
 
-      <div class="card" style="margin-top:14px">
-        <div class="card-hdr"><h3 class="card-ttl">📋 Entradas cadastradas</h3></div>
-        <div id="list-rendas" class="db-list"><p class="empty-msg">Nenhuma renda cadastrada.</p></div>
+        <div id="mt-renda-regular" class="card" style="display:none;margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="repeat" width="16" height="16"></i></span>
+              Adicionar renda regular
+            </h3>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" id="rr-nome" class="inp" placeholder="ex: Salário CLT"/>
+            </div>
+            <div class="field">
+              <label>Valor (R$)</label>
+              <input type="text" id="rr-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Dia do mês</label>
+              <input type="number" id="rr-dia" class="inp no-spin" placeholder="ex: 5" min="1" max="31"/>
+            </div>
+            <div class="field">
+              <label>Mês de início</label>
+              <input type="month" id="rr-inicio" class="inp"/>
+            </div>
+            <div class="field span-2">
+              <label>Prazo</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="rr-prazo" value="indeterminado" checked/>
+                  <span>Prazo indeterminado</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="rr-prazo" value="determinado"/>
+                  <span>Prazo determinado</span>
+                </label>
+              </div>
+            </div>
+            <div class="field span-2" id="rr-fim-wrap" style="display:none">
+              <label>Mês de encerramento</label>
+              <input type="month" id="rr-fim" class="inp"/>
+            </div>
+          </div>
+          <div class="form-foot">
+            <button id="btn-add-rr" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Adicionar renda regular
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="list" width="16" height="16"></i></span>
+              Entradas cadastradas
+            </h3>
+          </div>
+          <div id="list-rendas"><p class="empty-msg">Nenhuma renda cadastrada.</p></div>
+        </div>
+
       </div>
     </section>
 
-    <!-- Parceladas -->
+    <!-- ── Parceladas ─────────────────────────────────────────────── -->
     <section id="view-parceladas" class="view">
-      <div class="card form-card">
-        <div class="card-hdr"><h3 class="card-ttl">💳 Nova compra parcelada</h3></div>
-        <div class="form-grid">
-          <div class="form-group span-2">
-            <label>Nome da compra</label>
-            <input type="text" id="p-nome" placeholder="ex: iPhone 15, Geladeira..."/>
+      <div class="content page-narrow">
+        <div class="card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="credit-card" width="16" height="16"></i></span>
+              Nova compra parcelada
+            </h3>
           </div>
-          <div class="form-group span-2">
-            <label>Como vai inserir o valor?</label>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" id="p-tipo-total" name="p-tipo" value="total" checked/>
-                <span>Valor total (divide automaticamente)</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" id="p-tipo-parcela" name="p-tipo" value="parcela"/>
-                <span>Valor da parcela (repete mensalmente)</span>
-              </label>
+          <div class="form-grid">
+            <div class="field span-2">
+              <label>Nome da compra</label>
+              <input type="text" id="p-nome" class="inp" placeholder="ex: iPhone 15, Geladeira..."/>
+            </div>
+            <div class="field span-2">
+              <label>Como vai inserir o valor?</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" id="p-tipo-total" name="p-tipo" value="total" checked/>
+                  <span>Valor total (divide automaticamente)</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" id="p-tipo-parcela" name="p-tipo" value="parcela"/>
+                  <span>Valor da parcela (repete mensalmente)</span>
+                </label>
+              </div>
+            </div>
+            <div class="field">
+              <label id="p-valor-label">Valor total (R$)</label>
+              <input type="text" id="p-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Número de parcelas</label>
+              <input type="number" id="p-num" class="inp no-spin" placeholder="ex: 12" min="1" max="120"/>
+            </div>
+            <div class="field">
+              <label>Mês da 1ª parcela</label>
+              <input type="month" id="p-inicio" class="inp"/>
+            </div>
+            <div class="field">
+              <label>Dia de vencimento <span class="label-required">*</span></label>
+              <input type="number" id="p-dia-venc" class="inp no-spin" placeholder="ex: 10" min="1" max="31" required/>
             </div>
           </div>
-          <div class="form-group">
-            <label id="p-valor-label">Valor total (R$)</label>
-            <input type="text" id="p-valor" class="money-inp" placeholder="0"/>
-          </div>
-          <div class="form-group">
-            <label>Número de parcelas</label>
-            <input type="number" id="p-num" placeholder="ex: 12" min="1" max="120" class="no-spin"/>
-          </div>
-          <div class="form-group">
-            <label>Mês da 1ª parcela</label>
-            <input type="month" id="p-inicio"/>
-          </div>
-          <div class="form-group">
-            <label>Dia de vencimento <span class="label-required">*</span></label>
-            <input type="number" id="p-dia-venc" placeholder="ex: 10" min="1" max="31" class="no-spin" required/>
+          <div id="p-preview" class="preview-box hidden"></div>
+          <div class="form-foot">
+            <button id="btn-add-parc" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Adicionar parcelamento
+            </button>
           </div>
         </div>
-        <div id="p-preview" class="preview-box hidden"></div>
-        <button id="btn-add-parc" class="btn-primary">Adicionar parcelamento</button>
-      </div>
-      <div class="card" style="margin-top:14px">
-        <div class="card-hdr"><h3 class="card-ttl">📋 Parcelamentos ativos</h3></div>
-        <div id="list-parceladas" class="db-list"><p class="empty-msg">Nenhum parcelamento ativo.</p></div>
+        <div class="card" style="margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="list" width="16" height="16"></i></span>
+              Parcelamentos ativos
+            </h3>
+          </div>
+          <div id="list-parceladas"><p class="empty-msg">Nenhum parcelamento. Seu eu do futuro agradece.</p></div>
+        </div>
       </div>
     </section>
 
-    <!-- Compras futuras -->
+    <!-- ── Compras Futuras ────────────────────────────────────────── -->
     <section id="view-futuras" class="view">
-      <div class="card form-card">
-        <div class="card-hdr"><h3 class="card-ttl">🛍️ Planejar compra futura</h3></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="f-nome" placeholder="ex: Tênis, Viagem..."/>
+      <div class="content page-narrow">
+        <div class="card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="shopping-bag" width="16" height="16"></i></span>
+              Planejar compra futura
+            </h3>
           </div>
-          <div class="form-group">
-            <label>Valor estimado (R$)</label>
-            <input type="text" id="f-valor" class="money-inp" placeholder="0"/>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" id="f-nome" class="inp" placeholder="ex: Tênis, Viagem..."/>
+            </div>
+            <div class="field">
+              <label>Valor estimado (R$)</label>
+              <input type="text" id="f-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Data pretendida</label>
+              <input type="date" id="f-data" class="inp date-hidden"/>
+            </div>
+            <div class="field">
+              <label>Observação (opcional)</label>
+              <input type="text" id="f-obs" class="inp" placeholder="Qualquer nota..."/>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Data pretendida</label>
-            <input type="date" id="f-data" class="date-hidden"/>
-          </div>
-          <div class="form-group">
-            <label>Observação (opcional)</label>
-            <input type="text" id="f-obs" placeholder="Qualquer nota..."/>
+          <div class="form-foot">
+            <button id="btn-add-fut" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Planejar compra
+            </button>
           </div>
         </div>
-        <button id="btn-add-fut" class="btn-primary">Planejar compra</button>
-      </div>
-      <div class="card" style="margin-top:14px">
-        <div class="card-hdr"><h3 class="card-ttl">🗓️ Lista de desejos</h3></div>
-        <div id="list-futuras" class="db-list"><p class="empty-msg">Nenhuma compra planejada ✨</p></div>
+        <div class="card" style="margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="sparkles" width="16" height="16"></i></span>
+              Lista de desejos
+            </h3>
+          </div>
+          <div id="list-futuras"><p class="empty-msg">Lista de desejos vazia. Sonhar é grátis, planejar também.</p></div>
+        </div>
       </div>
     </section>
 
-    <!-- Recorrentes -->
+    <!-- ── Recorrentes ────────────────────────────────────────────── -->
     <section id="view-recorrentes" class="view">
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-hdr"><h3 class="card-ttl">🔄 Novo pagamento recorrente</h3></div>
-        <div class="form-grid form-grid-4">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" id="rc-nome" placeholder="ex: Cartão, Água, Unha..."/>
+      <div class="content">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="refresh-cw" width="16" height="16"></i></span>
+              Novo pagamento recorrente
+            </h3>
           </div>
-          <div class="form-group">
-            <label>Valor (R$)</label>
-            <input type="text" id="rc-valor" class="money-inp" placeholder="0"/>
+          <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" id="rc-nome" class="inp" placeholder="ex: Cartão, Água, Unha..."/>
+            </div>
+            <div class="field">
+              <label>Valor (R$)</label>
+              <input type="text" id="rc-valor" class="inp money-inp" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Frequência</label>
+              <select id="rc-freq" class="inp">
+                <option value="">Selecione...</option>
+                <option value="semanal">Semanal (7 dias)</option>
+                <option value="quinzenal">Quinzenal (15 dias)</option>
+                <option value="mensal">Mensal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Próximo vencimento</label>
+              <input type="date" id="rc-data" class="inp date-hidden"/>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Frequência</label>
-            <select id="rc-freq">
-              <option value="">Selecione...</option>
-              <option value="semanal">Semanal (7 dias)</option>
-              <option value="quinzenal">Quinzenal (15 dias)</option>
-              <option value="mensal">Mensal</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Próximo vencimento</label>
-            <input type="date" id="rc-data" class="date-hidden"/>
+          <div class="form-foot">
+            <button id="btn-add-rec" class="btn btn-primary">
+              <i data-lucide="plus" width="15" height="15"></i> Adicionar recorrente
+            </button>
           </div>
         </div>
-        <button id="btn-add-rec" class="btn-primary">Adicionar recorrente</button>
-      </div>
 
-      <div class="rec-grid">
-        <div class="card">
-          <div class="card-hdr">
-            <h3 class="card-ttl">📅 Mensais</h3>
-            <span class="pill pill-purple" id="rec-tot-mensal">R$ 0,00/mês</span>
+        <div class="rec-grid">
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="calendar" width="16" height="16"></i></span>
+                Mensais
+              </h3>
+              <span class="pill pill-ac" id="rec-tot-mensal">R$ 0,00/mês</span>
+            </div>
+            <div id="rec-list-mensal"><p class="empty-msg">Nenhuma.</p></div>
           </div>
-          <div id="rec-list-mensal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
-        </div>
-        <div class="card">
-          <div class="card-hdr">
-            <h3 class="card-ttl">📆 Semanais</h3>
-            <span class="pill pill-purple" id="rec-tot-semanal">R$ 0,00/sem</span>
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="calendar-days" width="16" height="16"></i></span>
+                Semanais
+              </h3>
+              <span class="pill pill-ac" id="rec-tot-semanal">R$ 0,00/sem</span>
+            </div>
+            <div id="rec-list-semanal"><p class="empty-msg">Nenhuma.</p></div>
           </div>
-          <div id="rec-list-semanal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
-        </div>
-        <div class="card">
-          <div class="card-hdr">
-            <h3 class="card-ttl">📆 Quinzenais</h3>
-            <span class="pill pill-purple" id="rec-tot-quinzenal">R$ 0,00/qnz</span>
+          <div class="card">
+            <div class="card-hd">
+              <h3 class="card-ttl">
+                <span class="fp-ic"><i data-lucide="calendar-range" width="16" height="16"></i></span>
+                Quinzenais
+              </h3>
+              <span class="pill pill-ac" id="rec-tot-quinzenal">R$ 0,00/qnz</span>
+            </div>
+            <div id="rec-list-quinzenal"><p class="empty-msg">Nenhuma.</p></div>
           </div>
-          <div id="rec-list-quinzenal" class="db-list"><p class="empty-msg">Nenhuma.</p></div>
         </div>
       </div>
     </section>
 
-    <!-- Historico -->
+    <!-- ── Histórico ──────────────────────────────────────────────── -->
     <section id="view-historico" class="view">
-      <div class="card">
-        <div class="card-hdr">
-          <h3 class="card-ttl">📋 Histórico de Gastos</h3>
-          <div class="hist-controls">
-            <select id="h-cat-filter">
-              <option value="">Todas as categorias</option>
-              <option value="Alimentação">🍔 Alimentação</option>
-              <option value="Transporte">🚗 Transporte</option>
-              <option value="Lazer">🎮 Lazer</option>
-              <option value="Contas">💡 Contas</option>
-              <option value="Saúde">🏥 Saúde</option>
-              <option value="Educação">📚 Educação</option>
-              <option value="Beleza">💅 Beleza</option>
-              <option value="Outros">📦 Outros</option>
-              <option value="cartao">💳 Cartão de Crédito</option>
-            </select>
-            <button id="btn-limpar" class="btn-danger">🗑️ Limpar tudo</button>
+      <div class="content page-narrow">
+        <div class="card">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="receipt" width="16" height="16"></i></span>
+              Histórico de Gastos
+            </h3>
+            <div class="hist-controls">
+              <select id="h-cat-filter" class="inp" style="height:34px;font-size:12.5px;width:auto">
+                <option value="">Todas as categorias</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Contas">Contas</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Educação">Educação</option>
+                <option value="Beleza">Beleza</option>
+                <option value="Outros">Outros</option>
+                <option value="cartao">Cartão de Crédito</option>
+              </select>
+              <button id="btn-limpar" class="btn btn-danger-ghost btn-sm">
+                <i data-lucide="trash-2" width="13" height="13"></i> Limpar tudo
+              </button>
+            </div>
           </div>
+          <div id="list-historico"><p class="empty-msg">Nenhum gasto registrado.</p></div>
         </div>
-        <div id="list-historico" class="db-list"><p class="empty-msg">Nenhum gasto registrado.</p></div>
-      </div>
-      <div class="card" style="margin-top:14px">
-        <div class="card-hdr"><h3 class="card-ttl">💚 Valores Recebidos</h3></div>
-        <div id="list-recebidos" class="db-list"><p class="empty-msg">Nenhum valor recebido ainda.</p></div>
-      </div>
-    </section>
-
-    <!-- Simulação -->
-    <section id="view-simulacao" class="view">
-      <div class="simul-placeholder">
-        <div class="simul-icon">⚡</div>
-        <h3 class="simul-title">Simulação</h3>
-        <p class="simul-desc">
-          Em breve: simule cenários financeiros.<br>
-          "E se eu ganhar R$ 500 a mais?", "E se eu cortar o lazer?"
-        </p>
-        <span class="simul-tag">🚧 Em desenvolvimento</span>
+        <div class="card" style="margin-top:14px">
+          <div class="card-hd">
+            <h3 class="card-ttl">
+              <span class="fp-ic"><i data-lucide="banknote" width="16" height="16"></i></span>
+              Valores Recebidos
+            </h3>
+          </div>
+          <div id="list-recebidos"><p class="empty-msg">Nenhum valor recebido ainda.</p></div>
+        </div>
       </div>
     </section>
 
-  </main>
-</div>
+    <!-- ── Simulação ──────────────────────────────────────────────── -->
+  </div><!-- /main -->
+</div><!-- /app -->
 
-<!-- Exportar PDF -->
-<div id="modal-pdf" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <button class="modal-close" id="btn-close-pdf">✕</button>
-    <div class="modal-hero">📄</div>
-    <h2 class="modal-title">Exportar Relatório</h2>
-    <p class="modal-byline">Escolha o período e o que incluir no relatório.</p>
-    <div class="modal-divider"></div>
+<!-- ══ MODAIS EXTRAS ═══════════════════════════════════════════════════════════ -->
 
-    <div class="form-group" style="margin-top:16px">
+<!-- Modal Exportar PDF -->
+<div id="modal-pdf" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:420px">
+    <button class="icon-btn m-close" id="btn-close-pdf"><i data-lucide="x" width="16" height="16"></i></button>
+    <div class="m-hero"><i data-lucide="file-text" width="22" height="22"></i></div>
+    <h2 class="m-title">Exportar Relatório</h2>
+    <p class="m-sub">Escolha o período e o que incluir no relatório.</p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
+
+    <div class="field" style="margin-top:4px">
       <label>Mês de referência</label>
-      <input type="month" id="pdf-mes" style="width:100%;margin-top:6px"/>
+      <input type="month" id="pdf-mes" class="inp"/>
     </div>
 
     <div style="margin-top:14px">
-      <label style="font-size:.78rem;font-weight:700;color:var(--txt);display:block;margin-bottom:10px;">Incluir no relatório:</label>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <label class="pdf-check"><input type="checkbox" id="pdf-gastos" checked> 💸 Gastos por categoria</label>
-        <label class="pdf-check"><input type="checkbox" id="pdf-rendas" checked> 💰 Rendas e entradas</label>
-        <label class="pdf-check"><input type="checkbox" id="pdf-parc" checked> 📦 Parceladas</label>
-        <label class="pdf-check"><input type="checkbox" id="pdf-rec" checked> 🔁 Recorrentes</label>
-        <label class="pdf-check"><input type="checkbox" id="pdf-fut" checked> 🔮 Despesas futuras</label>
+      <div class="t-micro" style="margin-bottom:10px">Incluir no relatório:</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label class="pdf-check"><input type="checkbox" id="pdf-gastos" checked> Gastos por categoria</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-rendas" checked> Rendas e entradas</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-parc" checked> Parceladas</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-rec" checked> Recorrentes</label>
+        <label class="pdf-check"><input type="checkbox" id="pdf-fut" checked> Despesas futuras</label>
       </div>
     </div>
 
-    <button id="btn-gerar-pdf" class="btn-primary w-full" style="margin-top:20px;">Gerar PDF 📄</button>
+    <button id="btn-gerar-pdf" class="btn btn-primary btn-block" style="margin-top:20px">
+      <i data-lucide="file-text" width="15" height="15"></i> Gerar PDF
+    </button>
   </div>
 </div>
 
 <!-- Modal Perfil -->
-<div id="modal-perfil" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <button class="modal-close" id="btn-close-perfil">✕</button>
+<div id="modal-perfil" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:420px">
+    <button class="icon-btn m-close" id="btn-close-perfil"><i data-lucide="x" width="16" height="16"></i></button>
 
-    <!-- Avatar -->
-    <div style="text-align:center;margin-bottom:16px;">
-      <div id="perfil-avatar-display" style="width:80px;height:80px;border-radius:50%;margin:0 auto 10px;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--p5),var(--p3));display:flex;align-items:center;justify-content:center;" title="Clique para trocar a foto">
-        <img id="perfil-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
-        <span id="perfil-avatar-inicial" style="font-size:2rem;color:#fff;">A</span>
-        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);padding:3px 0;font-size:.6rem;color:#fff;text-align:center;">trocar</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div id="perfil-avatar-display" style="width:80px;height:80px;border-radius:50%;margin:0 auto 10px;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--lav),var(--ac));display:flex;align-items:center;justify-content:center" title="Clique para trocar a foto">
+        <img id="perfil-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none"/>
+        <span id="perfil-avatar-inicial" style="font-size:2rem;color:#fff;font-family:var(--f-display)">A</span>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);padding:3px 0;font-size:.6rem;color:#fff;text-align:center">trocar</div>
       </div>
       <input type="file" id="perfil-foto-input" accept="image/*" style="display:none"/>
     </div>
 
-    <div class="modal-divider"></div>
+    <div style="height:1px;background:var(--border);margin:0 0 10px"></div>
 
-    <p id="perfil-username" style="text-align:center;font-size:.88rem;font-weight:600;color:var(--txt2);margin:10px 0 4px;">@username</p>
+    <p id="perfil-username" style="text-align:center;font-size:.88rem;font-weight:600;color:var(--txt2);margin-bottom:10px">@username</p>
 
-    <!-- Nome -->
-    <div class="form-group" style="margin-top:10px">
+    <div class="field">
       <label>Nome</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">✏️</span>
-        <input type="text" id="perfil-nome" placeholder="Seu nome"/>
+      <div class="inp-wrap has-ic">
+        <span class="fp-ic"><i data-lucide="pencil" width="14" height="14"></i></span>
+        <input type="text" id="perfil-nome" class="inp" placeholder="Seu nome"/>
       </div>
     </div>
 
-    <!-- Trocar senha -->
-    <div style="margin-top:10px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;">
-      <button id="btn-toggle-senha" type="button" style="width:100%;background:none;border:none;padding:12px 14px;font-size:.78rem;font-weight:700;color:var(--txt);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--font);">
-        <span>🔒 Alterar senha</span>
+    <div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <button id="btn-toggle-senha" type="button" style="width:100%;background:none;border:none;padding:12px 14px;font-size:.78rem;font-weight:700;color:var(--txt);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--f-ui);gap:8px">
+        <span style="display:flex;align-items:center;gap:8px">
+          <i data-lucide="lock" width="14" height="14"></i>
+          Alterar senha
+        </span>
+        <i data-lucide="chevron-down" width="14" height="14"></i>
       </button>
-      <div id="senha-fields" class="hidden" style="padding:0 14px 14px;">
-      <div class="form-group">
-        <div class="input-icon-wrap">
-          <span class="input-icon">🔒</span>
-          <input type="password" id="perfil-senha-atual" placeholder="Senha atual"/>
-          <button class="btn-eye" data-t="perfil-senha-atual" type="button">👁️</button>
+      <div id="senha-fields" class="hidden" style="padding:0 14px 14px">
+        <div class="field">
+          <div class="inp-wrap has-ic">
+            <span class="fp-ic"><i data-lucide="lock" width="14" height="14"></i></span>
+            <input type="password" id="perfil-senha-atual" class="inp" placeholder="Senha atual"/>
+            <span class="inp-suffix"><button class="icon-btn btn-eye" data-t="perfil-senha-atual" type="button"><i data-lucide="eye" width="15" height="15"></i></button></span>
+          </div>
+        </div>
+        <div class="field" style="margin-top:8px">
+          <div class="inp-wrap has-ic">
+            <span class="fp-ic"><i data-lucide="key" width="14" height="14"></i></span>
+            <input type="password" id="perfil-senha-nova" class="inp" placeholder="Nova senha"/>
+            <span class="inp-suffix"><button class="icon-btn btn-eye" data-t="perfil-senha-nova" type="button"><i data-lucide="eye" width="15" height="15"></i></button></span>
+          </div>
+        </div>
+        <div class="field" style="margin-top:8px">
+          <div class="inp-wrap has-ic">
+            <span class="fp-ic"><i data-lucide="key" width="14" height="14"></i></span>
+            <input type="password" id="perfil-senha-conf" class="inp" placeholder="Confirmar nova senha"/>
+            <span class="inp-suffix"><button class="icon-btn btn-eye" data-t="perfil-senha-conf" type="button"><i data-lucide="eye" width="15" height="15"></i></button></span>
+          </div>
         </div>
       </div>
-      <div class="form-group" style="margin-top:8px">
-        <div class="input-icon-wrap">
-          <span class="input-icon">🔑</span>
-          <input type="password" id="perfil-senha-nova" placeholder="Nova senha"/>
-          <button class="btn-eye" data-t="perfil-senha-nova" type="button">👁️</button>
-        </div>
-      </div>
-      <div class="form-group" style="margin-top:8px">
-        <div class="input-icon-wrap">
-          <span class="input-icon">🔑</span>
-          <input type="password" id="perfil-senha-conf" placeholder="Confirmar nova senha"/>
-          <button class="btn-eye" data-t="perfil-senha-conf" type="button">👁️</button>
-        </div>
-      </div>
-    </div>
     </div>
 
     <p id="perfil-erro" class="msg-err hidden" style="margin-top:8px"></p>
-    <p id="perfil-ok" class="hidden" style="margin-top:8px;font-size:.8rem;color:var(--green);font-weight:600"></p>
+    <p id="perfil-ok" class="hidden" style="margin-top:8px;font-size:.8rem;color:var(--ok);font-weight:600"></p>
 
-    <button id="btn-perfil-save" class="btn-primary w-full" style="margin-top:16px;">Salvar alterações</button>
-    <p style="text-align:center;font-size:.72rem;color:var(--txt3);margin-top:12px;">📅 Membro desde <span id="perfil-criado"></span></p>
+    <button id="btn-perfil-save" class="btn btn-primary btn-block" style="margin-top:16px">Salvar alterações</button>
+    <p style="text-align:center;font-size:.72rem;color:var(--txt3);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+      <i data-lucide="calendar" width="12" height="12"></i>
+      Membro desde <span id="perfil-criado"></span>
+    </p>
   </div>
 </div>
 
-<div id="modal-nova-senha" class="modal-backdrop hidden">
-  <div class="modal-box">
-    <div class="modal-hero">🔑</div>
-    <h2 class="modal-title">Criar nova senha</h2>
-    <p class="modal-byline">Digite sua nova senha abaixo.</p>
-    <div class="modal-divider"></div>
+<!-- Modal Nova Senha -->
+<div id="modal-nova-senha" class="fp-scrim hidden">
+  <div class="fp-modal" style="max-width:400px">
+    <div class="m-hero"><i data-lucide="key" width="22" height="22"></i></div>
+    <h2 class="m-title">Criar nova senha</h2>
+    <p class="m-sub">Digite sua nova senha abaixo.</p>
+    <div style="height:1px;background:var(--border);margin:14px 0"></div>
 
-    <div class="form-group" style="text-align:left;margin-top:14px">
+    <div class="field" style="margin-top:14px">
       <label>Nova senha</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">🔒</span>
-        <input type="password" id="ns-pass" placeholder="mín. 8 caracteres"/>
-        <button class="btn-eye" data-t="ns-pass" type="button">👁️</button>
+      <div class="inp-wrap has-ic">
+        <span class="fp-ic"><i data-lucide="lock" width="14" height="14"></i></span>
+        <input type="password" id="ns-pass" class="inp" placeholder="mín. 8 caracteres"/>
+        <span class="inp-suffix"><button class="icon-btn btn-eye" data-t="ns-pass" type="button"><i data-lucide="eye" width="15" height="15"></i></button></span>
       </div>
     </div>
 
-    <div class="form-group" style="text-align:left;margin-top:12px">
+    <div class="field" style="margin-top:12px">
       <label>Confirmar nova senha</label>
-      <div class="input-icon-wrap">
-        <span class="input-icon">🔒</span>
-        <input type="password" id="ns-pass2" placeholder="repita a senha"/>
-        <button class="btn-eye" data-t="ns-pass2" type="button">👁️</button>
+      <div class="inp-wrap has-ic">
+        <span class="fp-ic"><i data-lucide="lock" width="14" height="14"></i></span>
+        <input type="password" id="ns-pass2" class="inp" placeholder="repita a senha"/>
+        <span class="inp-suffix"><button class="icon-btn btn-eye" data-t="ns-pass2" type="button"><i data-lucide="eye" width="15" height="15"></i></button></span>
       </div>
     </div>
 
-    <p id="ns-error" class="msg-err hidden" style="text-align:left">Erro.</p>
+    <p id="ns-error" class="msg-err hidden" style="margin-top:8px">Erro.</p>
 
     <div style="margin-top:18px">
-      <button id="btn-ns-save" class="btn-primary w-full">Salvar nova senha</button>
+      <button id="btn-ns-save" class="btn btn-primary btn-block">Salvar nova senha</button>
     </div>
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) lucide.createIcons();
+  });
+</script>
 </body>
 </html>
