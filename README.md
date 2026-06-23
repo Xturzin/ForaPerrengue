@@ -28,12 +28,6 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/website?url=https%3A%2F%2Ftest-perrengue.vercel.app&label=status&up_message=online&down_message=offline&up_color=4ADE9D&down_color=F58A9B&labelColor=221345&style=flat-square" alt="Status do site"/>
-  &nbsp;
-  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FXturzin%2FForaPerrengue&count_bg=%23A076FF&title_bg=%23221345&icon=eye.svg&icon_color=%23FFFFFF&title=visitas&edge_flat=false" alt="Visitas"/>
-</p>
-
 ---
 
 ## 🎬 Demo
@@ -69,7 +63,7 @@ Feito pra quem quer se achar financeiramente sem depender de planilha ou bloco d
 </p>
 
 <p align="center">
-  <sub>Sem frameworks no front-end. A restrição era usar apenas HTML, CSS e JavaScript puro — as bibliotecas externas são carregadas via CDN.</sub>
+  <sub>Sem frameworks no front-end. A restrição era usar apenas HTML, CSS e JavaScript puro, com bibliotecas externas carregadas via CDN.</sub>
 </p>
 
 ---
