@@ -168,11 +168,16 @@ Tutorial de 8 slides exibido automaticamente no primeiro acesso. Apresenta cada 
       <br><sub>Notificações de vencimento</sub>
     </td>
     <td align="center" width="50%">
-      <img src="assets/screenshots/mobile_dashboard.png" alt="Layout mobile" width="52%"/>
-      <br><sub>Layout mobile</sub>
+      <img src="assets/screenshots/modal_pdf.png" alt="Relatório PDF" width="100%"/>
+      <br><sub>Relatório PDF</sub>
     </td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="assets/screenshots/dashboard_escuro_mobile.png" alt="Layout mobile" width="28%"/>
+  <br><sub>Layout mobile</sub>
+</p>
 
 <br>
 
